@@ -8,6 +8,16 @@ from pymongo import MongoClient
 if __name__ == "__main__":
     live_url = 'https://www.realtor.com/realestateandhomes-search/Aurora_CO'
 
+    '''
+    Wayback Machine API - used to get old versions of webpage for scraping
+    '''
+    
     client = WaybackClient()
     records = client.search(live_url)
 
+    '''
+    Using Selenium to automate navigation on Realtor.com
+    '''
+
+    web_driver = webdriver.Firefox()
+    
