@@ -50,11 +50,16 @@ ROBOTSTXT_OBEY = True
 #    'realestatescraper.middlewares.RealestatescraperSpiderMiddleware': 543,
 #}
 
-# Enable or disable downloader middlewares
-# See https://docs.scrapy.org/en/latest/topics/downloader-middleware.html
-#DOWNLOADER_MIDDLEWARES = {
+# proxy pool enebled
+# PROXY_POOL_ENABLED = True
+
+# # Enable or disable downloader middlewares
+# # See https://docs.scrapy.org/en/latest/topics/downloader-middleware.html
+# DOWNLOADER_MIDDLEWARES = {
 #    'realestatescraper.middlewares.RealestatescraperDownloaderMiddleware': 543,
-#}
+#     'scrapy_proxy_pool.middlewares.ProxyPoolMiddleware': 610,
+#     'scrapy_proxy_pool.middlewares.BanDetectionMiddleware': 620,
+# }
 
 # Enable or disable extensions
 # See https://docs.scrapy.org/en/latest/topics/extensions.html
@@ -80,6 +85,8 @@ ROBOTSTXT_OBEY = True
 #AUTOTHROTTLE_TARGET_CONCURRENCY = 1.0
 # Enable showing throttling stats for every response received:
 #AUTOTHROTTLE_DEBUG = False
+
+
 
 # Enable and configure HTTP caching (disabled by default)
 # See https://docs.scrapy.org/en/latest/topics/downloader-middleware.html#httpcache-middleware-settings
