@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-
+from shutil import which
 # Scrapy settings for realestatescraper project
 #
 # For simplicity, this file contains only settings considered important or
@@ -16,10 +16,7 @@ NEWSPIDER_MODULE = 'realestatescraper.spiders'
 
 
 # Crawl responsibly by identifying yourself (and your website) on the user-agent
-USER_AGENT = 'realestatescraper (https://www.github.com/connorslagle/homes-like-this)'
-
-# Obey robots.txt rules
-ROBOTSTXT_OBEY = True
+# USER_AGENT = 'realestatescraper (https://www.github.com/connorslagle/homes-like-this)'
 
 # Configure maximum concurrent requests performed by Scrapy (default: 16)
 #CONCURRENT_REQUESTS = 32
@@ -33,7 +30,7 @@ CONCURRENT_REQUESTS_PER_DOMAIN = 16
 CONCURRENT_REQUESTS_PER_IP = 16
 
 # Disable cookies (enabled by default)
-COOKIES_ENABLED = False
+# COOKIES_ENABLED = False
 
 # Disable Telnet Console (enabled by default)
 #TELNETCONSOLE_ENABLED = False
@@ -56,9 +53,10 @@ COOKIES_ENABLED = False
 # # Enable or disable downloader middlewares
 # # See https://docs.scrapy.org/en/latest/topics/downloader-middleware.html
 DOWNLOADER_MIDDLEWARES = {
-   'realestatescraper.middlewares.RealestatescraperDownloaderMiddleware': 543,
-    'scrapy_proxy_pool.middlewares.ProxyPoolMiddleware': 610,
-    'scrapy_proxy_pool.middlewares.BanDetectionMiddleware': 620,
+    'realestatescraper.middlewares.RealestatescraperDownloaderMiddleware': 543,
+    'scrapy_selenium.SeleniumMiddleware': 800
+#     'scrapy_proxy_pool.middlewares.ProxyPoolMiddleware': 610,
+#     'scrapy_proxy_pool.middlewares.BanDetectionMiddleware': 620,
 }
 
 # Enable or disable extensions
@@ -75,16 +73,16 @@ DOWNLOADER_MIDDLEWARES = {
 
 # Enable and configure the AutoThrottle extension (disabled by default)
 # See https://docs.scrapy.org/en/latest/topics/autothrottle.html
-AUTOTHROTTLE_ENABLED = True
-# The initial download delay
-AUTOTHROTTLE_START_DELAY = 5
-# The maximum download delay to be set in case of high latencies
-AUTOTHROTTLE_MAX_DELAY = 60
-# The average number of requests Scrapy should be sending in parallel to
-# each remote server
-AUTOTHROTTLE_TARGET_CONCURRENCY = 1.0
-# Enable showing throttling stats for every response received:
-AUTOTHROTTLE_DEBUG = False
+# AUTOTHROTTLE_ENABLED = True
+# # The initial download delay
+# AUTOTHROTTLE_START_DELAY = 5
+# # The maximum download delay to be set in case of high latencies
+# AUTOTHROTTLE_MAX_DELAY = 60
+# # The average number of requests Scrapy should be sending in parallel to
+# # each remote server
+# AUTOTHROTTLE_TARGET_CONCURRENCY = 1.0
+# # Enable showing throttling stats for every response received:
+# AUTOTHROTTLE_DEBUG = False
 
 
 
@@ -95,3 +93,8 @@ AUTOTHROTTLE_DEBUG = False
 #HTTPCACHE_DIR = 'httpcache'
 #HTTPCACHE_IGNORE_HTTP_CODES = []
 #HTTPCACHE_STORAGE = 'scrapy.extensions.httpcache.FilesystemCacheStorage'
+
+# Scrapy-selenium
+SELENIUM_DRIVER_NAME = 'firefox'
+SELENIUM_DRIVER_EXECUTABLE_PATH = which('geckodriver')
+SELENIUM_DRIVER_ARGUMENTS=['-headless']  # '--headless' if using chrome instead of firefox

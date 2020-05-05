@@ -1,6 +1,7 @@
 import scrapy
 from selenium import webdriver
 
+
 class ProductSpider(scrapy.Spider):
     name = "listing_spider"
     allowed_domains = ['realtor.com']
