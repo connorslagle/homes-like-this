@@ -1,8 +1,10 @@
 import scrapy
+from scrapy.spiders import CrawlSpider, Rule
+from scrapy.linkextractors import LinkExtractor
 from scrapy_selenium import SeleniumRequest
 
-class ListingSpider(scrapy.Spider):
-    name = 'listings'
+class ListingCrawler(CrawlSpider):
+    name = 'crawl-listings'
     
 
     def start_requests(self):
