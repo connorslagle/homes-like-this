@@ -4,7 +4,7 @@ from selenium import webdriver
 class ProductSpider(scrapy.Spider):
     name = "listing_spider"
     allowed_domains = ['realtor.com']
-    start_urls = ['http://www.ebay.com/sch/i.html?_odkw=books&_osacat=0&_trksid=p2045573.m570.l1313.TR0.TRC0.Xpython&_nkw=python&_sacat=0&_from=R40']
+    start_urls = ['https://www.realtor.com/realestateandhomes-search/Aurora_CO/pg-1']
 
     def __init__(self):
         self.driver = webdriver.Firefox()
@@ -12,12 +12,25 @@ class ProductSpider(scrapy.Spider):
     def parse(self, response):
         self.driver.get(response.url)
 
+
+
         while True:
-            next = self.driver.find_element_by_xpath('//td[@class="pagn-next"]/a')
+
+            page = response.url.split('-')[-1]
+            filename = f'realtor_test_selenium_{page}.html'
+            with open(filename, 'wb') as f:
+                f.write(response.body)
+            self.log(f'Saved file {filename}')
+
+            next_pg = self.driver.find_element_by_css_selector('a.pagination-direction')
 
             try:
-                next.click()
-
+                next_pg.click()
+                page = response.url.split('-')[-1]
+                filename = f'realtor_test_selenium_{page}.html'
+                with open(filename, 'wb') as f:
+                    f.write(response.body)
+                self.log(f'Saved file {filename}')
                 # get the data and write it to scrapy items
             except:
                 break

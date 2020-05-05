@@ -10,14 +10,14 @@ class ListingSpider(scrapy.Spider):
 
 
         pages = range(2,43)
-        urls = ['https://www.realtor.com/realestateandhomes-search/Aurora_CO/pg-1']
+        urls = ['https://www.zillow.com/aurora-co/1_p']
 
         for url in urls:
             yield scrapy.Request(url=url, callback=self.parse)
     
     def parse(self, response):
-        page = response.url.split('-')[-1]
-        filename = f'realtor_test_{page}.html'
+        page = response.url.split('/')[-1]
+        filename = f'zillow_test_{page}.html'
         with open(filename, 'wb') as f:
             f.write(response.body)
         self.log(f'Saved file {filename}')

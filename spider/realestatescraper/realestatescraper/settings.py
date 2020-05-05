@@ -16,7 +16,7 @@ NEWSPIDER_MODULE = 'realestatescraper.spiders'
 
 
 # Crawl responsibly by identifying yourself (and your website) on the user-agent
-USER_AGENT = 'realestatescraper (+http://www.yourdomain.com)'
+USER_AGENT = 'realestatescraper (https://www.github.com/connorslagle/homes-like-this)'
 
 # Obey robots.txt rules
 ROBOTSTXT_OBEY = True
@@ -55,11 +55,11 @@ COOKIES_ENABLED = False
 
 # # Enable or disable downloader middlewares
 # # See https://docs.scrapy.org/en/latest/topics/downloader-middleware.html
-# DOWNLOADER_MIDDLEWARES = {
-#    'realestatescraper.middlewares.RealestatescraperDownloaderMiddleware': 543,
-#     'scrapy_proxy_pool.middlewares.ProxyPoolMiddleware': 610,
-#     'scrapy_proxy_pool.middlewares.BanDetectionMiddleware': 620,
-# }
+DOWNLOADER_MIDDLEWARES = {
+   'realestatescraper.middlewares.RealestatescraperDownloaderMiddleware': 543,
+    'scrapy_proxy_pool.middlewares.ProxyPoolMiddleware': 610,
+    'scrapy_proxy_pool.middlewares.BanDetectionMiddleware': 620,
+}
 
 # Enable or disable extensions
 # See https://docs.scrapy.org/en/latest/topics/extensions.html
