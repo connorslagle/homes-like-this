@@ -29,3 +29,8 @@ if __name__ == "__main__":
                     'https://www.zillow.com/aurora-co/1_p']
 
     # CSS selector for next page, Realtor.com (a.pagination-direction)
+    # //a[@rel="noopener"]/picture
+    # when in listing
+    # 1. click //div[@class="slick-list"]
+    # 2. driver.execute_script("window.scrollTo({left:0, top:document.body.scrollHeight, behavior:'smooth'});")
+    # 3. driver.execute_script("window.scrollTo({left:0, top:-(document.body.scrollHeight), behavior:'smooth'});")

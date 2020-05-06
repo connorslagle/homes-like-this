@@ -24,7 +24,7 @@ NEWSPIDER_MODULE = 'realestatescraper.spiders'
 # Configure a delay for requests for the same website (default: 0)
 # See https://docs.scrapy.org/en/latest/topics/settings.html#download-delay
 # See also autothrottle settings and docs
-DOWNLOAD_DELAY = 3
+DOWNLOAD_DELAY = 5
 # The download delay setting will honor only one of:
 CONCURRENT_REQUESTS_PER_DOMAIN = 16
 CONCURRENT_REQUESTS_PER_IP = 16
@@ -67,9 +67,19 @@ DOWNLOADER_MIDDLEWARES = {
 
 # Configure item pipelines
 # See https://docs.scrapy.org/en/latest/topics/item-pipeline.html
-#ITEM_PIPELINES = {
-#    'realestatescraper.pipelines.RealestatescraperPipeline': 300,
-#}
+ITEM_PIPELINES = {
+   'realestatescraper.pipelines.MyImagesPipeline': 300
+#    'realestatescraper.pipelines.RealestatescraperPipeline': 600,
+}
+
+# image pipeline settings
+IMAGES_STORE = '../../../images/listing_images/'
+
+# make thumbnail images
+IMAGES_THUMBS = {
+    'small': (100, 100),
+    'big': (300, 300),
+}
 
 # Enable and configure the AutoThrottle extension (disabled by default)
 # See https://docs.scrapy.org/en/latest/topics/autothrottle.html
