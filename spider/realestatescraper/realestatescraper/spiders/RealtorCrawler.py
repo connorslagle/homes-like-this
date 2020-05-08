@@ -15,11 +15,22 @@ class ListingCrawler(CrawlSpider):
             yield SeleniumRequest(url=url, callback=self.parse_result)
     
     def parse_result(self, response):
-        page = response.url.split('/')[-2]
-        filename = f'realtor_test_{page}.html'
+        '''
+        Collect raw HTML of search page
+        '''
+        page = response.url.split('-')[-1]
+        filename = f'realtor_aurora_pg{page}.html'
         with open(filename, 'wb') as f:
             f.write(response.body)
         self.log(f'Saved file {filename}')
+
+        selenium_driver = response.request.meta['driver']
+
+
+        '''
+        Navigate to 
+        '''
+        
 
 
 if __name__ == "__main__":
@@ -29,6 +40,27 @@ if __name__ == "__main__":
                     'https://www.zillow.com/aurora-co/1_p']
 
     # CSS selector for next page, Realtor.com (a.pagination-direction)
+    '''
+    Property Card Information:
+    listing xpaths:
+        href:           //ul[@data-testid='property-list-container']/li/div/div[2]/div[3]/a/@href
+        type:           //ul[@data-testid='property-list-container']/li/div/div[2]/div[3]/a/div/div[1]/div/span/text()
+        price:          //ul[@data-testid='property-list-container']/li/div/div[2]/div[3]/a/div/div[2]/span/text()
+        beds:           //ul[@data-testid='property-list-container']/li/div/div[2]/div[3]/div[1]/div/a/div[1]/div/ul/li[1]/span[1]/text()
+        baths:          //ul[@data-testid='property-list-container']/li/div/div[2]/div[3]/div[1]/div/a/div[1]/div/ul/li[2]/span[1]/text()
+        sq.ft:          //ul[@data-testid='property-list-container']/li/div/div[2]/div[3]/div[1]/div/a/div[1]/div/ul/li[3]/span[1]/text()
+        lot:            //ul[@data-testid='property-list-container']/li/div/div[2]/div[3]/div[1]/div/a/div[1]/div/ul/li[4]/span[1]/text()
+        address:        //ul[@data-testid='property-list-container']/li/div/div[2]/div[3]/div[1]/div/a/div[2]/text()
+        city_state_zip: //ul[@data-testid='property-list-container']/li/div/div[2]/div[3]/div[1]/div/a/div[2]/div/text()
+
+
+    location: //ul[@data-testid='property-list-container']/li/div/div[2]/div[1]
+    scrapy command: response.xpath("//ul[@data-testid='property-list-container']/li/div/div[2]/div[1]").extract()
+    html path for property: //ul[@data-testid='property-list-container']/li/div/div[2]/div[1]/a/@href
+    scrapy cmd to follow href response.urljoin(href string)
+    '''
+
+
     # //a[@rel="noopener"]/picture
     # when in listing
     # 1. click //div[@class="slick-list"]
