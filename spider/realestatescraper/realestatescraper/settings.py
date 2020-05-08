@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-from shutil import which
 # Scrapy settings for realestatescraper project
 #
 # For simplicity, this file contains only settings considered important or
@@ -9,17 +8,12 @@ from shutil import which
 #     https://docs.scrapy.org/en/latest/topics/downloader-middleware.html
 #     https://docs.scrapy.org/en/latest/topics/spider-middleware.html
 
+from shutil import which
+
 BOT_NAME = 'realestatescraper'
 
 SPIDER_MODULES = ['realestatescraper.spiders']
 NEWSPIDER_MODULE = 'realestatescraper.spiders'
-
-
-# Crawl responsibly by identifying yourself (and your website) on the user-agent
-# USER_AGENT = 'realestatescraper (https://www.github.com/connorslagle/homes-like-this)'
-
-# Configure maximum concurrent requests performed by Scrapy (default: 16)
-#CONCURRENT_REQUESTS = 32
 
 # Configure a delay for requests for the same website (default: 0)
 # See https://docs.scrapy.org/en/latest/topics/settings.html#download-delay
@@ -28,6 +22,46 @@ DOWNLOAD_DELAY = 5
 # The download delay setting will honor only one of:
 CONCURRENT_REQUESTS_PER_DOMAIN = 16
 CONCURRENT_REQUESTS_PER_IP = 16
+
+# # Enable or disable downloader middlewares
+# # See https://docs.scrapy.org/en/latest/topics/downloader-middleware.html
+DOWNLOADER_MIDDLEWARES = {
+    'realestatescraper.middlewares.RealestatescraperDownloaderMiddleware': 543,
+    'scrapy_selenium.SeleniumMiddleware': 800
+    'scrapy_proxy_pool.middlewares.ProxyPoolMiddleware': None,
+    'scrapy_proxy_pool.middlewares.BanDetectionMiddleware': None,
+}
+
+# Configure item pipelines
+# See https://docs.scrapy.org/en/latest/topics/item-pipeline.html
+ITEM_PIPELINES = {
+   'realestatescraper.pipelines.MyImagesPipeline': 300
+   'realestatescraper.pipelines.RealestatescraperPipeline': None,
+}
+
+# image pipeline settings
+IMAGES_STORE = '../../../images/listing_images/'
+
+# make thumbnail images
+IMAGES_THUMBS = {
+    'small': (64, 64),
+    'big': (12800, 128),
+}
+
+# Scrapy-selenium
+SELENIUM_DRIVER_NAME = 'firefox'
+SELENIUM_DRIVER_EXECUTABLE_PATH = which('geckodriver')
+SELENIUM_DRIVER_ARGUMENTS=['-headless']  # '--headless' if using chrome instead of firefox
+
+# data storage
+FEED_FORMAT = 'jl'
+FEED_URI = 
+
+# Crawl responsibly by identifying yourself (and your website) on the user-agent
+# USER_AGENT = 'realestatescraper (https://www.github.com/connorslagle/homes-like-this)'
+
+# Configure maximum concurrent requests performed by Scrapy (default: 16)
+#CONCURRENT_REQUESTS = 32
 
 # Disable cookies (enabled by default)
 # COOKIES_ENABLED = False
@@ -50,36 +84,11 @@ CONCURRENT_REQUESTS_PER_IP = 16
 # proxy pool enebled
 # PROXY_POOL_ENABLED = True
 
-# # Enable or disable downloader middlewares
-# # See https://docs.scrapy.org/en/latest/topics/downloader-middleware.html
-DOWNLOADER_MIDDLEWARES = {
-    'realestatescraper.middlewares.RealestatescraperDownloaderMiddleware': 543,
-    'scrapy_selenium.SeleniumMiddleware': 800
-#     'scrapy_proxy_pool.middlewares.ProxyPoolMiddleware': 610,
-#     'scrapy_proxy_pool.middlewares.BanDetectionMiddleware': 620,
-}
-
 # Enable or disable extensions
 # See https://docs.scrapy.org/en/latest/topics/extensions.html
 #EXTENSIONS = {
 #    'scrapy.extensions.telnet.TelnetConsole': None,
 #}
-
-# Configure item pipelines
-# See https://docs.scrapy.org/en/latest/topics/item-pipeline.html
-ITEM_PIPELINES = {
-   'realestatescraper.pipelines.MyImagesPipeline': 300
-#    'realestatescraper.pipelines.RealestatescraperPipeline': 600,
-}
-
-# image pipeline settings
-IMAGES_STORE = '../../../images/listing_images/'
-
-# make thumbnail images
-IMAGES_THUMBS = {
-    'small': (100, 100),
-    'big': (300, 300),
-}
 
 # Enable and configure the AutoThrottle extension (disabled by default)
 # See https://docs.scrapy.org/en/latest/topics/autothrottle.html
@@ -103,8 +112,3 @@ IMAGES_THUMBS = {
 #HTTPCACHE_DIR = 'httpcache'
 #HTTPCACHE_IGNORE_HTTP_CODES = []
 #HTTPCACHE_STORAGE = 'scrapy.extensions.httpcache.FilesystemCacheStorage'
-
-# Scrapy-selenium
-SELENIUM_DRIVER_NAME = 'firefox'
-SELENIUM_DRIVER_EXECUTABLE_PATH = which('geckodriver')
-SELENIUM_DRIVER_ARGUMENTS=['-headless']  # '--headless' if using chrome instead of firefox

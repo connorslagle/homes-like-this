@@ -42,6 +42,7 @@ if __name__ == "__main__":
     # CSS selector for next page, Realtor.com (a.pagination-direction)
     '''
     Property Card Information:
+    extract cmds with: response.xpath(<xpath>).extract()
     listing xpaths:
         href:           //ul[@data-testid='property-list-container']/li/div/div[2]/div[3]/a/@href
         type:           //ul[@data-testid='property-list-container']/li/div/div[2]/div[3]/a/div/div[1]/div/span/text()
