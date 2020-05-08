@@ -16,7 +16,15 @@ class ListingSpider(scrapy.Spider):
         Ken Caryl (CDP), Littleton, Northglenn, Parker, Sherrelwood (CDP)
         '''
         
-        start_urls = ['https://www.realtor.com/realestateandhomes-search/Aurora_CO/pg-1']
+        # start_urls = ['https://www.realtor.com/realestateandhomes-search/Aurora_CO/pg-1']
+
+        start_urls = ['https://www.realtor.com/realestateandhomes-search/Aurora_CO/pg-1',
+                'https://www.realtor.com/realestateandhomes-search/Arvada_CO/pg-1',
+                'https://www.realtor.com/realestateandhomes-search/Centennial_CO/pg-1',
+                'https://www.realtor.com/realestateandhomes-search/Denver_CO/pg-1',
+                'https://www.realtor.com/realestateandhomes-search/Lakewood_CO/pg-1',
+                'https://www.realtor.com/realestateandhomes-search/Thornton_CO/pg-1',
+                'https://www.realtor.com/realestateandhomes-search/Westminster_CO/pg-1']
 
         for url in start_urls:
             yield SeleniumRequest(url=url, callback=self.parse_result)
@@ -67,14 +75,5 @@ if __name__ == "__main__":
         lot:            //ul[@data-testid='property-list-container']/li/div/div[2]/div[3]/div[1]/div/a/div[1]/div/ul/li[4]/span[1]/text()
         address:        //ul[@data-testid='property-list-container']/li/div/div[2]/div[3]/div[1]/div/a/div[2]/text()
         city_state_zip: //ul[@data-testid='property-list-container']/li/div/div[2]/div[3]/div[1]/div/a/div[2]/div/text()
-
-    start_urls = ['https://www.realtor.com/realestateandhomes-search/Aurora_CO/pg-1',
-                'https://www.realtor.com/realestateandhomes-search/Arvada_CO/pg-1',
-                'https://www.realtor.com/realestateandhomes-search/Centennial_CO/pg-1',
-                'https://www.realtor.com/realestateandhomes-search/Denver_CO/pg-1',
-                'https://www.realtor.com/realestateandhomes-search/Lakewood_CO/pg-1',
-                'https://www.realtor.com/realestateandhomes-search/Thornton_CO/pg-1',
-                'https://www.realtor.com/realestateandhomes-search/Westminster_CO/pg-1']
-
     '''
 
