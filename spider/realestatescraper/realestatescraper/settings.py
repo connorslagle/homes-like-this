@@ -27,7 +27,7 @@ CONCURRENT_REQUESTS_PER_IP = 16
 # # See https://docs.scrapy.org/en/latest/topics/downloader-middleware.html
 DOWNLOADER_MIDDLEWARES = {
     'realestatescraper.middlewares.RealestatescraperDownloaderMiddleware': 543,
-    'scrapy_selenium.SeleniumMiddleware': 800
+    'scrapy_selenium.SeleniumMiddleware': 800,
     'scrapy_proxy_pool.middlewares.ProxyPoolMiddleware': None,
     'scrapy_proxy_pool.middlewares.BanDetectionMiddleware': None,
 }
@@ -35,7 +35,7 @@ DOWNLOADER_MIDDLEWARES = {
 # Configure item pipelines
 # See https://docs.scrapy.org/en/latest/topics/item-pipeline.html
 ITEM_PIPELINES = {
-   'realestatescraper.pipelines.MyImagesPipeline': 300
+   'realestatescraper.pipelines.MyImagesPipeline': 300,
    'realestatescraper.pipelines.RealestatescraperPipeline': None,
 }
 
@@ -45,7 +45,7 @@ IMAGES_STORE = '../../../images/listing_images/'
 # make thumbnail images
 IMAGES_THUMBS = {
     'small': (64, 64),
-    'big': (12800, 128),
+    'big': (128, 128),
 }
 
 # Scrapy-selenium
@@ -54,9 +54,13 @@ SELENIUM_DRIVER_EXECUTABLE_PATH = which('geckodriver')
 SELENIUM_DRIVER_ARGUMENTS=['-headless']  # '--headless' if using chrome instead of firefox
 
 # data storage
-FEED_FORMAT = 'jl'
-FEED_URI = 
-
+FEEDS = {
+    '/home/conslag/Documents/galvanize/capstones/homes-like-this/data/%(name)s/%(time)s.jsonl' : {
+        'format': 'jsonlines',
+        'encoding': 'utf8',
+        'store_empty': False,
+    }
+}
 # Crawl responsibly by identifying yourself (and your website) on the user-agent
 # USER_AGENT = 'realestatescraper (https://www.github.com/connorslagle/homes-like-this)'
 
