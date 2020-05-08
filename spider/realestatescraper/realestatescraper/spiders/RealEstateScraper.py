@@ -16,20 +16,23 @@ class ListingSpider(scrapy.Spider):
         Ken Caryl (CDP), Littleton, Northglenn, Parker, Sherrelwood (CDP)
         '''
         
-        # start_urls = ['https://www.realtor.com/realestateandhomes-search/Aurora_CO/pg-1']
+        start_urls = ['https://www.realtor.com/realestateandhomes-search/Aurora_CO/pg-1']
 
-        start_urls = ['https://www.realtor.com/realestateandhomes-search/Aurora_CO/pg-1',
-                'https://www.realtor.com/realestateandhomes-search/Arvada_CO/pg-1',
-                'https://www.realtor.com/realestateandhomes-search/Centennial_CO/pg-1',
-                'https://www.realtor.com/realestateandhomes-search/Denver_CO/pg-1',
-                'https://www.realtor.com/realestateandhomes-search/Lakewood_CO/pg-1',
-                'https://www.realtor.com/realestateandhomes-search/Thornton_CO/pg-1',
-                'https://www.realtor.com/realestateandhomes-search/Westminster_CO/pg-1']
+        # start_urls = ['https://www.realtor.com/realestateandhomes-search/Aurora_CO/pg-1',
+        #         'https://www.realtor.com/realestateandhomes-search/Arvada_CO/pg-1',
+        #         'https://www.realtor.com/realestateandhomes-search/Centennial_CO/pg-1',
+        #         'https://www.realtor.com/realestateandhomes-search/Denver_CO/pg-1',
+        #         'https://www.realtor.com/realestateandhomes-search/Lakewood_CO/pg-1',
+        #         'https://www.realtor.com/realestateandhomes-search/Thornton_CO/pg-1',
+        #         'https://www.realtor.com/realestateandhomes-search/Westminster_CO/pg-1']
 
         for url in start_urls:
             yield SeleniumRequest(url=url, callback=self.parse_result)
     
     def parse_result(self, response):
+        '''
+        List of Listings pages: extract metadata and send to file (json)
+        '''
         url_page = response.url.split('-')[-1]
         url_city = response.url.split('/')[-2]
 
@@ -53,6 +56,21 @@ class ListingSpider(scrapy.Spider):
             scraped_info[key] = data
         yield scraped_info
 
+        '''
+        Nav to next listing page to scrape more
+        '''
+        li_num = 9
+        next_page_xpath=f"//div[@data-testid='srp-body']/section[1]/div[1]/ul/li[{li_num}]/a/@href"
+        next_page = response.xpath(next_page_xpath).extract()
+        while not bool(next_page):
+            if li_num == 0:
+                break
+            li_num -= 1
+            next_page_xpath=f"//div[@data-testid='srp-body']/section[1]/div[1]/ul/li[{li_num}]/a/@href"
+            next_page = response.xpath(next_page_xpath).extract()
+
+        if next_page:
+            yield SeleniumRequest(url=response.urljoin(next_page[0]), callback=self.parse_result)
 
         # page = response.url.split('/')[-2]
         # filename = f'realtor_test_{page}.html'
@@ -63,7 +81,7 @@ class ListingSpider(scrapy.Spider):
 
 if __name__ == "__main__":
     '''
-        Property Card Information:
+    Property Card Information:
     extract cmds with: response.xpath(<xpath>).extract()
     listing xpaths:
         href:           //ul[@data-testid='property-list-container']/li/div/div[2]/div[3]/a/@href
@@ -75,5 +93,9 @@ if __name__ == "__main__":
         lot:            //ul[@data-testid='property-list-container']/li/div/div[2]/div[3]/div[1]/div/a/div[1]/div/ul/li[4]/span[1]/text()
         address:        //ul[@data-testid='property-list-container']/li/div/div[2]/div[3]/div[1]/div/a/div[2]/text()
         city_state_zip: //ul[@data-testid='property-list-container']/li/div/div[2]/div[3]/div[1]/div/a/div[2]/div/text()
+
+    individual listing page xpaths:
+        photos (60x60):         //div[@class='ldp-hero-carousel-wrap']/div[1]/div/div/div[@class='owl-item cloned']/div/div/img
+        
     '''
 

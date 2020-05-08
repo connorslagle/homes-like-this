@@ -11,6 +11,7 @@ from urllib.parse import urlparse
 import scrapy
 from scrapy.pipelines.images import ImagesPipeline
 from scrapy.exceptions import DropItem
+from scrapy_selenium import SeleniumRequest
 
 
 class RealestatescraperPipeline:
@@ -19,12 +20,10 @@ class RealestatescraperPipeline:
 
 
 class MyImagesPipeline(ImagesPipeline):
-    def file_path(self, request, response=None, info=None):
-        return '../../../images/listing_images/' + os.path.basename(urlparse(request.url).path)
 
     def get_media_requests(self, item, info):
         for image_url in item['image_urls']:
-            yield scrapy.Request(image_url)
+            yield SeleniumRequest(url=image_url)
 
     def item_completed(self, results, item, info):
         image_paths = [x['path'] for ok, x in results if ok]
