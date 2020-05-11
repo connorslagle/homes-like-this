@@ -13,6 +13,7 @@ from scrapy.pipelines.images import ImagesPipeline
 from scrapy.exceptions import DropItem
 from scrapy_selenium import SeleniumRequest
 import pymongo
+import gridfs
 
 
 class MetadataPipeline():
@@ -20,10 +21,13 @@ class MetadataPipeline():
     Metadata will be stored in mongodb, in db 'listing_metadata'
     db will have collections 'by_search_page', and 'by_listing'
     '''
-    def __init__(self):
+    def open_spider(self, spider):
         self.conn = pymongo.MongoClient('localhost', 27017)
         db = self.conn['listings']
         self.collection = db['metadata']
+
+    def close_spider(self, spider):
+        self.conn.close()
 
     def process_item(self, item, spider):
         self.collection.insert(dict(item))
@@ -31,6 +35,12 @@ class MetadataPipeline():
 
 
 class MyImagesPipeline(ImagesPipeline):
+
+    # def __init__(self):
+    #     self.conn = pymongo.MongoClient('localhost', 27017)
+    #     db = self.conn['listings']
+    #     self.fs = gridfs.GridFS(db)
+    #     self.collection = db['metadata']
 
     def get_media_requests(self, item, info):
         for image_url in item['image_urls']:

@@ -36,38 +36,35 @@ class ListingSpider(scrapy.Spider):
         print(self.request_counter)
 
         if self.request_counter == 0:
-            search_meta_item = SearchPageItem()
+            l = ItemLoader(item=SearchPageItem, response=response)
             '''
-            List of Listings pages: extract metadata and send to file (json)
+            List of Listings pages: extract metadata and load to SearchPageItem container
             '''
-
             self.search_page_url = response.url
             url_page = response.url.split('-')[-1]
             url_city = response.url.split('/')[-2]
 
-            search_meta_item['search_url'] = self.search_page_url
-            search_meta_item['search_page'] = url_page
-            search_meta_item['search_city'] = url_city
-
             base_xpath= "//ul[@data-testid='property-list-container']/li/div/div[2]/div[3]"
 
             self.href = response.xpath(f'{base_xpath}/a/@href').extract()
-            prop_type = response.xpath(f'{base_xpath}/a/div/div[1]/div/span/text()').extract()
-            price = response.xpath(f'{base_xpath}/a/div/div[2]/span/text()').extract()
-            beds = response.xpath(f'{base_xpath}/div[1]/div/a/div[1]/div/ul/li[1]/span[1]/text()').extract()
-            baths = response.xpath(f'{base_xpath}/div[1]/div/a/div[1]/div/ul/li[2]/span[1]/text()').extract()
-            sqft = response.xpath(f'{base_xpath}/div[1]/div/a/div[1]/div/ul/li[3]/span[1]/text()').extract()
-            lotsqft = response.xpath(f'{base_xpath}/div[1]/div/a/div[1]/div/ul/li[4]/span[1]/text()').extract()
-            address = response.xpath(f'{base_xpath}/div[1]/div/a/div[2]/text()').extract()
-            city = response.xpath(f'{base_xpath}/div[1]/div/a/div[2]/div/text()').extract()
 
-            listing_zip = zip(self.href, prop_type, price, beds, baths, sqft, lotsqft, address, city)
+            for idx, listing in enumerate(self.href):
+                l.add_value('listing_id',f'{url_city}_{url_page}_{idx}')
+                l.add_value('search_url', self.search_page_url)
+                l.add_value('search_city', url_city)
+                l.add_value('search_page', url_page)
 
-            scraped_info = {'fields':['href', 'prop_type', 'price', 'beds', 'baths', 'sqft', 'lotsqft', 'address', 'city']}
-            for listing, data in enumerate(listing_zip):
-                key = f'{url_city}_pg{url_page}_listing{listing}'
-                scraped_info[key] = data
-            yield scraped_info
+                l.add_value('listing_href', listing)
+                l.add_xpath('prop_type', f'{base_xpath}/a/div/div[1]/div/span/text()')
+                l.add_xpath('price', f'{base_xpath}/a/div/div[2]/span/text()')
+                l.add_xpath('beds', f'{base_xpath}/div[1]/div/a/div[1]/div/ul/li[1]/span[1]/text()')
+                l.add_xpath('bath', f'{base_xpath}/div[1]/div/a/div[1]/div/ul/li[2]/span[1]/text()')
+                l.add_xpath('sqft', f'{base_xpath}/div[1]/div/a/div[1]/div/ul/li[3]/span[1]/text()')
+                l.add_xpath('lotsqft', f'{base_xpath}/div[1]/div/a/div[1]/div/ul/li[4]/span[1]/text()')
+                l.add_xpath('address', f'{base_xpath}/div[1]/div/a/div[2]/text()')
+                l.add_xpath('city', f'{base_xpath}/div[1]/div/a/div[2]/div/text()')
+                yield l.load_item()
+                
 
             # Scrape search page info -> move to first listing
             self.request_counter += 1

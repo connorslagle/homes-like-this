@@ -1,49 +1,44 @@
 import scrapy
+from scrapy.loader import ItemLoader
 from scrapy_selenium import SeleniumRequest
-from ..items import RealestatescraperItem
+from ..items import SearchPageItem
 
-class ProductSpider(scrapy.Spider):
-    name = "test_spider"
-    
-    
+
+class ListingSpider(scrapy.Spider):
+    name = "test"
+
     def start_request(self):
         allowed_domains = ['realtor.com']
-        start_urls = ['https://www.realtor.com/realestateandhomes-search/Boston_MA/pg-1']
+        start_urls = ['https://www.realtor.com/realestateandhomes-search/Denver_CO/pg-1']
         for url in start_urls:
             yield SeleniumRequest(url=url, callback=self.parse_result)
 
     def parse_result(self, response):
-        item = RealestatescraperItem()
-        item['image_urls'] = ['https://ap.rdcpix.com/f2d3d8da16bfc6272857bb8432fd0821l-m4195757090xd-r3_w60_h60_q80.jpg',
-                'https://ap.rdcpix.com/f2d3d8da16bfc6272857bb8432fd0821l-m1553618064xd-r3_w60_h60_q80.jpg',
-                'https://ap.rdcpix.com/f2d3d8da16bfc6272857bb8432fd0821l-m3390361382xd-r3_w60_h60_q80.jpg',
-                'https://ap.rdcpix.com/f2d3d8da16bfc6272857bb8432fd0821l-m694287565xd-r3_w60_h60_q80.jpg',
-                'https://ap.rdcpix.com/f2d3d8da16bfc6272857bb8432fd0821l-m314216804xd-r3_w60_h60_q80.jpg',
-                'https://ap.rdcpix.com/f2d3d8da16bfc6272857bb8432fd0821l-m4168513700xd-r3_w60_h60_q80.jpg',
-                'https://ap.rdcpix.com/f2d3d8da16bfc6272857bb8432fd0821l-m254909824xd-r3_w60_h60_q80.jpg',
-                'https://ap.rdcpix.com/f2d3d8da16bfc6272857bb8432fd0821l-m2850122435xd-r3_w60_h60_q80.jpg',
-                'https://ap.rdcpix.com/f2d3d8da16bfc6272857bb8432fd0821l-m4293566320xd-r3_w60_h60_q80.jpg',
-                'https://ap.rdcpix.com/f2d3d8da16bfc6272857bb8432fd0821l-m3828111939xd-r3_w60_h60_q80.jpg',
-                'https://ap.rdcpix.com/f2d3d8da16bfc6272857bb8432fd0821l-m87540920xd-r3_w60_h60_q80.jpg',
-                'https://ap.rdcpix.com/f2d3d8da16bfc6272857bb8432fd0821l-m2740238186xd-r3_w60_h60_q80.jpg',
-                'https://ap.rdcpix.com/f2d3d8da16bfc6272857bb8432fd0821l-m3177530126xd-r3_w60_h60_q80.jpg',
-                'https://ap.rdcpix.com/f2d3d8da16bfc6272857bb8432fd0821l-m3699680085xd-r3_w60_h60_q80.jpg',
-                'https://ap.rdcpix.com/f2d3d8da16bfc6272857bb8432fd0821l-m2105159420xd-r3_w60_h60_q80.jpg',
-                'https://ap.rdcpix.com/f2d3d8da16bfc6272857bb8432fd0821l-m2574086931xd-r3_w60_h60_q80.jpg',
-                'https://ap.rdcpix.com/f2d3d8da16bfc6272857bb8432fd0821l-m94802870xd-r3_w60_h60_q80.jpg',
-                'https://ap.rdcpix.com/f2d3d8da16bfc6272857bb8432fd0821l-m4021695627xd-r3_w60_h60_q80.jpg',
-                'https://ap.rdcpix.com/f2d3d8da16bfc6272857bb8432fd0821l-m80416574xd-r3_w60_h60_q80.jpg',
-                'https://ap.rdcpix.com/f2d3d8da16bfc6272857bb8432fd0821l-m1113940022xd-r3_w60_h60_q80.jpg',
-                'https://ap.rdcpix.com/f2d3d8da16bfc6272857bb8432fd0821l-m1842568115xd-r3_w60_h60_q80.jpg',
-                'https://ap.rdcpix.com/f2d3d8da16bfc6272857bb8432fd0821l-m1254826498xd-r3_w60_h60_q80.jpg',
-                'https://ap.rdcpix.com/f2d3d8da16bfc6272857bb8432fd0821l-m3178044250xd-r3_w60_h60_q80.jpg',
-                'https://ap.rdcpix.com/f2d3d8da16bfc6272857bb8432fd0821l-m782603140xd-r3_w60_h60_q80.jpg',
-                'https://ap.rdcpix.com/f2d3d8da16bfc6272857bb8432fd0821l-m2994640551xd-r3_w60_h60_q80.jpg',
-                'https://ap.rdcpix.com/f2d3d8da16bfc6272857bb8432fd0821l-m2433103184xd-r3_w60_h60_q80.jpg',
-                'https://ap.rdcpix.com/f2d3d8da16bfc6272857bb8432fd0821l-m4286653922xd-r3_w60_h60_q80.jpg',
-                'https://ap.rdcpix.com/f2d3d8da16bfc6272857bb8432fd0821l-m2332058624xd-r3_w60_h60_q80.jpg',
-                'https://ap.rdcpix.com/f2d3d8da16bfc6272857bb8432fd0821l-m1478366693xd-r3_w60_h60_q80.jpg',
-                'https://ap.rdcpix.com/f2d3d8da16bfc6272857bb8432fd0821l-m2992851727xd-r3_w60_h60_q80.jpg',
-                'https://ap.rdcpix.com/f2d3d8da16bfc6272857bb8432fd0821l-m863422880xd-r3_w60_h60_q80.jpg',
-                'https://ap.rdcpix.com/f2d3d8da16bfc6272857bb8432fd0821l-m319271888xd-r3_w60_h60_q80.jpg']
-        yield item
+        l = ItemLoader(item=SearchPageItem, response=response)
+        '''
+        List of Listings pages: extract metadata and load to SearchPageItem container
+        '''
+        self.search_page_url = response.url
+        url_page = response.url.split('-')[-1]
+        url_city = response.url.split('/')[-2]
+
+        base_xpath= "//ul[@data-testid='property-list-container']/li/div/div[2]/div[3]"
+
+        self.href = response.xpath(f'{base_xpath}/a/@href').extract()
+
+        for idx, listing in enumerate(self.href):
+            l.add_value('listing_id',f'{url_city}_{url_page}_{idx}')
+            l.add_value('search_url', self.search_page_url)
+            l.add_value('search_city', url_city)
+            l.add_value('search_page', url_page)
+
+            l.add_value('listing_href', listing)
+            l.add_xpath('prop_type', f'{base_xpath}/a/div/div[1]/div/span/text()')
+            l.add_xpath('price', f'{base_xpath}/a/div/div[2]/span/text()')
+            l.add_xpath('beds', f'{base_xpath}/div[1]/div/a/div[1]/div/ul/li[1]/span[1]/text()')
+            l.add_xpath('bath', f'{base_xpath}/div[1]/div/a/div[1]/div/ul/li[2]/span[1]/text()')
+            l.add_xpath('sqft', f'{base_xpath}/div[1]/div/a/div[1]/div/ul/li[3]/span[1]/text()')
+            l.add_xpath('lotsqft', f'{base_xpath}/div[1]/div/a/div[1]/div/ul/li[4]/span[1]/text()')
+            l.add_xpath('address', f'{base_xpath}/div[1]/div/a/div[2]/text()')
+            l.add_xpath('city', f'{base_xpath}/div[1]/div/a/div[2]/div/text()')
+            yield l.load_item()

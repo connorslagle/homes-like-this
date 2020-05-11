@@ -27,6 +27,7 @@ class SearchPageItem(scrapy.Item):
     search_city = scrapy.Field()
     search_page = scrapy.Field()
 
+    listing_id = scrapy.Field()
     listing_href = scrapy.Field()
     prop_type = scrapy.Field()
     price = scrapy.Field()
