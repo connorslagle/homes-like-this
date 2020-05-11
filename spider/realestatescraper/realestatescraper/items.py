@@ -35,5 +35,4 @@ class SearchPageItem(scrapy.Item):
     baths = scrapy.Field()
     sqft = scrapy.Field()
     lotsqft = scrapy.Field()
-    address = scrapy.Field()
-    city = scrapy.Field()
+

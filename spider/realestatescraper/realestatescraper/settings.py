@@ -51,7 +51,7 @@ DOWNLOADER_MIDDLEWARES = {
 # Configure item pipelines
 # See https://docs.scrapy.org/en/latest/topics/item-pipeline.html
 ITEM_PIPELINES = {
-   'realestatescraper.pipelines.MyImagesPipeline': 100,
+   'realestatescraper.pipelines.MyImagesPipeline': None,
    'realestatescraper.pipelines.MetadataPipeline': 200,
 }
 # image pipeline settings
