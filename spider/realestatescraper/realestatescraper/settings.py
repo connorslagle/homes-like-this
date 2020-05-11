@@ -51,7 +51,7 @@ DOWNLOADER_MIDDLEWARES = {
 # Configure item pipelines
 # See https://docs.scrapy.org/en/latest/topics/item-pipeline.html
 ITEM_PIPELINES = {
-   'realestatescraper.pipelines.MyImagesPipeline': None,
+   'realestatescraper.pipelines.MyImagesPipeline': 1,
    'realestatescraper.pipelines.RealestatescraperPipeline': None,
 }
 # image pipeline settings
@@ -62,14 +62,13 @@ ITEM_PIPELINES = {
 #     'small': (64, 64),
 #     'big': (128, 128),
 # }
-# # image pipeline settings
-# IMAGES_STORE = '../../../images/listing_images/'
+# image pipeline settings
+IMAGES_STORE = '/home/conslag/Documents/galvanize/capstones/homes-like-this/data/listing_images'
 
-# # make thumbnail images
-# IMAGES_THUMBS = {
-#     'small': (64, 64),
-#     'big': (128, 128),
-# }
+# make thumbnail images
+IMAGES_THUMBS = {
+    'small': (32, 32),
+}
 
 # Scrapy-selenium
 SELENIUM_DRIVER_NAME = 'firefox'

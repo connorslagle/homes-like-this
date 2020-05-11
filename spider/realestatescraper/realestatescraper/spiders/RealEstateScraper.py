@@ -16,15 +16,15 @@ class ListingSpider(scrapy.Spider):
         Ken Caryl (CDP), Littleton, Northglenn, Parker, Sherrelwood (CDP)
         '''
         
-        # start_urls = ['https://www.realtor.com/realestateandhomes-search/Aurora_CO/pg-1']
+        start_urls = ['https://www.realtor.com/realestateandhomes-search/Aurora_CO/pg-1']
 
-        start_urls = ['https://www.realtor.com/realestateandhomes-search/Aurora_CO/pg-1',
-                'https://www.realtor.com/realestateandhomes-search/Arvada_CO/pg-1',
-                'https://www.realtor.com/realestateandhomes-search/Centennial_CO/pg-1',
-                'https://www.realtor.com/realestateandhomes-search/Denver_CO/pg-1',
-                'https://www.realtor.com/realestateandhomes-search/Lakewood_CO/pg-1',
-                'https://www.realtor.com/realestateandhomes-search/Thornton_CO/pg-1',
-                'https://www.realtor.com/realestateandhomes-search/Westminster_CO/pg-1']
+        # start_urls = ['https://www.realtor.com/realestateandhomes-search/Aurora_CO/pg-1',
+        #         'https://www.realtor.com/realestateandhomes-search/Arvada_CO/pg-1',
+        #         'https://www.realtor.com/realestateandhomes-search/Centennial_CO/pg-1',
+        #         'https://www.realtor.com/realestateandhomes-search/Denver_CO/pg-1',
+        #         'https://www.realtor.com/realestateandhomes-search/Lakewood_CO/pg-1',
+        #         'https://www.realtor.com/realestateandhomes-search/Thornton_CO/pg-1',
+        #         'https://www.realtor.com/realestateandhomes-search/Westminster_CO/pg-1']
 
         for url in start_urls:
             yield SeleniumRequest(url=url, callback=self.parse_result)
@@ -49,12 +49,7 @@ class ListingSpider(scrapy.Spider):
         city = response.xpath(f'{base_xpath}/div[1]/div/a/div[2]/div/text()').extract()
 
         
-        '''
-        getting images from listings
-        '''
-
-        # for idx, listing in enumerate(href):
-        #     # go back a page response.meta['driver'].execute_script("window.history.go(-1)")
+       
 
         listing_zip = zip(href, prop_type, price, beds, baths, sqft, lotsqft, address, city)
 
@@ -63,6 +58,18 @@ class ListingSpider(scrapy.Spider):
             key = f'{url_city}_pg{url_page}_listing{listing}'
             scraped_info[key] = data
         yield scraped_info
+
+        '''
+        getting images from listings
+        '''
+        img_dict = {}
+        img_dict['image_urls'] = []
+        for listing in href:
+            SeleniumRequest(url=response.urljoin(listing))
+            img_dict['image_urls'].append(response.xpath(
+                "//div[@class='ldp-hero-carousel-wrap']/div[1]/div/div/div[@class='owl-item cloned']/div/div/img/@data-src").extract())
+            response.meta['driver'].execute_script("window.history.go(-1)")
+        yield img_dict
 
         '''
         Nav to next listing page to scrape more
