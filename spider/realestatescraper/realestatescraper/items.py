@@ -8,7 +8,31 @@
 import scrapy
 
 
-class RealestatescraperItem(scrapy.Item):
+class ListingItem(scrapy.Item):
     # define the fields for your item here like:
     # name = scrapy.Field()
-    pass
+
+    # images
+    images = scrapy.Field()
+    image_urls = scrapy.Field()
+
+    # aux metadata
+
+
+class SearchPageItem(scrapy.Item):
+    # define the fields for your item here like:
+    
+    # meta data from search page
+    search_url = scrapy.Field()
+    search_city = scrapy.Field()
+    search_page = scrapy.Field()
+
+    listing_href = scrapy.Field()
+    prop_type = scrapy.Field()
+    price = scrapy.Field()
+    beds = scrapy.Field()
+    baths = scrapy.Field()
+    sqft = scrapy.Field()
+    lotsqft = scrapy.Field()
+    address = scrapy.Field()
+    city = scrapy.Field()

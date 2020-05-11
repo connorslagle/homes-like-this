@@ -70,6 +70,8 @@ IMAGES_THUMBS = {
     'small': (32, 32),
 }
 
+MEDIA_ALLOW_REDIRECTS = True
+
 # Scrapy-selenium
 SELENIUM_DRIVER_NAME = 'firefox'
 SELENIUM_DRIVER_EXECUTABLE_PATH = which('geckodriver')
@@ -114,10 +116,6 @@ FEEDS = {
 #EXTENSIONS = {
 #    'scrapy.extensions.telnet.TelnetConsole': None,
 #}
-
-
-
-
 
 # Enable and configure HTTP caching (disabled by default)
 # See https://docs.scrapy.org/en/latest/topics/downloader-middleware.html#httpcache-middleware-settings

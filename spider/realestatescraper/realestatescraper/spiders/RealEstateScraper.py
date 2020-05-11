@@ -1,5 +1,7 @@
 import scrapy
+from scrapy.loader import ItemLoader
 from scrapy_selenium import SeleniumRequest
+from ..items import ListingItem, SearchPageItem
 
 class ListingSpider(scrapy.Spider):
     name = 'large_metro'
@@ -16,7 +18,7 @@ class ListingSpider(scrapy.Spider):
         Ken Caryl (CDP), Littleton, Northglenn, Parker, Sherrelwood (CDP)
         '''
         
-        start_urls = ['https://www.realtor.com/realestateandhomes-search/Aurora_CO/pg-1']
+        start_urls = ['https://www.realtor.com/realestateandhomes-search/Arvada_CO/pg-1']
 
         # start_urls = ['https://www.realtor.com/realestateandhomes-search/Aurora_CO/pg-1',
         #         'https://www.realtor.com/realestateandhomes-search/Arvada_CO/pg-1',
@@ -27,71 +29,80 @@ class ListingSpider(scrapy.Spider):
         #         'https://www.realtor.com/realestateandhomes-search/Westminster_CO/pg-1']
 
         for url in start_urls:
+            self.request_counter = 0
             yield SeleniumRequest(url=url, callback=self.parse_result)
     
     def parse_result(self, response):
-        '''
-        List of Listings pages: extract metadata and send to file (json)
-        '''
-        url_page = response.url.split('-')[-1]
-        url_city = response.url.split('/')[-2]
+        print(self.request_counter)
 
-        base_xpath= "//ul[@data-testid='property-list-container']/li/div/div[2]/div[3]"
+        if self.request_counter == 0:
+            search_meta_item = SearchPageItem()
+            '''
+            List of Listings pages: extract metadata and send to file (json)
+            '''
 
-        href = response.xpath(f'{base_xpath}/a/@href').extract()
-        prop_type = response.xpath(f'{base_xpath}/a/div/div[1]/div/span/text()').extract()
-        price = response.xpath(f'{base_xpath}/a/div/div[2]/span/text()').extract()
-        beds = response.xpath(f'{base_xpath}/div[1]/div/a/div[1]/div/ul/li[1]/span[1]/text()').extract()
-        baths = response.xpath(f'{base_xpath}/div[1]/div/a/div[1]/div/ul/li[2]/span[1]/text()').extract()
-        sqft = response.xpath(f'{base_xpath}/div[1]/div/a/div[1]/div/ul/li[3]/span[1]/text()').extract()
-        lotsqft = response.xpath(f'{base_xpath}/div[1]/div/a/div[1]/div/ul/li[4]/span[1]/text()').extract()
-        address = response.xpath(f'{base_xpath}/div[1]/div/a/div[2]/text()').extract()
-        city = response.xpath(f'{base_xpath}/div[1]/div/a/div[2]/div/text()').extract()
+            self.search_page_url = response.url
+            url_page = response.url.split('-')[-1]
+            url_city = response.url.split('/')[-2]
 
-        
-       
+            search_meta_item['search_url'] = self.search_page_url
+            search_meta_item['search_page'] = url_page
+            search_meta_item['search_city'] = url_city
 
-        listing_zip = zip(href, prop_type, price, beds, baths, sqft, lotsqft, address, city)
+            base_xpath= "//ul[@data-testid='property-list-container']/li/div/div[2]/div[3]"
 
-        scraped_info = {'fields':['href', 'prop_type', 'price', 'beds', 'baths', 'sqft', 'lotsqft', 'address', 'city']}
-        for listing, data in enumerate(listing_zip):
-            key = f'{url_city}_pg{url_page}_listing{listing}'
-            scraped_info[key] = data
-        yield scraped_info
+            self.href = response.xpath(f'{base_xpath}/a/@href').extract()
+            prop_type = response.xpath(f'{base_xpath}/a/div/div[1]/div/span/text()').extract()
+            price = response.xpath(f'{base_xpath}/a/div/div[2]/span/text()').extract()
+            beds = response.xpath(f'{base_xpath}/div[1]/div/a/div[1]/div/ul/li[1]/span[1]/text()').extract()
+            baths = response.xpath(f'{base_xpath}/div[1]/div/a/div[1]/div/ul/li[2]/span[1]/text()').extract()
+            sqft = response.xpath(f'{base_xpath}/div[1]/div/a/div[1]/div/ul/li[3]/span[1]/text()').extract()
+            lotsqft = response.xpath(f'{base_xpath}/div[1]/div/a/div[1]/div/ul/li[4]/span[1]/text()').extract()
+            address = response.xpath(f'{base_xpath}/div[1]/div/a/div[2]/text()').extract()
+            city = response.xpath(f'{base_xpath}/div[1]/div/a/div[2]/div/text()').extract()
 
-        '''
-        getting images from listings
-        '''
-        img_dict = {}
-        img_dict['image_urls'] = []
-        for listing in href:
-            SeleniumRequest(url=response.urljoin(listing))
-            img_dict['image_urls'].append(response.xpath(
-                "//div[@class='ldp-hero-carousel-wrap']/div[1]/div/div/div[@class='owl-item cloned']/div/div/img/@data-src").extract())
-            response.meta['driver'].execute_script("window.history.go(-1)")
-        yield img_dict
+            listing_zip = zip(self.href, prop_type, price, beds, baths, sqft, lotsqft, address, city)
 
-        '''
-        Nav to next listing page to scrape more
-        '''
-        li_num = 9
-        next_page_xpath=f"//div[@data-testid='srp-body']/section[1]/div[1]/ul/li[{li_num}]/a/@href"
-        next_page = response.xpath(next_page_xpath).extract()
-        while not bool(next_page):
-            if li_num == 0:
-                break
-            li_num -= 1
+            scraped_info = {'fields':['href', 'prop_type', 'price', 'beds', 'baths', 'sqft', 'lotsqft', 'address', 'city']}
+            for listing, data in enumerate(listing_zip):
+                key = f'{url_city}_pg{url_page}_listing{listing}'
+                scraped_info[key] = data
+            yield scraped_info
+
+            # Scrape search page info -> move to first listing
+            self.request_counter += 1
+            yield SeleniumRequest(url=response.urljoin(self.href[0]), callback=self.parse_result)
+
+        elif self.request_counter > 0 & self.request_counter <= len(self.href)+1:
+            '''
+            getting images from listings
+            '''
+            item = RealestatescraperItem()
+            img_urls = response.xpath(
+                "//section[@id='ldp-hero-container']/div/div/div[1]/div[1]/div/div[@class='background-item']/img/@data-src").extract()
+            item['image_urls'] = img_urls
+            yield item
+
+            self.request_counter += 1
+            yield SeleniumRequest(url=response.urljoin(self.href[self.request_counter-2]), callback=self.parse_result)
+        else:
+            '''
+            Nav to next listing page to scrape more
+            '''
+            self.request_counter = 0
+            li_num = 9
             next_page_xpath=f"//div[@data-testid='srp-body']/section[1]/div[1]/ul/li[{li_num}]/a/@href"
             next_page = response.xpath(next_page_xpath).extract()
+            while not bool(next_page):
+                if li_num == 0:
+                    break
+                li_num -= 1
+                next_page_xpath=f"//div[@data-testid='srp-body']/section[1]/div[1]/ul/li[{li_num}]/a/@href"
+                next_page = response.xpath(next_page_xpath).extract()
 
-        if next_page:
-            yield SeleniumRequest(url=response.urljoin(next_page[0]), callback=self.parse_result)
+            if next_page:
+                yield SeleniumRequest(url=response.urljoin(next_page[0]), callback=self.parse_result)
 
-        # page = response.url.split('/')[-2]
-        # filename = f'realtor_test_{page}.html'
-        # with open(filename, 'wb') as f:
-        #     f.write(response.body)
-        # self.log(f'Saved file {filename}')
 
 
 if __name__ == "__main__":
