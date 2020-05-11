@@ -14,6 +14,7 @@ class ListingItem(scrapy.Item):
 
     # images
     images = scrapy.Field()
+    image_paths = scrapy.Field()
     image_urls = scrapy.Field()
 
     # aux metadata

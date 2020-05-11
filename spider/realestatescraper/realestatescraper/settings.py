@@ -70,7 +70,7 @@ IMAGES_THUMBS = {
     'small': (32, 32),
 }
 
-MEDIA_ALLOW_REDIRECTS = True
+# MEDIA_ALLOW_REDIRECTS = True
 
 # Scrapy-selenium
 SELENIUM_DRIVER_NAME = 'firefox'
