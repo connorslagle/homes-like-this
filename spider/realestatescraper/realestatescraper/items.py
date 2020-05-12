@@ -19,16 +19,17 @@ class ListingItem(scrapy.Item):
     image_id = scrapy.Field()
 
     # aux metadata
-    prop_status = scrapy.Field()
-    price_sqft = scrapy.Field()
-    time_on_web = scrapy.Field()
-    prop_type = scrapy.Field()
-    year_built = scrapy.Field()
-    prop_style = scrapy.Field()
-    prop_desc = scrapy.Field()
+    aux_metadata = scrapy.Field()
+    from_url = scrapy.Field()
 
 class SearchPageItem(scrapy.Item):
     # define the fields for your item here like:
+
+    # # placeholder to pass img test
+    # images = scrapy.Field()
+    # image_paths = scrapy.Field()
+    # image_urls = scrapy.Field()
+    # image_id = scrapy.Field()
     
     # meta data from search page
     search_url = scrapy.Field()
