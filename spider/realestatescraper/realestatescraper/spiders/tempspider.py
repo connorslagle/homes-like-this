@@ -2,7 +2,7 @@ import scrapy
 from scrapy.loader import ItemLoader
 from scrapy.loader.processors import Compose
 from scrapy_selenium import SeleniumRequest
-from ..items import SearchPageItem
+from ..items import ListingItem
 
 
 class ListingSpider(scrapy.Spider):
@@ -16,7 +16,7 @@ class ListingSpider(scrapy.Spider):
 
     def parse_result(self, response):
         
-        l = ItemLoader(item=SearchPageItem(), response=response)
+        l = ItemLoader(item=ListingItem(), response=response)
 
         imgs_xpath = "//section[@id='ldp-hero-container']/div/div/div[1]/div[1]/div/img/@data-src"
 
