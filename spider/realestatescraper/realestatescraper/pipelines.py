@@ -24,18 +24,23 @@ class MetadataPipeline():
     '''
     def open_spider(self, spider):
         self.conn = pymongo.MongoClient('localhost', 27017)
-        db = self.conn['listings']
-        self.collection = db['metadata']
+        self.db = self.conn['listings']
 
     def close_spider(self, spider):
         self.conn.close()
 
     def process_item(self, item, spider):
-        self.collection.insert(dict(item))
+        if 'image_urls' not in item.keys():
+            collection = self.db['search_metadata']
+            collection.insert(dict(item))
+        else:
+            collection = self.db['listing_metadata']
+            collection.insert(dict(item))
+
         return item
 
 
-class MyImagesPipeline(ImagesPipeline):
+class MyImagesPipeline(ImagesPipeline): 
 
     def get_media_requests(self, item, info):
         for image_url in item['image_urls']:

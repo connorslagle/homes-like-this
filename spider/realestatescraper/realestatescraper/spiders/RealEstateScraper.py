@@ -41,47 +41,58 @@ class ListingSpider(scrapy.Spider):
             url_page = response.url.split('-')[-1]
             url_city = response.url.split('/')[-2]
 
-            base_xpath= "//ul[@data-testid='property-list-container']/li/div/div[2]/div[3]"
-
-            self.href = response.xpath(f'{base_xpath}/a/@href').extract()
             l = ItemLoader(item=SearchPageItem(), response=response)
+
+            base_xpath= "//ul[@data-testid='property-list-container']/li/div/div[2]/div[3]"
+            self.href = response.xpath(f'{base_xpath}/a/@href').extract()
 
             for idx, listing in enumerate(self.href):
                 l.add_value('listing_id',f'{url_city}_{url_page}_{idx}')
-                l.add_value('search_url', self.search_page_url)
-                l.add_value('search_city', url_city)
-                l.add_value('search_page', url_page)
-
-                idx_elem = Compose(lambda x: x[idx])
-
                 l.add_value('listing_href', listing)
-                l.add_xpath('prop_type', f'{base_xpath}/a/div/div[1]/div/span/text()', idx_elem)
-                l.add_xpath('price', f'{base_xpath}/a/div/div[2]/span/text()', idx_elem)
-                l.add_xpath('beds', f'{base_xpath}/div[1]/div/a/div[1]/div/ul/li[1]/span[1]/text()', idx_elem)
-                l.add_xpath('baths', f'{base_xpath}/div[1]/div/a/div[1]/div/ul/li[2]/span[1]/text()', idx_elem)
-                l.add_xpath('sqft', f'{base_xpath}/div[1]/div/a/div[1]/div/ul/li[3]/span[1]/text()', idx_elem)
-                l.add_xpath('lotsqft', f'{base_xpath}/div[1]/div/a/div[1]/div/ul/li[4]/span[1]/text()', idx_elem)
+
+            l.add_value('search_url', self.search_page_url)
+            l.add_xpath('prop_type', f'{base_xpath}/a/div/div[1]/div/span/text()')
+            l.add_xpath('price', f'{base_xpath}/a/div/div[2]/span/text()')
+            l.add_xpath('beds', f'{base_xpath}/div[1]/div/a/div[1]/div/ul/li[1]/span[1]/text()')
+            l.add_xpath('baths', f'{base_xpath}/div[1]/div/a/div[1]/div/ul/li[2]/span[1]/text()')
+            l.add_xpath('sqft', f'{base_xpath}/div[1]/div/a/div[1]/div/ul/li[3]/span[1]/text()')
+            l.add_xpath('lotsqft', f'{base_xpath}/div[1]/div/a/div[1]/div/ul/li[4]/span[1]/text()')
             self.metadata_item = l.load_item()
             yield self.metadata_item
             
             self.listing_counter = 0 
             yield SeleniumRequest(url=response.urljoin(self.href[0]), callback=self.parse_result, cb_kwargs={'metadata_item': 1})
         
-        if self.listing_counter <= len(self.href):
+        if self.listing_counter <= len(self.href)-1:
             '''
             getting images from listings
             '''
             img_l = ItemLoader(item=ListingItem(), response=response)
+
             listing_id = self.metadata_item.get('listing_id')[self.listing_counter]
             img_id = f'{listing_id}_{self.listing_counter}'
 
+            aux_metadata = response.xpath("//div[@id='ldp-detail-overview']/div[1]/div/ul/li/div[@class]/text()").extract()
+
+            img_l.add_value('prop_status', aux_metadata[0])
+            img_l.add_value('price_sqft', aux_metadata[1])
+            img_l.add_value('time_on_web', aux_metadata[2])
+            img_l.add_value('prop_type', aux_metadata[3])
+            img_l.add_value('year_built', aux_metadata[4])
+            img_l.add_value('prop_style', aux_metadata[5])
+            img_l.add_xpath('prop_desc', "//div[@id='ldp-detail-overview']/div[2]/p/text()")
+            
             img_l.add_value('image_id', img_id)
             img_l.add_xpath( 'image_urls',
                 "//section[@id='ldp-hero-container']/div/div/div[1]/div[1]/div/img/@data-src")
             yield img_l.load_item()
 
             self.listing_counter += 1
-            yield SeleniumRequest(url=response.urljoin(self.href[self.listing_counter]), callback=self.parse_result, cb_kwargs={'metadata_item': 1})
+
+            if self.listing_counter < len(self.href):
+                yield SeleniumRequest(url=response.urljoin(self.href[self.listing_counter]), callback=self.parse_result, cb_kwargs={'metadata_item': 1})
+            else:
+                yield SeleniumRequest(url=self.search_page_url, callback=self.parse_result, cb_kwargs={'metadata_item': 1})
         
         else:
             '''
@@ -120,7 +131,7 @@ if __name__ == "__main__":
     individual listing page xpaths:
         photos (60x60):         //div[@class='ldp-hero-carousel-wrap']/div[1]/div/div/img/@src
         description:            //div[@id='ldp-detail-overview']/div[2]/p/text()
-        prop details:           //div[@id='ldp-detail-overview']/div[1]/div/ul/div[1]/div/div/li/div[2]/text()
+        prop details:           //div[@id='ldp-detail-overview']/div[1]/div/ul/li/div[@class]/text()
             ['status', 'price_sqft', 'time_on_web', 'type', 'built', 'style']
 
 
