@@ -10,7 +10,7 @@
 
 from shutil import which
 
-BOT_NAME = 'realestatescraper'
+BOT_NAME = 'lovingproject'
 # ROBOTSTXT_OBEY = False
 
 SPIDER_MODULES = ['realestatescraper.spiders']

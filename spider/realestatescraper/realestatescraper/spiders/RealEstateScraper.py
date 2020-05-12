@@ -19,15 +19,15 @@ class ListingSpider(scrapy.Spider):
         Ken Caryl (CDP), Littleton, Northglenn, Parker, Sherrelwood (CDP)
         '''
         
-        start_urls = ['https://www.realtor.com/realestateandhomes-search/Arvada_CO/pg-1']
+        # start_urls = ['https://www.realtor.com/realestateandhomes-search/Aurora_CO/pg-1']
 
-        # start_urls = ['https://www.realtor.com/realestateandhomes-search/Aurora_CO/pg-1',
-        #         'https://www.realtor.com/realestateandhomes-search/Arvada_CO/pg-1',
-        #         'https://www.realtor.com/realestateandhomes-search/Centennial_CO/pg-1',
-        #         'https://www.realtor.com/realestateandhomes-search/Denver_CO/pg-1',
-        #         'https://www.realtor.com/realestateandhomes-search/Lakewood_CO/pg-1',
-        #         'https://www.realtor.com/realestateandhomes-search/Thornton_CO/pg-1',
-        #         'https://www.realtor.com/realestateandhomes-search/Westminster_CO/pg-1']
+        start_urls = ['https://www.realtor.com/realestateandhomes-search/Aurora_CO/pg-1',
+                # 'https://www.realtor.com/realestateandhomes-search/Arvada_CO/pg-1',
+                'https://www.realtor.com/realestateandhomes-search/Centennial_CO/pg-1',
+                'https://www.realtor.com/realestateandhomes-search/Denver_CO/pg-1',
+                'https://www.realtor.com/realestateandhomes-search/Lakewood_CO/pg-1',
+                'https://www.realtor.com/realestateandhomes-search/Thornton_CO/pg-1',
+                'https://www.realtor.com/realestateandhomes-search/Westminster_CO/pg-1']
 
         for url in start_urls:
             yield SeleniumRequest(url=url, callback=self.parse_result)
@@ -38,16 +38,17 @@ class ListingSpider(scrapy.Spider):
             List of Listings pages: extract metadata and load to SearchPageItem container
             '''
             self.search_page_url = response.url
-            url_page = response.url.split('-')[-1]
-            url_city = response.url.split('/')[-2]
+            self.url_page = response.url.split('-')[-1]
+            self.url_city = response.url.split('/')[-2]
 
             l = ItemLoader(item=SearchPageItem(), response=response)
 
             base_xpath= "//ul[@data-testid='property-list-container']/li/div/div[2]/div[3]"
             self.href = response.xpath(f'{base_xpath}/a/@href').extract()
+            
 
             for idx, listing in enumerate(self.href):
-                l.add_value('listing_id',f'{url_city}_{url_page}_{idx}')
+                l.add_value('listing_id',f'{self.url_city}_{self.url_page}_{idx}')
                 l.add_value('listing_href', listing)
 
             l.add_value('search_url', self.search_page_url)
@@ -57,29 +58,32 @@ class ListingSpider(scrapy.Spider):
             l.add_xpath('baths', f'{base_xpath}/div[1]/div/a/div[1]/div/ul/li[2]/span[1]/text()')
             l.add_xpath('sqft', f'{base_xpath}/div[1]/div/a/div[1]/div/ul/li[3]/span[1]/text()')
             l.add_xpath('lotsqft', f'{base_xpath}/div[1]/div/a/div[1]/div/ul/li[4]/span[1]/text()')
-            self.metadata_item = l.load_item()
-            yield self.metadata_item
+            metadata_item = l.load_item()
+            print(f'\nSending metadata from search page: City:{self.url_city}\t Page:{self.url_page}')
+            print(f'href is {len(self.href)} long\n')
+            yield metadata_item
             
             self.listing_counter = 0 
-            yield SeleniumRequest(url=response.urljoin(self.href[0]), callback=self.parse_result, cb_kwargs={'metadata_item': 1})
+            yield SeleniumRequest(url=response.urljoin(self.href[0]), callback=self.parse_result, cb_kwargs={'metadata_item': metadata_item})
         
         if self.listing_counter <= len(self.href)-1:
+            print(f'\nCollecting Listing Data: City:{self.url_city}\tPage:{self.url_page}\tListing#:{self.listing_counter}\n')
             '''
             getting images from listings
             '''
             img_l = ItemLoader(item=ListingItem(), response=response)
 
-            listing_id = self.metadata_item.get('listing_id')[self.listing_counter]
+            listing_id = response.cb_kwargs.get('metadata_item').get('listing_id')[self.listing_counter]
             img_id = f'{listing_id}_{self.listing_counter}'
 
             aux_metadata = response.xpath("//div[@id='ldp-detail-overview']/div[1]/div/ul/li/div[@class]/text()").extract()
-
-            img_l.add_value('prop_status', aux_metadata[0])
-            img_l.add_value('price_sqft', aux_metadata[1])
-            img_l.add_value('time_on_web', aux_metadata[2])
-            img_l.add_value('prop_type', aux_metadata[3])
-            img_l.add_value('year_built', aux_metadata[4])
-            img_l.add_value('prop_style', aux_metadata[5])
+            if len(aux_metadata) != 0:
+                img_l.add_value('prop_status', aux_metadata[0])
+                img_l.add_value('price_sqft', aux_metadata[1])
+                img_l.add_value('time_on_web', aux_metadata[2])
+                img_l.add_value('prop_type', aux_metadata[3])
+                img_l.add_value('year_built', aux_metadata[4])
+                img_l.add_value('prop_style', aux_metadata[5])
             img_l.add_xpath('prop_desc', "//div[@id='ldp-detail-overview']/div[2]/p/text()")
             
             img_l.add_value('image_id', img_id)
@@ -90,11 +94,11 @@ class ListingSpider(scrapy.Spider):
             self.listing_counter += 1
 
             if self.listing_counter < len(self.href):
-                yield SeleniumRequest(url=response.urljoin(self.href[self.listing_counter]), callback=self.parse_result, cb_kwargs={'metadata_item': 1})
+                print(f'\nGoing to next Listing: City:{self.url_city}\tPage:{self.url_page}\tListing#:{self.listing_counter}\n')
+                yield SeleniumRequest(url=response.urljoin(self.href[self.listing_counter]), callback=self.parse_result, cb_kwargs=response.cb_kwargs)
             else:
-                yield SeleniumRequest(url=self.search_page_url, callback=self.parse_result, cb_kwargs={'metadata_item': 1})
-        
-        else:
+                yield SeleniumRequest(url=self.search_page_url, callback=self.parse_result, cb_kwargs={'metadata_item': response.cb_kwargs})
+        elif self.listing_counter > len(self.href):
             '''
             Nav to next listing page to scrape more
             '''
@@ -109,6 +113,7 @@ class ListingSpider(scrapy.Spider):
                 next_page = response.xpath(next_page_xpath).extract()
 
             if next_page:
+                print(f'\nGoing to next Page: City:{self.url_city}\tPage:{self.url_page}\n')
                 yield SeleniumRequest(url=response.urljoin(next_page[0]), callback=self.parse_result)
 
 
