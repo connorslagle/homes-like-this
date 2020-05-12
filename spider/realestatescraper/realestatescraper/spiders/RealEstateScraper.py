@@ -30,14 +30,10 @@ class ListingSpider(scrapy.Spider):
         #         'https://www.realtor.com/realestateandhomes-search/Westminster_CO/pg-1']
 
         for url in start_urls:
-            self.request_counter = 0
             yield SeleniumRequest(url=url, callback=self.parse_result)
     
-    def parse_result(self, response):
-        print(self.request_counter)
-
-        if self.request_counter == 0:
-            
+    def parse_result(self, response, metadata_item=None):
+        if metadata_item == None:
             '''
             List of Listings pages: extract metadata and load to SearchPageItem container
             '''
@@ -48,9 +44,9 @@ class ListingSpider(scrapy.Spider):
             base_xpath= "//ul[@data-testid='property-list-container']/li/div/div[2]/div[3]"
 
             self.href = response.xpath(f'{base_xpath}/a/@href').extract()
+            l = ItemLoader(item=SearchPageItem(), response=response)
 
             for idx, listing in enumerate(self.href):
-                l = ItemLoader(item=SearchPageItem(), response=response)
                 l.add_value('listing_id',f'{url_city}_{url_page}_{idx}')
                 l.add_value('search_url', self.search_page_url)
                 l.add_value('search_city', url_city)
@@ -65,30 +61,32 @@ class ListingSpider(scrapy.Spider):
                 l.add_xpath('baths', f'{base_xpath}/div[1]/div/a/div[1]/div/ul/li[2]/span[1]/text()', idx_elem)
                 l.add_xpath('sqft', f'{base_xpath}/div[1]/div/a/div[1]/div/ul/li[3]/span[1]/text()', idx_elem)
                 l.add_xpath('lotsqft', f'{base_xpath}/div[1]/div/a/div[1]/div/ul/li[4]/span[1]/text()', idx_elem)
-                yield l.load_item()
-                
-
-            # Scrape search page info -> move to first listing
-            self.request_counter += 1
-            yield SeleniumRequest(url=response.urljoin(self.href[0]), callback=self.parse_result)
-
-        elif self.request_counter > 0 & self.request_counter <= len(self.href)+1:
+            self.metadata_item = l.load_item()
+            yield self.metadata_item
+            
+            self.listing_counter = 0 
+            yield SeleniumRequest(url=response.urljoin(self.href[0]), callback=self.parse_result, cb_kwargs={'metadata_item': 1})
+        
+        if self.listing_counter <= len(self.href):
             '''
             getting images from listings
             '''
-            item = ListingItem()
-            img_urls = response.xpath(
-                "//section[@id='ldp-hero-container']/div/div/div[1]/div[1]/div/div[@class='background-item']/img/@data-src").extract()
-            item['image_urls'] = img_urls
-            yield item
+            img_l = ItemLoader(item=ListingItem(), response=response)
+            listing_id = self.metadata_item.get('listing_id')[self.listing_counter]
+            img_id = f'{listing_id}_{self.listing_counter}'
 
-            self.request_counter += 1
-            yield SeleniumRequest(url=response.urljoin(self.href[self.request_counter-2]), callback=self.parse_result)
+            img_l.add_value('image_id', img_id)
+            img_l.add_xpath( 'image_urls',
+                "//section[@id='ldp-hero-container']/div/div/div[1]/div[1]/div/img/@data-src")
+            yield img_l.load_item()
+
+            self.listing_counter += 1
+            yield SeleniumRequest(url=response.urljoin(self.href[self.listing_counter]), callback=self.parse_result, cb_kwargs={'metadata_item': 1})
+        
         else:
             '''
             Nav to next listing page to scrape more
             '''
-            self.request_counter = 0
             li_num = 9
             next_page_xpath=f"//div[@data-testid='srp-body']/section[1]/div[1]/ul/li[{li_num}]/a/@href"
             next_page = response.xpath(next_page_xpath).extract()
@@ -122,6 +120,9 @@ if __name__ == "__main__":
     individual listing page xpaths:
         photos (60x60):         //div[@class='ldp-hero-carousel-wrap']/div[1]/div/div/img/@src
         description:            //div[@id='ldp-detail-overview']/div[2]/p/text()
+        prop details:           //div[@id='ldp-detail-overview']/div[1]/div/ul/div[1]/div/div/li/div[2]/text()
+            ['status', 'price_sqft', 'time_on_web', 'type', 'built', 'style']
+
 
     '''
 

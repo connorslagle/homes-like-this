@@ -37,12 +37,6 @@ class MetadataPipeline():
 
 class MyImagesPipeline(ImagesPipeline):
 
-    # def __init__(self):
-    #     self.conn = pymongo.MongoClient('localhost', 27017)
-    #     db = self.conn['listings']
-    #     self.fs = gridfs.GridFS(db)
-    #     self.collection = db['metadata']
-
     def get_media_requests(self, item, info):
         for image_url in item['image_urls']:
             yield scrapy.http.Request(image_url)
