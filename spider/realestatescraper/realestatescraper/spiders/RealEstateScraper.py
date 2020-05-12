@@ -37,30 +37,26 @@ class ListingSpider(scrapy.Spider):
             '''
             List of Listings pages: extract metadata and load to SearchPageItem container
             '''
-            self.search_page_url = response.url
-            self.url_page = response.url.split('-')[-1]
-            self.url_city = response.url.split('/')[-2]
+            url_page = response.url.split('-')[-1]
+            url_city = response.url.split('/')[-2]
 
             l = ItemLoader(item=SearchPageItem(), response=response)
 
             base_xpath= "//ul[@data-testid='property-list-container']/li/div/div[2]/div[3]"
-            self.href = response.xpath(f'{base_xpath}/a/@href').extract()
+            href = response.xpath(f'{base_xpath}/a/@href').extract()
             
 
-            for idx, listing in enumerate(self.href):
-                l.add_value('listing_id',f'{self.url_city}_{self.url_page}_{idx}')
+            for idx, listing in enumerate(href):
+                l.add_value('listing_id',f'{url_city}_{url_page}_{idx}')
                 l.add_value('listing_href', listing)
 
-            l.add_value('search_url', self.search_page_url)
+            l.add_value('search_url', response.url)
             l.add_xpath('prop_type', f'{base_xpath}/a/div/div[1]/div/span/text()')
             l.add_xpath('price', f'{base_xpath}/a/div/div[2]/span/text()')
             l.add_xpath('beds', f'{base_xpath}/div[1]/div/a/div[1]/div/ul/li[1]/span[1]/text()')
             l.add_xpath('baths', f'{base_xpath}/div[1]/div/a/div[1]/div/ul/li[2]/span[1]/text()')
             l.add_xpath('sqft', f'{base_xpath}/div[1]/div/a/div[1]/div/ul/li[3]/span[1]/text()')
             l.add_xpath('lotsqft', f'{base_xpath}/div[1]/div/a/div[1]/div/ul/li[4]/span[1]/text()')
-            
-            print(f'\nSending metadata from search page: City:{self.url_city}\t Page:{self.url_page}')
-            print(f'href is {len(self.href)} long\n')
 
             # # placeholder to pass ImagePipeline
             # l.add_value('images',[])
@@ -72,11 +68,10 @@ class ListingSpider(scrapy.Spider):
             yield metadata_item
             
             listing_counter += 1 
-            yield SeleniumRequest(url=response.urljoin(self.href[0]), callback=self.parse_result, 
+            yield SeleniumRequest(url=response.urljoin(metadata_item['listing_href'][0]), callback=self.parse_result, 
                     cb_kwargs={'metadata_item': metadata_item, 'listing_counter': listing_counter})
         
-        if listing_counter <= len(self.href)-1:
-            print(f'\nCollecting Listing Data: City:{self.url_city}\tPage:{self.url_page}\tListing#:{listing_counter}\n')
+        if listing_counter <= len(metadata_item['listing_href'])-1:
             '''
             getting images from listings
             '''
@@ -95,15 +90,14 @@ class ListingSpider(scrapy.Spider):
 
             listing_counter += 1
 
-            if listing_counter < len(self.href):
-                print(f'\nGoing to next Listing: City:{self.url_city}\tPage:{self.url_page}\tToListing#:{listing_counter}\n')
-                yield SeleniumRequest(url=response.urljoin(self.href[listing_counter]), callback=self.parse_result, 
+            if listing_counter < len(metadata_item['listing_href']):
+                yield SeleniumRequest(url=response.urljoin(metadata_item['listing_href'][listing_counter]), callback=self.parse_result, 
                     cb_kwargs={'metadata_item': metadata_item, 'listing_counter': listing_counter})
             else:
-                print(f'\nDone with Images. City:{self.url_city}\Page:{self.url_page}')
-                yield SeleniumRequest(url=self.search_page_url, callback=self.parse_result, 
+                yield SeleniumRequest(url=metadata_item['search_url'][0], callback=self.parse_result, 
                     cb_kwargs={'metadata_item': metadata_item, 'listing_counter': listing_counter})
-        elif listing_counter > len(self.href):
+                    
+        elif listing_counter > len(metadata_item['listing_href']):
             '''
             Nav to next listing page to scrape more
             '''
@@ -118,7 +112,6 @@ class ListingSpider(scrapy.Spider):
                 next_page = response.xpath(next_page_xpath).extract()
 
             if bool(next_page):
-                print(f'\nGoing to next Page: City:{self.url_city}\tPage:{response.urljoin(next_page[0])}\n')
                 yield SeleniumRequest(url=response.urljoin(next_page[0]), callback=self.parse_result)
 
 

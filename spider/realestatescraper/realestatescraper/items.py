@@ -22,6 +22,9 @@ class ListingItem(scrapy.Item):
     aux_metadata = scrapy.Field()
     from_url = scrapy.Field()
 
+    #prop description
+    prop_desc = scrapy.Field()
+
 class SearchPageItem(scrapy.Item):
     # define the fields for your item here like:
 
