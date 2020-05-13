@@ -20,15 +20,14 @@ class ListingSpider(scrapy.Spider):
         '''
         
         # start_urls = ['https://www.realtor.com/realestateandhomes-search/Aurora_CO/pg-1']
-
         start_urls = [
-                'https://www.realtor.com/realestateandhomes-search/Aurora_CO/pg-2',
-                'https://www.realtor.com/realestateandhomes-search/Arvada_CO/pg-2',
-                'https://www.realtor.com/realestateandhomes-search/Centennial_CO/pg-2',
-                'https://www.realtor.com/realestateandhomes-search/Denver_CO/pg-2',
-                'https://www.realtor.com/realestateandhomes-search/Lakewood_CO/pg-2',
-                'https://www.realtor.com/realestateandhomes-search/Thornton_CO/pg-2',
-                'https://www.realtor.com/realestateandhomes-search/Westminster_CO/pg-2']
+                'https://www.realtor.com/realestateandhomes-search/Aurora_CO/pg-1',
+                'https://www.realtor.com/realestateandhomes-search/Arvada_CO/pg-1',
+                'https://www.realtor.com/realestateandhomes-search/Centennial_CO/pg-1',
+                'https://www.realtor.com/realestateandhomes-search/Denver_CO/pg-1',
+                'https://www.realtor.com/realestateandhomes-search/Lakewood_CO/pg-1',
+                'https://www.realtor.com/realestateandhomes-search/Thornton_CO/pg-1',
+                'https://www.realtor.com/realestateandhomes-search/Westminster_CO/pg-1']
 
         for url in start_urls:
             yield SeleniumRequest(url=url, callback=self.parse_result)
@@ -138,6 +137,9 @@ if __name__ == "__main__":
         prop details:           //div[@id='ldp-detail-overview']/div[1]/div/ul/li/div[@class]/text()
             ['status', 'price_sqft', 'time_on_web', 'type', 'built', 'style']
 
+    Shell cmds:
+        from scrapy_selenium import SeleniumRequest
+        fetch(SeleniumRequest(url='https://www.realtor.com/realestateandhomes-search/Aurora_CO/pg-1'))
 
     '''
 

@@ -42,6 +42,9 @@ class MetadataPipeline():
 
 class MyImagesPipeline(ImagesPipeline): 
 
+    def file_path(self, request, response=None, info=None):
+        return 'full/' + os.path.basename(urlparse(request.url).path)
+
     def get_media_requests(self, item, info):
         if 'image_urls' in item.keys():
             for image_url in item['image_urls']:
