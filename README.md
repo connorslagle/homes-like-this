@@ -17,16 +17,22 @@ Data was collected from [Realtor.com](https://www.realtor.com/) via webscraping 
 
 For a proof of concept, listings were scraped from municipalities around the Denver Metro Area with a [population > 100,000](https://en.wikipedia.org/wiki/Denver_metropolitan_area#Places_with_over_100,000_inhabitants). 
 
-Municipality | Pop. (2018, est.) | Listings Avail. (May 13, 2020) | Listings Scraped | Images Scraped
-|---|---|---|---|---|
-Denver | 727,000 |  | 30 | 700
-Aurora | 374,000 |  | 30 | 700
-Lakewood | 156,000 | 512 | 30 | 700
-Thornton | 139,000 |  | 30 | 700
-Arvada | 120,000 |  | 30 | 700
-Westminster | 113,000 |  | 30 | 700
-Centennial | 110,000 |  | 30 | 700
-**Total** | 
+<p align="center">
+
+Municipality | Pop. (2018, est.) | Listings Avail. (5/13/2020) | Listings Scraped | Images Scraped
+|---|---:|---:|---:|---:|
+Denver | 727,000 | 3,700 | 30 | 700
+Aurora | 374,000 | 1,900 | 30 | 700
+Lakewood | 156,000 | 510 | 30 | 700
+Thornton | 139,000 | 700 | 30 | 700
+Arvada | 120,000 | 500 | 30 | 700
+Westminster | 113,000 | 320 | 30 | 700
+Centennial | 110,000 | 340 | 30 | 700
+**Total** | **1,740,000** | **8,000** | **210** | **4,900**
+
+</p>
+
+
 
 ## Capstone 2
 
