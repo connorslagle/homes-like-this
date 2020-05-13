@@ -13,11 +13,10 @@ In this project, I propose a machine learning algorithm... need to complete afte
 
 3. Description of Data
 
-Data was collected from [Realtor.com](https://www.realtor.com/) via webscraping (Scrapy/Selenium); collecting listing images and metadata then storing the data in a NoSQL (MongoDB) database.
+Data was collected from [Realtor.com](https://www.realtor.com/) via webscraping (Scrapy/Selenium); collecting listing images and metadata then storing the metadata in a NoSQL (MongoDB) database.
 
 For a proof of concept, listings were scraped from municipalities around the Denver Metro Area with a [population > 100,000](https://en.wikipedia.org/wiki/Denver_metropolitan_area#Places_with_over_100,000_inhabitants). 
 
-<p align="center">
 
 Municipality | Pop. (2018, est.) | Listings Avail. (5/13/2020) | Listings Scraped | Images Scraped
 |---|---:|---:|---:|---:|
@@ -30,12 +29,21 @@ Westminster | 113,000 | 320 | 30 | 700
 Centennial | 110,000 | 340 | 30 | 700
 **Total** | **1,740,000** | **8,000** | **210** | **4,900**
 
-</p>
-
 
 
 ## Capstone 2
 
-1. Motivating question
+Goals for Capstone 2: 
+- Scalable webscraper (done)
+- Data Cleaning Pipelines
+- Featurize images (NB, or CNN) and hard cluster
+- Label clusters, test with pictures of my house
+
+## Capstone 3
+
+Goals for Capstone 3: 
+- Scrape more data (more cities/listings -> run on AWS)
+- Combine image features with metadata -> predict where to look by 
+- 
 
 # Part 1:
