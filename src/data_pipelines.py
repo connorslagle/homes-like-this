@@ -270,18 +270,17 @@ class ImagePipeline():
         Take a list of images and vectorize all the images. Returns a feature matrix where each
         row represents an image
         """
-        # row_tup = tuple(img_arr.ravel()[np.newaxis, :]
-        #                 for img_lst in self.img_lst2 for img_arr in img_lst)
-        # self.test = row_tup
-        # self.features = np.r_[row_tup]
+        row_tup = tuple(img_arr.ravel()[np.newaxis, :]
+                        for img_lst in self.img_lst2 for img_arr in img_lst)
+        self.test = row_tup
+        self.features = np.r_[row_tup]
 
     def _vectorize_labels(self):
         """
         Convert file names to a list of y labels (in the example it would be either cat or dog, 1 or 0)
         """
         # Get the labels with the dimensions of the number of image files
-        self.labels = np.concatenate([np.repeat(i, len(img_names)) 
-                                     for i, img_names in enumerate(self.img_names2)])
+        self.labels = self.img_names2[0]
 
     def vectorize(self):
         """
@@ -297,10 +296,10 @@ if __name__ == "__main__":
     # df = importer.load_docs()
     # importer.to_csv('pg1_3_all.csv')
 
-    img_pipe = ImagePipeline('../data/listing_images/full/')
-    img_pipe.read(batch_mode=True)
-    # img_pipe.resize((64,64))
-    # img_pipe.save()
+    # img_pipe = ImagePipeline('../data/listing_images/full/')
+    # img_pipe.read(batch_mode=True)
+    # # img_pipe.resize((64,64))
+    # # img_pipe.save()
 
     
     '''
