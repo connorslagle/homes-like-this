@@ -3,7 +3,10 @@ import numpy as np
 import pandas as pd
 from bson.objectid import ObjectId
 from datetime import date
-
+import os
+from skimage import io
+from skimage.transform import resize
+from skimage.color import rgb2gray
 
 
 class MongoImporter():
@@ -103,10 +106,7 @@ class MongoImporter():
 
         return self.df
     
-    def _format_df(self, df):
-        df_copy = df.copy()
-
-        
+    def _format_df(self, df):        
         # reindex df, drop old index
         df.drop('index', axis=1, inplace=True)
 
@@ -134,9 +134,9 @@ class MongoImporter():
         for idx, elem in enumerate(df.temp1):
             if len(elem) < 3:
                 drop_lst.append(idx)
-        # breakpoint()
+
         df.drop(drop_lst, inplace=True)
-        # breakpoint()
+
         df['address'] = [elem[-3] for elem in df.temp1]
         df['city'] = [elem[-2] for elem in df.temp1]
         df['state'] = [state for elem in df.listing_href]
@@ -157,7 +157,6 @@ class MongoImporter():
         mask = [(elem not in cities) for elem in df.city]
 
         df.drop(df.city[mask].index, inplace=True)
-
         return df
 
     def to_csv(self, file_name):
@@ -170,13 +169,108 @@ class MongoImporter():
         self.df.to_csv(file_path)
 
     
-# class ImagePipeline():
+class ImagePipeline():
+    '''
+    Class for processing/featurizing images
+    '''
+    def __init__(self, image_dir):
+        self.image_dir = image_dir
+        # self.label_map = None
+        self.save_dir = '../data/proc_images/'
+
+        self.img_lst2 = []
+        self.img_names2 = []
+
+        self.features = None
+        self.labels = None
+
+    # def _make_labels(self):
+    #     return {label: i for i, label in enumerate(self.image_dir)}
+
+    def _empty_variables(self):
+        """
+        Reset all the image related instance variables
+        """
+        self.img_lst2 = []
+        self.img_names2 = []
+        self.features = None
+        self.labels = None
+
+    def read(self, batch_mode=False):
+        '''
+        reads image and image names to self variables
+        '''
+        self._empty_variables()
+
+        img_names = os.listdir(self.image_dir)
+        self.img_names2.append(img_names)
+
+        img_lst = [io.imread(os.path.join(self.image_dir, fname)) for fname in img_names]
+        self.img_lst2.append(img_lst)
+
+    def _square_image(self, img):
+        y_len, x_len, _ = img.shape
+
+        crop_len = min([x_len,y_len])
+        x_crop = [int((x_len/2) - (crop_len/2)), int((x_len/2) + (crop_len/2))]
+        y_crop = [int((y_len/2) - (crop_len/2)), int((y_len/2) + (crop_len/2))]
+        if y_len <= crop_len:
+            cropped = img[y_crop[0]:y_crop[1], x_crop[0]:x_crop[1]]
+        else:
+            cropped = img[x_crop[0]:x_crop[1], y_crop[0]:y_crop[1]]
+        return cropped
+
+    def resize(self, shape):
+        """
+        Resize all images in self.img_lst2 to a uniform square shape
+        """
+        new_img_lst2 = []
+        for image in self.img_lst2:
+            new_img_lst2.append(resize(self._square_image(image), shape))
+        self.img_lst2 = new_img_lst2
+
+
+    def save(self):
+        for fname, img in zip(self.img_names2, self.img_lst2):
+            io.imsave(os.path.join(f'{self.save_dir}{shape[0]}/', fname), img)
+
+    def _vectorize_features(self):
+        """
+        Take a list of images and vectorize all the images. Returns a feature matrix where each
+        row represents an image
+        """
+        # row_tup = tuple(img_arr.ravel()[np.newaxis, :]
+        #                 for img_lst in self.img_lst2 for img_arr in img_lst)
+        # self.test = row_tup
+        # self.features = np.r_[row_tup]
+
+    def _vectorize_labels(self):
+        """
+        Convert file names to a list of y labels (in the example it would be either cat or dog, 1 or 0)
+        """
+        # Get the labels with the dimensions of the number of image files
+        self.labels = np.concatenate([np.repeat(i, len(img_names)) 
+                                     for i, img_names in enumerate(self.img_names2)])
+
+    def vectorize(self):
+        """
+        Return (feature matrix, the response) if output is True, otherwise set as instance variable.
+        Run at the end of all transformations
+        """
+        self._vectorize_features()
+        self._vectorize_labels()
 
 
 if __name__ == "__main__":
-    importer = MongoImporter()
-    df = importer.load_docs()
-    importer.to_csv('pg1_3_all.csv')
+    # importer = MongoImporter()
+    # df = importer.load_docs()
+    # importer.to_csv('pg1_3_all.csv')
+
+    img_pipe = ImagePipeline('../data/listing_images/full/')
+    img_pipe.read()
+    img_pipe.resize((64,64))
+    img_pipe.save()
+
     
     '''
     # df = pd.DataFrame.from_dict(listing_docs[0])
