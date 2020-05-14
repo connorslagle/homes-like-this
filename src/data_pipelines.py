@@ -122,8 +122,11 @@ class MongoImporter():
         df['zipcode'] = [elem[3] for elem in df.listing_href]
         df.drop('listing_href', axis=1, inplace=True)
 
-        df.columns = []
+        df.columns = ['listing_id', 'image_file','prop_type', 'listing_price',
+                        'beds','baths', 'sqft', 'address','city','state','zipcode']
 
+        # drop duplicate images
+        df.drop_duplicates('image_file',inplace=True)
         return df
 
 
