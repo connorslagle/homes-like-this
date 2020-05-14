@@ -92,6 +92,7 @@ class MongoImporter():
 
     def _join_dfs(self):
         full_df = self.listing_df.join(self.search_df.set_index('listing_id'), on='image_id', how='right')
+        full_df.reset_index(inplace=True)
         return full_df
         
     def load_docs(self, from_search_coll=True):
@@ -99,11 +100,14 @@ class MongoImporter():
         self._concat_docs()
         df = self._join_dfs()
         self.df = self._format_df(df)
+
         return self.df
     
     def _format_df(self, df):
+        df_copy = df.copy()
+
+        
         # reindex df, drop old index
-        df.reset_index(inplace=True)
         df.drop('index', axis=1, inplace=True)
 
         #drop nans
@@ -116,19 +120,44 @@ class MongoImporter():
         # listing href to address/city/zip
         df.listing_href = df.listing_href.str.split('/')
         df.listing_href = [elem[-1] for elem in df.listing_href]
+        
+        state = 'CO'
 
-        df.listing_href = df.listing_href.str.split('_')
-        df['address'] = [elem[0] for elem in df.listing_href]
-        df['city'] = [elem[1] for elem in df.listing_href]
-        df['state'] = [elem[2] for elem in df.listing_href]
-        df['zipcode'] = [elem[3] for elem in df.listing_href]
+        df.listing_href = df.listing_href.str.split(state)
+        df['temp2'] = [elem[-1] for elem in df.listing_href]
+        df['temp1'] = [elem[-2] for elem in df.listing_href]
+
+        df.temp1 = df.temp1.str.split('_')
+        df.temp2 = df.temp2.str.split('_')
+
+        drop_lst = []
+        for idx, elem in enumerate(df.temp1):
+            if len(elem) < 3:
+                drop_lst.append(idx)
+        # breakpoint()
+        df.drop(drop_lst, inplace=True)
+        # breakpoint()
+        df['address'] = [elem[-3] for elem in df.temp1]
+        df['city'] = [elem[-2] for elem in df.temp1]
+        df['state'] = [state for elem in df.listing_href]
+        df['zipcode'] = [elem[1] for elem in df.temp2]
         df.drop('listing_href', axis=1, inplace=True)
+        df.drop('temp1', axis=1, inplace=True)
+        df.drop('temp2', axis=1, inplace=True)
 
         df.columns = ['listing_id', 'image_file','prop_type', 'listing_price',
                         'beds','baths', 'sqft', 'address','city','state','zipcode']
 
         # drop duplicate images
         df.drop_duplicates('image_file',inplace=True)
+
+        # if not in big 7 cities - drop
+        cities = ['Denver','Aurora','Arvada','Thornton','Lakewood','Centennial','Westminster']
+
+        mask = [(elem not in cities) for elem in df.city]
+
+        df.drop(df.city[mask].index, inplace=True)
+
         return df
 
     def to_csv(self, file_name):
@@ -147,7 +176,7 @@ class MongoImporter():
 if __name__ == "__main__":
     importer = MongoImporter()
     df = importer.load_docs()
-    importer.to_csv('pg1all.csv')
+    importer.to_csv('pg1_3_all.csv')
     
     '''
     # df = pd.DataFrame.from_dict(listing_docs[0])
