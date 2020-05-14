@@ -196,17 +196,43 @@ class ImagePipeline():
         self.features = None
         self.labels = None
 
-    def read(self, batch_mode=False):
+    def read(self, batch_mode=False, batch_size=1000):
         '''
         reads image and image names to self variables
         '''
         self._empty_variables()
 
         img_names = os.listdir(self.image_dir)
-        self.img_names2.append(img_names)
+        
+        
+        if batch_mode:
+            num_batches = (len(img_names) // batch_size) + 1
+            for batch in range(num_batches):
+                self.img_lst2 = []
+                self.img_names2 = []
 
-        img_lst = [io.imread(os.path.join(self.image_dir, fname)) for fname in img_names]
-        self.img_lst2.append(img_lst)
+                remaining = len(img_names) - batch*batch_size
+
+                if remaining >= batch_size:
+                    names = img_names[batch*batch_size:(batch+1)*batch_size]
+                    self.img_names2.append(names)
+                    img_lst = [io.imread(os.path.join(self.image_dir, fname)) for fname in names]
+                    self.img_lst2.append(img_lst)
+                else:
+                    names = img_names[batch*batch_size:]
+                    self.img_names2.append(names)
+                    img_lst = [io.imread(os.path.join(self.image_dir, fname)) for fname in names]
+                    self.img_lst2.append(img_lst)
+
+                self.resize((64,64))
+                self.save()
+        
+        else:
+            self.img_names2.append(img_names)
+            img_lst = [io.imread(os.path.join(self.image_dir, fname)) for fname in img_names]
+            self.img_lst2.append(img_lst)
+
+        
 
     def _square_image(self, img):
         y_len, x_len, _ = img.shape
@@ -214,25 +240,30 @@ class ImagePipeline():
         crop_len = min([x_len,y_len])
         x_crop = [int((x_len/2) - (crop_len/2)), int((x_len/2) + (crop_len/2))]
         y_crop = [int((y_len/2) - (crop_len/2)), int((y_len/2) + (crop_len/2))]
-        if y_len <= crop_len:
+        if y_len >= crop_len:
             cropped = img[y_crop[0]:y_crop[1], x_crop[0]:x_crop[1]]
         else:
             cropped = img[x_crop[0]:x_crop[1], y_crop[0]:y_crop[1]]
-        return cropped
+        
+        gray = rgb2gray(cropped)
+        return gray
 
     def resize(self, shape):
         """
         Resize all images in self.img_lst2 to a uniform square shape
         """
         new_img_lst2 = []
-        for image in self.img_lst2:
+        # breakpoint()
+        for image in self.img_lst2[0]:
             new_img_lst2.append(resize(self._square_image(image), shape))
         self.img_lst2 = new_img_lst2
+        self.shape = shape[0]
 
 
     def save(self):
-        for fname, img in zip(self.img_names2, self.img_lst2):
-            io.imsave(os.path.join(f'{self.save_dir}{shape[0]}/', fname), img)
+        for fname, img in zip(self.img_names2[0], self.img_lst2):
+            # breakpoint()
+            io.imsave(os.path.join(f'{self.save_dir}{self.shape}/', fname), img)
 
     def _vectorize_features(self):
         """
@@ -267,9 +298,9 @@ if __name__ == "__main__":
     # importer.to_csv('pg1_3_all.csv')
 
     img_pipe = ImagePipeline('../data/listing_images/full/')
-    img_pipe.read()
-    img_pipe.resize((64,64))
-    img_pipe.save()
+    img_pipe.read(batch_mode=True)
+    # img_pipe.resize((64,64))
+    # img_pipe.save()
 
     
     '''
