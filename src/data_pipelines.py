@@ -2,6 +2,7 @@ import pymongo
 import numpy as np
 import pandas as pd
 from bson.objectid import ObjectId
+from datetime import date
 
 
 class MongoImporter():
@@ -96,8 +97,8 @@ class MongoImporter():
         self.from_search_coll = from_search_coll
         self._concat_docs()
         df = self._join_dfs()
-
-        return self._format_df(df)
+        self.df = self._format_df(df)
+        return self.df
     
     def _format_df(self, df):
         # reindex df, drop old index
@@ -129,6 +130,14 @@ class MongoImporter():
         df.drop_duplicates('image_file',inplace=True)
         return df
 
+    def to_csv(self, file_name):
+        '''
+        output csv with todays date
+        '''
+        today_date = str(date.today())
+        file_path = f'../data/metadata/{today_date}_{file_name}'
+
+        self.df.to_csv(file_path)
 
     
 # class ImagePipeline():
@@ -137,6 +146,7 @@ class MongoImporter():
 if __name__ == "__main__":
     importer = MongoImporter()
     df = importer.load_docs()
+    importer.to_csv('pg1all.csv')
     
     '''
     # df = pd.DataFrame.from_dict(listing_docs[0])
