@@ -83,39 +83,39 @@ if __name__ =="__main__":
     y = np.array(target)
     # holdout
     rand_state = 1
-    X_tt, X_holdout, y_tt, y_holdout = train_test_split(X_new, y, random_state=rand_state, test_size=0.20)
+    X_tt, X_holdout, y_tt, y_holdout = train_test_split(X_new, y, random_state=rand_state, stratify=[])
 
     # # test/train split
-    # X_train, X_test, y_train, y_test = train_test_split(X_tt, y_tt, random_state=rand_state, test_size=0.20)
+    X_train, X_test, y_train, y_test = train_test_split(X_tt, y_tt, random_state=rand_state, stratify = [])
 
     '''
     Single test/train split
     '''
-    # mnb = MultinomialNB()
-    # mnb.fit(X_train, y_train)
+    mnb = MultinomialNB()
+    mnb.fit(X_train, y_train)
 
-    # y_hat = mnb.predict(X_test)
+    y_hat = mnb.predict(X_test)
 
-    # cats = ['Denver','Arvada','Aurora','Lakewood','Centennial','Westminster','Thornton']
-    # conf_mat = confusion_matrix(y_test,y_hat, labels=cats, normalize='true')
+    cats = ['Denver','Arvada','Aurora','Lakewood','Centennial','Westminster','Thornton']
+    conf_mat = confusion_matrix(y_test,y_hat, labels=cats, normalize='true')
 
-    # accuracy = mnb.score(X_test,y_test)
+    accuracy = mnb.score(X_test,y_test)
 
 
     '''
     3,5,7,9 Kfold split (no real change - sticking with 5)
     '''
-    mnb = MultinomialNB()
-    folds_list = [4,8,12]
-    test_acc_means = []
-    train_acc_means = []
-    for folds in folds_list:
-        train_acc, test_acc = k_folds_mnb(mnb, X_tt, y_tt, folds)
-        test_acc_means.append(np.mean(test_acc))
-        train_acc_means.append(np.mean(train_acc))
-    y_hat = mnb.predict(X_holdout)
+    # mnb = MultinomialNB()
+    # folds_list = [4,8,12]
+    # test_acc_means = []
+    # train_acc_means = []
+    # for folds in folds_list:
+    #     train_acc, test_acc = k_folds_mnb(mnb, X_tt, y_tt, folds)
+    #     test_acc_means.append(np.mean(test_acc))
+    #     train_acc_means.append(np.mean(train_acc))
+    # y_hat = mnb.predict(X_holdout)
 
-    mcc = matthews_corrcoef(y_holdout,y_hat)
+    # mcc = matthews_corrcoef(y_holdout,y_hat)
     # f1 = f1_score(y_holdout, y_hat)
     # print('\nTraining Accuracy:\n')
     # for folds, acc in zip(folds_list,train_acc_means):
@@ -133,5 +133,3 @@ if __name__ =="__main__":
 
     # for name, image_idx in zip(classes, most_likely_images[:2]):
     #     plot_1x2_img()
-
-    [0.19282511210762332, 0.2062780269058296, 0.21076233183856502, 0.15695067264573992, 0.2242152466367713, 0.15246636771300448, 0.21524663677130046, 0.16143497757847533, 0.23766816143497757, 0.2062780269058296, 0.17040358744394618, 0.21076233183856502, 0.17937219730941703, 0.14349775784753363, 0.17937219730941703, 0.15695067264573992, 0.17488789237668162, 0.15765765765765766, 0.14414414414414414, 0.17567567567567569]
