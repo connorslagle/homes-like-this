@@ -8,6 +8,12 @@ from sklearn.metrics import confusion_matrix
 from sklearn.model_selection import KFold
 
 def load_data(file_dir):
+    '''
+    Load images from specified directory.
+
+    Outputs featurized (raveled) images for NB Classification model.
+    '''
+
     img_pipe = ImagePipeline(file_dir)
     img_pipe.read()
     img_pipe.vectorize()
@@ -16,6 +22,12 @@ def load_data(file_dir):
     return X_from_pipe, y_from_pipe
 
 def fname_to_city(df, X_in, y_in):
+    '''
+    Searches dataframe for filenames in y -> creates target with city as
+    categories.
+    
+    Returns: city_target and matching X
+    '''
     city = []
     idx = []
     for elem in y_in: 
@@ -27,15 +39,40 @@ def fname_to_city(df, X_in, y_in):
 
     return X_match, city
 
+def k_folds_mnb(multi_NB_classifier, X_tt, y_tt, n_folds=5):
+    '''
+    Applies kfold cv on mnb. Was not able to stratify on tt/holdout split,
+    trying to accomodate with averaging k-folds
 
+    returns train acc, test acc
+    '''
+
+    kf = KFold(n_splits=n_folds)
+    kf.get_n_splits(X_tt)
+
+    test_acc = []
+    train_acc = []
+    for train_index, test_index in kf.split(X_tt):
+
+        X_train, X_test = X_tt[train_index], X_tt[test_index]
+        y_train, y_test = y_tt[train_index], y_tt[test_index]
+    
+        mnb.fit(X_train, y_train)
+        y_hat = mnb.predict(X_test)
+        y_hat_train = mnb.predict(X_train)
+
+        test_acc.append(np.mean(y_test == y_hat))
+        train_acc.append(np.mean(y_train == y_hat_train))
+    return train_acc, test_acc
 
 if __name__ =="__main__":
+    img_size = 32
 
     df = pd.read_csv('../data/metadata/2020-05-14_pg1_3_all.csv')
-    X_feat, y_target = load_data('../data/proc_images/32/')
+    X_feat, y_target = load_data(f'../data/proc_images/{img_size}/')
 
     X_new, target = fname_to_city(df, X_feat, y_target)
-    # breakpoint()
+
     y = np.array(target)
     # holdout
     rand_state = 1
@@ -57,30 +94,20 @@ if __name__ =="__main__":
 
     # accuracy = mnb.score(X_test,y_test)
 
+
     '''
     3,5,7,9 Kfold split (no real change - sticking with 5)
     '''
+    # mnb = MultinomialNB()
     # folds_list = np.arange(2,20,2)
     # test_acc_means = []
     # train_acc_means = []
     # for folds in folds_list:
-    kf = KFold()
-    kf.get_n_splits(X_tt)
-    test_acc = []
-    train_acc = []
-    for train_index, test_index in kf.split(X_tt):
-        X_train, X_test = X_tt[train_index], X_tt[test_index]
-        y_train, y_test = y_tt[train_index], y_tt[test_index]
-    
-        mnb.fit(X_train, y_train)
-        y_hat = mnb.predict(X_test)      # Default predict_proba thresh
-        y_hat_train = mnb.predict(X_train)
-
-        test_acc.append(np.mean(y_test == y_hat))
-        train_acc.append(np.mean(y_train == y_hat_train))
-
+        # train_acc, test_acc = k_folds_mnb(mnb, X_tt, y_tt, folds)
         # test_acc_means.append(np.mean(test_acc))
         # train_acc_means.append(np.mean(train_acc))
+    
+    
     # print('\nTraining Accuracy:\n')
     # for folds, acc in zip(folds_list,train_acc_means):
     #     print(f'# Folds: {folds}\tTrain Acc: {acc:0.3f}')
@@ -88,19 +115,3 @@ if __name__ =="__main__":
     # print('\nTesting Accuracy:\n')
     # for folds, acc in zip(folds_list,test_acc_means):
     #     print(f'# Folds: {folds}\tTest Acc: {acc:0.3f}')
-
-
-    # Project Structure
-
-    # I want to ultimately deploy the recommender to a web-application. For that purpose, the project will be split into two parts. In part one, a scalable data infrastructure (webscraper and pipelines) will be presented along with exploratory data analysis (EDA) and preliminary image featurization. In part two, a convolutional neural network (CNN) autoencoder will be explored for real  
-
-    # - Develop a scalable webscraper (to be deployed on AWS)
-    # - Develop robust data cleaning pipelines for image and image metadata
-    # - Featurize images
-
-    # Goals for Capstone 3: 
-    # - Scrape more data (more cities/listings -> run on AWS)
-    # - Combine image features with metadata -> predict where to look by 
-
-    # This project will be presented in two parts.
-    
