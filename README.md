@@ -112,16 +112,32 @@ Well. Not exactly the same. To get a better understanding of these 5,000 images,
     <img src="images/Thornton_1x2.png" width='800'/>
 </p>
 
+As seen in the Arvada subgroup - some of these images are of the house from the outside. Not shown above, there are also images of empty lots, chicken coops, and other unforseen images.
+
+
 # Image Processing
 
-To process the images, I built a 
+ Unfortunately, the images from Realtor.com are 1000x700 color images. In order to train a machine learning model, I preprocessed them with a pipeline.
+
+ First, the images were cropped square.
+
+<p align="center">
+    <img src="images/1x2_color.png" width='800'/>
+</p>
+
+Then the images were grayscaled and reduced. I collected 32x32, 64x64, 128x128, and 256x256. Afterwards, I visually checked to see at which point the image was visually unrecognizable.
 
 <p align="center">
     <img src="images/1x4_gray.png" width='800'/>
 </p>
 
+At 32x32 it becomes difficult to where an object begins and ends; however, smaller images are easier to featurize.
+
 # Naive Bayes Classifier
 
+As an initial step, I wanted to see how a relatively simple model classified the images. I chose to use a Niave Bayes classifier as they have been shown to predict relatively well on raveled images. 
+
+Initially, I split the data into holdout and train/test groups with 20% of the data stored in the holdout set. An additional 20% of the data was heldout for testing, with the remainder comprising the train set. 
 
 
 # Conclusion

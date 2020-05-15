@@ -81,13 +81,18 @@ if __name__ == "__main__":
     Plotting 1x2 by city
     '''
     
-    # cats = ['Denver','Arvada','Aurora','Lakewood','Centennial','Westminster','Thornton']
-    # for cat in cats:
-    #     test = df.image_file[df.city == cat]
-    #     fnames = list(test)[100:102]
-    #     color_imgs = [io.imread(f'../data/listing_images/full/{file}') for file in fnames]
-    #     plot_1x2_img(color_imgs,[f'{cat} #1',f'{cat} #2'])
-    #     save_fig(f'{cat}_1x2.png')
+    cats = ['Denver','Arvada','Aurora','Lakewood','Centennial','Westminster','Thornton']
+    for cat in cats:
+        test = df.image_file[df.city == cat]
+        
+    
+        fnames = []
+        for _ in range(2):
+            rand_idx = np.random.randint(0,500)
+            fnames.append(list(test)[rand_idx])
+        color_imgs = [io.imread(f'../data/listing_images/full/{file}') for file in fnames]
+        plot_1x2_img(color_imgs,[f'{cat} #1',f'{cat} #2'])
+        save_fig(f'{cat}_1x2.png')
 
     '''
     Plotting 1x4 gray
