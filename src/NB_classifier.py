@@ -4,7 +4,7 @@ from sklearn import preprocessing
 from sklearn.model_selection import train_test_split
 from sklearn.naive_bayes import MultinomialNB
 from data_pipelines import ImagePipeline
-from sklearn.metrics import confusion_matrix
+from sklearn.metrics import confusion_matrix, matthews_corrcoef
 from sklearn.model_selection import KFold
 
 def load_data(file_dir, use_filter=False):
@@ -70,15 +70,15 @@ def k_folds_mnb(multi_NB_classifier, X_tt, y_tt, n_folds=5):
 if __name__ =="__main__":
     img_size = 128
 
-    # df = pd.read_csv('../data/metadata/2020-05-14_pg1_3_all.csv')
-    # X_feat, y_target = load_data(f'../data/proc_images/{img_size}/')
+    df = pd.read_csv('../data/metadata/2020-05-14_pg1_3_all.csv')
+    X_feat, y_target = load_data(f'../data/proc_images/{img_size}/')
 
-    # X_new, target = fname_to_city(df, X_feat, y_target)
+    X_new, target = fname_to_city(df, X_feat, y_target)
 
-    # y = np.array(target)
-    # # holdout
-    # rand_state = 1
-    # X_tt, X_holdout, y_tt, y_holdout = train_test_split(X_new, y, random_state=rand_state, test_size=0.20)
+    y = np.array(target)
+    # holdout
+    rand_state = 1
+    X_tt, X_holdout, y_tt, y_holdout = train_test_split(X_new, y, random_state=rand_state, test_size=0.20)
 
     # # test/train split
     # X_train, X_test, y_train, y_test = train_test_split(X_tt, y_tt, random_state=rand_state, test_size=0.20)
@@ -100,16 +100,17 @@ if __name__ =="__main__":
     '''
     3,5,7,9 Kfold split (no real change - sticking with 5)
     '''
-    # mnb = MultinomialNB()
-    # folds_list = np.arange(2,20,2)
-    # test_acc_means = []
-    # train_acc_means = []
-    # for folds in folds_list:
-    #     train_acc, test_acc = k_folds_mnb(mnb, X_tt, y_tt, folds)
-    #     test_acc_means.append(np.mean(test_acc))
-    #     train_acc_means.append(np.mean(train_acc))
-    
-    
+    mnb = MultinomialNB()
+    folds_list = [20]
+    test_acc_means = []
+    train_acc_means = []
+    for folds in folds_list:
+        train_acc, test_acc = k_folds_mnb(mnb, X_tt, y_tt, folds)
+        test_acc_means.append(np.mean(test_acc))
+        train_acc_means.append(np.mean(train_acc))
+    y_hat = mnb.predict(X_holdout)
+
+    mcc = matthews_corrcoef(y_holdout,y_hat)
     # print('\nTraining Accuracy:\n')
     # for folds, acc in zip(folds_list,train_acc_means):
     #     print(f'# Folds: {folds}\tTrain Acc: {acc:0.3f}')

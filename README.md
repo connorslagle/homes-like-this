@@ -155,15 +155,31 @@ I chose a k-fold of 18 to train my final model on. **The accuracy on the holdout
 Although the accuracy leaves much to be desired, I was excited to look at the confusion matrices to see which cities scored the highest.
 
 <p align="center">
-    <img src="images/cm_test.png" width='450'/>
-    <img src="images/cm_holdout.png" width='450'/>
+    <img src="images/cm_test.png" width='500'/>
+    <img src="images/cm_holdout.png" width='500'/>
 </p>
 
+In the confusion matrices above, the values shown are normalized counts **by true value (vertical axis)**. If you focus your attention to the diagonal, you can see Lakewood was predicted with the most accuract in both test and holdout datasets. However, Wesminster is not far behind.
+
+To get a better understanding of how my model performed, I tested the performance with the [Mathiews Correlation Coefficient (MCC)](https://en.wikipedia.org/wiki/Matthews_correlation_coefficient).
+
+<p align="center">
+    <img src="images/mcc.svg" width='600'/>
+</p>
+
+The MCC ranges from [-1, 1] - 1 being a perfect prediction, -1 a completely opposite prediction. Our value: **-0.002**, slightly worse than random guessing. 
+
+As can be seen, maybe NB is not the best approach for this classification problem - although futher sorting of the images (indoor/outdoor) might help.
 
 # Conclusion
 
+This concludes this part of the Homes Like This project. In this part we developed a scalable webscraper, with visions of implementing on AWS. Image and data pipelines were established to format the data in a meaningful way, although future work into image segragation is warented. For an initial look at feasibility, we fit our data with a Naive Bayes Classifier. The model did not perform very well on aggregate; however, significant differences in 'types' of homes were seen in the confusion matrices. 
 
-# Next Steps
+In part two, we will implement our scraper in the glorious AWS and broaden the cities which we webscrape data from. This might increase our classification accuracy. Another objective of part 2 will be exploring other featurization methods to process the images. The most exciting in my opionion, being a convolutional neural network autoencoder. This will train on the color image, reduce the dimentionality (encode) our images from 32x32x3 (=3,074!) features to ~128. The ultimate goal of the next part will be to deploy a better model in a Flask app, so users can upload images snapped from their phones. 
+
+Thank you for reading, feel free to contact me about any questions/comments/greetings.
+
+Connor
 
 
 
