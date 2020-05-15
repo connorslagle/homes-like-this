@@ -13,8 +13,6 @@ Connor Slagle
 2. [The Dataset](#The-Dataset)
 3. [Webscraping](##Webscraping)
 3. [Exploratory Data Analysis](#Exploratory-Data-Analysis)
-4. [The VADER Algorithm](#The-VADER-Algorithm)
-5. [Bootstrapping the Data](##Bootstrapping-The-Data)
 6. [Sensitivity of Pre-processing](#Sensitivity-of-Pre-processing)
 7. [Conclusion](#Conclusion)
 8. [References](#References)
@@ -28,20 +26,6 @@ I think there is! Let computer's do the work for us.
 According to [Realtor.com](https://www.realtor.com/advice/buy/how-many-homes-will-it-take/), the average time it takes to find yout dream home is 10 weeks - with touring roughly 10 homes in that time. Most people have about [1-2 hours](https://www.quora.com/How-much-free-time-does-the-average-person-have-This-does-not-include-time-spent-at-work-or-on-house-work-like-cooking-dinner?share=1) of freetime per day - when looking for a houme this number can easily go to 0. During this process any time you can squeeze out for yourself is golden. 
 
 With this in mind, I decided to build a search optimizer that can recommend **where** to look for your next home based on images of rooms you already like.
-
-# Project Structure
-
-I want to ultimately deploy the recommender to a web-application. For that purpose, the project will be split into two parts. In part one, a scalable data infrastructure (webscraper and pipelines) will be presented along with exploratory data analysis (EDA) and preliminary image featurization. In part two, a convolutional neural network (CNN) autoencoder will be explored for real  
-
-- Develop a scalable webscraper (to be deployed on AWS)
-- Develop robust data cleaning pipelines for image and image metadata
-- Featurize images
-
-Goals for Capstone 3: 
-- Scrape more data (more cities/listings -> run on AWS)
-- Combine image features with metadata -> predict where to look by 
-
-This project will be presented in two parts.
 
 # The Dataset
 
@@ -68,9 +52,15 @@ Therefore, I scraped the data with the [Scrapy](https://scrapy.org/) python libr
     <img src="images/scrapy.png" width='800'/>
 </p>
 
+Scrapy is build on an asynchronous [Twisted](https://twistedmatrix.com/trac/) engine that controls web-page requests, webscrapers (spiders), and data post-processing. Additionally, custom 'middleware' can be added for further functionality.
 
+With scrapy in my toolbelt, feeling confident, I tried to scrape Realtor.com - and was hit with a 403 - Unauthorized Request. I modified my code, tried again, and was redirected to their ['/robots.txt'](https://www.realtor.com/robots.txt) page. For those of you who are unaware of the 'robots.txt' rule of webscraping, as I was, here's a snippet from Realtor.com:
 
+<p align="center">
+    <img src="images/robots.png" width='800'/>
+</p>
 
+This file describes which robots are allowed to scrape the website, and no matter what 
 
 On top of the typical home seach hyperparameters (bedrooms, bathrooms, pooltable, etc.), providing images 
 

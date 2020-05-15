@@ -88,4 +88,19 @@ if __name__ =="__main__":
     # print('\nTesting Accuracy:\n')
     # for folds, acc in zip(folds_list,test_acc_means):
     #     print(f'# Folds: {folds}\tTest Acc: {acc:0.3f}')
+
+
+    # Project Structure
+
+    # I want to ultimately deploy the recommender to a web-application. For that purpose, the project will be split into two parts. In part one, a scalable data infrastructure (webscraper and pipelines) will be presented along with exploratory data analysis (EDA) and preliminary image featurization. In part two, a convolutional neural network (CNN) autoencoder will be explored for real  
+
+    # - Develop a scalable webscraper (to be deployed on AWS)
+    # - Develop robust data cleaning pipelines for image and image metadata
+    # - Featurize images
+
+    # Goals for Capstone 3: 
+    # - Scrape more data (more cities/listings -> run on AWS)
+    # - Combine image features with metadata -> predict where to look by 
+
+    # This project will be presented in two parts.
     
