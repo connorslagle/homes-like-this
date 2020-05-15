@@ -1,4 +1,4 @@
-# Homes Like This: Real Estate Search Optimizer
+# Homes Like This: Real Estate Search Optimizer, Pt. 1
 
 <p align="center">
     <img src="images/banner3.jpg" width='1000'/>
@@ -11,6 +11,7 @@ Connor Slagle
 
 1. [Motivation](#Motivation)
 2. [The Dataset](#The-Dataset)
+3. [Webscraping](##Webscraping)
 3. [Exploratory Data Analysis](#Exploratory-Data-Analysis)
 4. [The VADER Algorithm](#The-VADER-Algorithm)
 5. [Bootstrapping the Data](##Bootstrapping-The-Data)
@@ -28,9 +29,23 @@ According to [Realtor.com](https://www.realtor.com/advice/buy/how-many-homes-wil
 
 With this in mind, I decided to build a search optimizer that can recommend **where** to look for your next home based on images of rooms you already like.
 
+# Project Structure
+
+I want to ultimately deploy the recommender to a web-application. For that purpose, the project will be split into two parts. In part one, a scalable data infrastructure (webscraper and pipelines) will be presented along with exploratory data analysis (EDA) and preliminary image featurization. In part two, a convolutional neural network (CNN) autoencoder will be explored for real  
+
+- Develop a scalable webscraper (to be deployed on AWS)
+- Develop robust data cleaning pipelines for image and image metadata
+- Featurize images
+
+Goals for Capstone 3: 
+- Scrape more data (more cities/listings -> run on AWS)
+- Combine image features with metadata -> predict where to look by 
+
+This project will be presented in two parts.
+
 # The Dataset
 
-The data for this project was collected by webscraping [Realtor.com](https://www.realtor.com/). For a proof of concept, roughly 10,000 images were scraped on May 12th - 13th, 2020 from the seven municipalities around the Denver Metro Area with a [population > 100,000](https://en.wikipedia.org/wiki/Denver_metropolitan_area#Places_with_over_100,000_inhabitants). 
+The dataset was collected by webscraping [Realtor.com](https://www.realtor.com/). For a proof of concept, roughly 10,000 images were scraped on May 12th - 13th, 2020 from the seven municipalities around the Denver Metro Area with a [population > 100,000](https://en.wikipedia.org/wiki/Denver_metropolitan_area#Places_with_over_100,000_inhabitants). Of the 10,000 images, only ~5,600 of them were unique and included in the final dataset. A brief descrion of the data source is below:
 
 Municipality | Pop. (2018, est.) | Listings Avail. (5/13/2020) | Listings Scraped | Images Scraped | Images/Listing
 |---|---:|---:|---:|---:|---:|
@@ -42,6 +57,20 @@ Arvada | 120,000 | 500 | 34 | 840 | 25
 Westminster | 113,000 | 320 | 26 | 620 | 24
 Centennial | 110,000 | 340 | 28 | 700 | 25
 **Total** | **1,740,000** | **8,000** | **234** | **5,570** | **24**
+
+## Webscraping
+
+Webscraping is a tricky beast. Mainly because websites are so good at detecting automated data collectors (bots). A common workflow for webscraping is to request the page HTML, process with HTML-parser (shout out Beautiful Soup), then store in a NoSQL database. This workflow works really well when scraping from a single web-page; however, it suffers at scale as synchronous requests are slow and easy to identify by websites. 
+
+Therefore, I scraped the data with the [Scrapy](https://scrapy.org/) python library. The Scrapy workflow is shown below:
+
+<p align="center">
+    <img src="images/scrapy.png" width='800'/>
+</p>
+
+
+
+
 
 On top of the typical home seach hyperparameters (bedrooms, bathrooms, pooltable, etc.), providing images 
 
@@ -73,7 +102,6 @@ Goals for Capstone 2:
 - Scalable webscraper (done)
 - Data Cleaning Pipelines
 - Featurize images (NB, or CNN) and hard cluster
-- Label clusters, test with pictures of my house
 
 ## Capstone 3
 
