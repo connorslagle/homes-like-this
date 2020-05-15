@@ -85,31 +85,31 @@ To start off, I wanted to make sure my webscraper collected data in equal propor
 Well. Not exactly the same. To get a better understanding of these 5,000 images, I figured it would be nice to look at a few per city.
 
 <p align="center">
-    <img src="images/Denver_1x2.png" width='800'/>
+    <img src="images/Denver_1x2.png" width='850'/>
 </p>
 
 <p align="center">
-    <img src="images/Arvada_1x2.png" width='800'/>
+    <img src="images/Arvada_1x2.png" width='850'/>
 </p>
 
 <p align="center">
-    <img src="images/Aurora_1x2.png" width='800'/>
+    <img src="images/Aurora_1x2.png" width='850'/>
 </p>
 
 <p align="center">
-    <img src="images/Lakewood_1x2.png" width='800'/>
+    <img src="images/Lakewood_1x2.png" width='850'/>
 </p>
 
 <p align="center">
-    <img src="images/Centennial_1x2.png" width='800'/>
+    <img src="images/Centennial_1x2.png" width='850'/>
 </p>
 
 <p align="center">
-    <img src="images/Westminster_1x2.png" width='800'/>
+    <img src="images/Westminster_1x2.png" width='850'/>
 </p>
 
 <p align="center">
-    <img src="images/Thornton_1x2.png" width='800'/>
+    <img src="images/Thornton_1x2.png" width='850'/>
 </p>
 
 As seen in the Arvada subgroup - some of these images are of the house from the outside. Not shown above, there are also images of empty lots, chicken coops, and other unforseen images.
@@ -159,7 +159,7 @@ Although the accuracy leaves much to be desired, I was excited to look at the co
     <img src="images/cm_holdout_new.png" width='450'/>
 </p>
 
-In the confusion matrices above, the values shown are normalized counts **by true value**. If you focus your attention to the diagonal, you can see Lakewood was predicted with the most accuract in both test and holdout datasets. However, Wesminster is not far behind.
+In the confusion matrices above, the values shown are normalized counts **by true value (rows sum to 1)**. If you focus your attention to the diagonal, you can see Lakewood was predicted with the most accuract in both test and holdout datasets. However, Wesminster is not far behind.
 
 To get a better understanding of how my model performed, I tested the performance with the [Matthews Correlation Coefficient (MCC)](https://en.wikipedia.org/wiki/Matthews_correlation_coefficient).
 
@@ -180,9 +180,3 @@ In part two, we will implement our scraper in the glorious AWS and broaden the c
 Thank you for reading, feel free to contact me about any questions/comments/greetings.
 
 Connor
-
-
-
-# References
-
-
