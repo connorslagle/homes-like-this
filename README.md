@@ -148,15 +148,15 @@ For NB classifiers, a 'wide' dataset (number of features >> number of targets) i
 | train | 0.224 | 0.220 | 0.219 | 0.219 |
 | test | 0.18 | 0.177 | 0.183 | 0.184
 
-You're eyes aren't deceiving you - that's an accuracy of 0.18. However, I was surprised that the accuracy was not affected very much by the number of k-folds.
+You're eyes aren't deceiving you - that's an accuracy of 0.184. However, I was surprised that the accuracy was not affected very much by the number of k-folds.
 
-I chose a k-fold of 18 to train my final model on. **The accuracy on the holdout data was 0.147** - slightly above random guessing; for 7 classes, the expected accuract is 0.143.
+I chose a k-fold of 18 to train my final model on. **The accuracy on the holdout data was 0.178** - slightly above random guessing; for 7 classes, the expected accuract is 0.143.
 
 Although the accuracy leaves much to be desired, I was excited to look at the confusion matrices to see which cities scored the highest.
 
 <p align="center">
-    <img src="images/cm_test.png" width='450'/>
-    <img src="images/cm_holdout.png" width='450'/>
+    <img src="images/cm_test_new.png" width='450'/>
+    <img src="images/cm_holdout_new.png" width='450'/>
 </p>
 
 In the confusion matrices above, the values shown are normalized counts **by true value (vertical axis)**. If you focus your attention to the diagonal, you can see Lakewood was predicted with the most accuract in both test and holdout datasets. However, Wesminster is not far behind.
@@ -167,7 +167,7 @@ To get a better understanding of how my model performed, I tested the performanc
     <img src="images/mcc.svg" width='600'/>
 </p>
 
-The MCC ranges from [-1, 1], +1 being a perfect prediction, -1 a completely opposite prediction. Our value: **-0.002**, slightly worse than random guessing. 
+The MCC ranges from [-1, 1], +1 being a perfect prediction, -1 a completely opposite prediction. Our value: **0.05**, slightly worse than random guessing. 
 
 As can be seen, maybe NB is not the best approach for this classification problem - although futher sorting of the images (indoor/outdoor) might help.
 

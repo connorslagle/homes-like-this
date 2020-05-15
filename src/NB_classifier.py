@@ -1,11 +1,13 @@
 import pandas as pd
 import numpy as np
+from skimage import io
 from sklearn import preprocessing
 from sklearn.model_selection import train_test_split
 from sklearn.naive_bayes import MultinomialNB
 from data_pipelines import ImagePipeline
-from sklearn.metrics import confusion_matrix, matthews_corrcoef
+from sklearn.metrics import confusion_matrix, matthews_corrcoef, f1_score
 from sklearn.model_selection import KFold
+from plotting_functions import plot_1x2_img
 
 def load_data(file_dir, use_filter=False):
     '''
@@ -19,6 +21,7 @@ def load_data(file_dir, use_filter=False):
     if use_filter:
         img_pipe._filter_image()
     img_pipe.vectorize()
+    # breakpoint()
     X_from_pipe = img_pipe.features
     y_from_pipe = img_pipe.labels
     return X_from_pipe, y_from_pipe
@@ -30,6 +33,8 @@ def fname_to_city(df, X_in, y_in):
     
     Returns: city_target and matching X
     '''
+
+
     city = []
     idx = []
     for elem in y_in: 
@@ -101,7 +106,7 @@ if __name__ =="__main__":
     3,5,7,9 Kfold split (no real change - sticking with 5)
     '''
     mnb = MultinomialNB()
-    folds_list = [20]
+    folds_list = [4,8,12]
     test_acc_means = []
     train_acc_means = []
     for folds in folds_list:
@@ -111,6 +116,7 @@ if __name__ =="__main__":
     y_hat = mnb.predict(X_holdout)
 
     mcc = matthews_corrcoef(y_holdout,y_hat)
+    # f1 = f1_score(y_holdout, y_hat)
     # print('\nTraining Accuracy:\n')
     # for folds, acc in zip(folds_list,train_acc_means):
     #     print(f'# Folds: {folds}\tTrain Acc: {acc:0.3f}')
@@ -118,3 +124,14 @@ if __name__ =="__main__":
     # print('\nTesting Accuracy:\n')
     # for folds, acc in zip(folds_list,test_acc_means):
     #     print(f'# Folds: {folds}\tTest Acc: {acc:0.3f}')
+
+    # highest probability image.
+    # most_likely_images = [[ 885,  334, 1027], [449, 253, 886], [510, 541, 411],
+    #                          [855, 778,  34], [ 175, 1041,  939], [ 40, 428,  73], [ 49, 392, 580]]
+
+    # classes = ['Arvada', 'Aurora', 'Centennial', 'Denver', 'Lakewood', 'Thornton', 'Westminster']
+
+    # for name, image_idx in zip(classes, most_likely_images[:2]):
+    #     plot_1x2_img()
+
+    [0.19282511210762332, 0.2062780269058296, 0.21076233183856502, 0.15695067264573992, 0.2242152466367713, 0.15246636771300448, 0.21524663677130046, 0.16143497757847533, 0.23766816143497757, 0.2062780269058296, 0.17040358744394618, 0.21076233183856502, 0.17937219730941703, 0.14349775784753363, 0.17937219730941703, 0.15695067264573992, 0.17488789237668162, 0.15765765765765766, 0.14414414414414414, 0.17567567567567569]

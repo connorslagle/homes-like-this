@@ -326,10 +326,10 @@ class ImagePipeline():
         Take a list of images and vectorize all the images. Returns a feature matrix where each
         row represents an image
         """
-        row_tup = tuple(img_arr.ravel()[np.newaxis, :]
-                        for img_lst in self.img_lst2 for img_arr in img_lst)
-        self.test = row_tup
-        self.features = np.r_[row_tup]
+        imgs = [np.ravel(img) for img in self.img_lst2]
+        
+        self.features = np.r_['0', imgs]
+
 
     def _vectorize_labels(self):
         """

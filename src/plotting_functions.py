@@ -8,7 +8,7 @@ import seaborn as sb
 from data_pipelines import ImagePipeline
 
 plt.style.use('ggplot')
-plt.rcParams.update({'font.size': 20})
+plt.rcParams.update({'font.size': 10})
 
 def bar_chart_desc(tick_labels, values, xlabel, ylabel, title):
     desc_idx = np.argsort(np.array(values))
@@ -81,18 +81,18 @@ if __name__ == "__main__":
     Plotting 1x2 by city
     '''
     
-    cats = ['Denver','Arvada','Aurora','Lakewood','Centennial','Westminster','Thornton']
-    for cat in cats:
-        test = df.image_file[df.city == cat]
+    # cats = ['Denver','Arvada','Aurora','Lakewood','Centennial','Westminster','Thornton']
+    # for cat in cats:
+    #     test = df.image_file[df.city == cat]
         
     
-        fnames = []
-        for _ in range(2):
-            rand_idx = np.random.randint(0,500)
-            fnames.append(list(test)[rand_idx])
-        color_imgs = [io.imread(f'../data/listing_images/full/{file}') for file in fnames]
-        plot_1x2_img(color_imgs,[f'{cat} #1',f'{cat} #2'])
-        save_fig(f'{cat}_1x2.png')
+    #     fnames = []
+    #     for _ in range(2):
+    #         rand_idx = np.random.randint(0,500)
+    #         fnames.append(list(test)[rand_idx])
+    #     color_imgs = [io.imread(f'../data/listing_images/full/{file}') for file in fnames]
+    #     plot_1x2_img(color_imgs,[f'{cat} #1',f'{cat} #2'])
+    #     save_fig(f'{cat}_1x2.png')
 
     '''
     Plotting 1x4 gray
@@ -134,6 +134,15 @@ if __name__ == "__main__":
     # save_fig('1x2_color.png')
 
     '''
+    Trying to plot imgs that max_predict_proba
+    '''
+    # most_likely_images = [[ 885,  334, 1027], [449, 253, 886], [510, 541, 411],
+    #                          [855, 778,  34], [ 175, 1041,  939], [ 40, 428,  73], [ 49, 392, 580]]
+    # classes = classes = ['Arvada', 'Aurora', 'Centennial', 'Denver', 'Lakewood', 'Thornton', 'Westminster']
+    
+    # for class
+
+    '''
     Plotting CM (on train & on holdout)
     '''
     # # on test from NB_classifier.py
@@ -155,6 +164,35 @@ if __name__ == "__main__":
     # cm_plot(cm_test,'NB Confusion Matrix - Test Split')
     # save_fig('cm_test.png')
 
+    # cm_test_new = np.array([[0.14146341, 0.08780488, 0.05365854, 0.28292683, 0.15609756,
+    #     0.17073171, 0.10731707],
+    #    [0.05263158, 0.09868421, 0.03947368, 0.28289474, 0.15789474,
+    #     0.25      , 0.11842105],
+    #    [0.08064516, 0.10483871, 0.03225806, 0.24193548, 0.19354839,
+    #     0.22580645, 0.12096774],
+    #    [0.06837607, 0.05128205, 0.05128205, 0.4017094 , 0.16239316,
+    #     0.17094017, 0.09401709],
+    #    [0.04901961, 0.08823529, 0.01960784, 0.33333333, 0.20588235,
+    #     0.18627451, 0.11764706],
+    #    [0.06382979, 0.15957447, 0.05319149, 0.18085106, 0.15957447,
+    #     0.25531915, 0.12765957],
+    #    [0.04081633, 0.09183673, 0.03061224, 0.2244898 , 0.10204082,
+    #     0.2244898 , 0.28571429]])
+
+    # cm_plot(cm_test_new,'NB Confusion Matrix - Test Split')
+    # save_fig('cm_test_new.png')       
+
+    cm_test_val = np.array([[29, 18, 11, 58, 32, 35, 22],
+       [ 8, 15,  6, 43, 24, 38, 18],
+       [10, 13,  4, 30, 24, 28, 15],
+       [ 8,  6,  6, 47, 19, 20, 11],
+       [ 5,  9,  2, 34, 21, 19, 12],
+       [ 6, 15,  5, 17, 15, 24, 12],
+       [ 4,  9,  3, 22, 10, 22, 28]])
+
+    cm_plot(cm_test_val,'NB Confusion Matrix - Test Split')
+    save_fig('cm_test_new_val.png') 
+
     # cm_holdout = np.array([[0.0503876 , 0.08527132, 0.06976744, 0.25968992, 0.20930233,
     #     0.24418605, 0.08139535],
     #    [0.04      , 0.13714286, 0.02857143, 0.23428571, 0.22857143,
@@ -173,4 +211,31 @@ if __name__ == "__main__":
     # cm_plot(cm_holdout,'NB Confusion Matrix - Holdout Split')
     # save_fig('cm_holdout.png')
 
+    # cm_holdout_new = np.array([[0.07751938, 0.09689922, 0.03875969, 0.30620155, 0.15116279,
+    #     0.18604651, 0.14341085],
+    #    [0.05714286, 0.13714286, 0.01142857, 0.30285714, 0.14857143,
+    #     0.15428571, 0.18857143],
+    #    [0.05960265, 0.09271523, 0.03311258, 0.34437086, 0.0794702 ,
+    #     0.18543046, 0.20529801],
+    #    [0.12269939, 0.11042945, 0.03680982, 0.42944785, 0.04294479,
+    #     0.17177914, 0.08588957],
+    #    [0.10714286, 0.08571429, 0.05      , 0.3       , 0.18571429,
+    #     0.14285714, 0.12857143],
+    #    [0.09009009, 0.17117117, 0.04504505, 0.21621622, 0.11711712,
+    #     0.24324324, 0.11711712],
+    #    [0.07692308, 0.14529915, 0.01709402, 0.23076923, 0.17094017,
+    #     0.18803419, 0.17094017]])
     
+    # cm_plot(cm_holdout_new,'NB Confusion Matrix - Holdout Split')
+    # save_fig('cm_holdout_new.png')
+
+    cm_holdout_vals = np.array([[20, 25, 10, 79, 39, 48, 37],
+       [10, 24,  2, 53, 26, 27, 33],
+       [ 9, 14,  5, 52, 12, 28, 31],
+       [20, 18,  6, 70,  7, 28, 14],
+       [15, 12,  7, 42, 26, 20, 18],
+       [10, 19,  5, 24, 13, 27, 13],
+       [ 9, 17,  2, 27, 20, 22, 20]])
+
+    cm_plot(cm_holdout_vals,'NB Confusion Matrix - Holdout Split')
+    save_fig('cm_holdout_new_vals.png')
