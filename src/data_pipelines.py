@@ -7,6 +7,7 @@ import os
 from skimage import io
 from skimage.transform import resize
 from skimage.color import rgb2gray
+from skimage.filters import sobel
 
 
 class MongoImporter():
@@ -249,7 +250,12 @@ class ImagePipeline():
                     img_lst = [io.imread(os.path.join(self.image_dir, fname)) for fname in names]
                     self.img_lst2.append(img_lst)
 
-                self.resize(batch_resize_size)
+
+                self._square_image()
+                self._gray_image()
+
+                self._resize(batch_resize_size)
+                
                 self.save()
         
         else:
@@ -257,36 +263,51 @@ class ImagePipeline():
             img_lst = [io.imread(os.path.join(self.image_dir, fname)) for fname in img_names]
             self.img_lst2.append(img_lst)
 
+        self.img_lst2 = self.img_lst2[0]
+
         
 
-    def _square_image(self, img):
+    def _square_image(self):
         '''
         Squares image based on largest side length.
-
-        returns grayscale, sq image.
         '''
-        y_len, x_len, _ = img.shape
+        cropped_lst = []
+        for img in self.img_lst2:
+            y_len, x_len, _ = img.shape
 
-        crop_len = min([x_len,y_len])
-        x_crop = [int((x_len/2) - (crop_len/2)), int((x_len/2) + (crop_len/2))]
-        y_crop = [int((y_len/2) - (crop_len/2)), int((y_len/2) + (crop_len/2))]
-        if y_len >= crop_len:
-            cropped = img[y_crop[0]:y_crop[1], x_crop[0]:x_crop[1]]
-        else:
-            cropped = img[x_crop[0]:x_crop[1], y_crop[0]:y_crop[1]]
-        
-        gray = rgb2gray(cropped)
-        return gray
+            crop_len = min([x_len,y_len])
+            x_crop = [int((x_len/2) - (crop_len/2)), int((x_len/2) + (crop_len/2))]
+            y_crop = [int((y_len/2) - (crop_len/2)), int((y_len/2) + (crop_len/2))]
+            if y_len >= crop_len:
+                cropped_lst.append(img[y_crop[0]:y_crop[1], x_crop[0]:x_crop[1]])
+            else:
+                cropped_lst.append(img[x_crop[0]:x_crop[1], y_crop[0]:y_crop[1]])
+        self.img_lst2 = cropped_lst
 
-    def resize(self, shape):
+    def _gray_image(self):
+        '''
+        Grayscales img
+        '''
+        gray_imgs = [rgb2gray(elem) for elem in self.img_lst2]
+        self.img_lst2 = gray_imgs
+
+
+    def _filter_image(self, filter='sobel'):
+        '''
+        Filters grey img
+        '''
+        filter_imgs = [sobel(elem) for elem in self.img_lst2]
+        self.img_lst2 = filter_imgs
+
+    def _resize(self, shape):
         """
         Resize all images in self.img_lst2 to specified size (prefer base 2 numbers (32,64,128))
         """
 
         new_img_lst2 = []
-        # breakpoint()
-        for image in self.img_lst2[0]:
-            new_img_lst2.append(resize(self._square_image(image), shape))
+        for image in self.img_lst2:
+            new_img_lst2.append(resize(image, shape))
+
         self.img_lst2 = new_img_lst2
         self.shape = shape[0]
 
@@ -297,7 +318,7 @@ class ImagePipeline():
         '''
 
         for fname, img in zip(self.img_names2[0], self.img_lst2):
-            # breakpoint()
+
             io.imsave(os.path.join(f'{self.save_dir}{self.shape}/', fname), img)
 
     def _vectorize_features(self):

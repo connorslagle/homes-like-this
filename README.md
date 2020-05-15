@@ -13,6 +13,7 @@ Connor Slagle
 2. [The Dataset](#The-Dataset)
 3. [Webscraping](##Webscraping)
 4. [Exploratory Data Analysis](#Exploratory-Data-Analysis)
+5. [Image Processing](#Image-Processing)
 5. [Naive Bayes Classifier](#Naive-Bayes-Classifier)
 6. [Conclusion](#Conclusion)
 7. [Next Steps](#Next-Steps)
@@ -75,7 +76,49 @@ After webscraping, the data was imported to Pandas. A random sample of 5 entries
 | 4985 | Denver_CO_3_9    |   5380-N-Argonne-St         | Denver      | CO      |      80249 | m2762133823xd-w1020_h770_q80.jpg | House for Sale   | $333,595     |           4 |          3.0 | 1,701    | 
 | 3479 | Aurora_CO_1_32  |    6632-S-Muscadine-Ct       | Aurora      | CO      |      80016 | w1113822923xd-w1020_h770_q80.jpg | House for Sale   | $495,000     |           3 |          2.5 | 3,255    | 
 
+To start off, I wanted to make sure my webscraper collected data in equal proportions.
 
+<p align="center">
+    <img src="images/count_by_city.png" width='500'/>
+</p>
+
+Well. Not exactly the same. To get a better understanding of these 5,000 images, I figured it would be nice to look at a few per city.
+
+<p align="center">
+    <img src="images/Denver_1x2.png" width='800'/>
+</p>
+
+<p align="center">
+    <img src="images/Arvada_1x2.png" width='800'/>
+</p>
+
+<p align="center">
+    <img src="images/Aurora_1x2.png" width='800'/>
+</p>
+
+<p align="center">
+    <img src="images/Lakewood_1x2.png" width='800'/>
+</p>
+
+<p align="center">
+    <img src="images/Centennial_1x2.png" width='800'/>
+</p>
+
+<p align="center">
+    <img src="images/Westminster_1x2.png" width='800'/>
+</p>
+
+<p align="center">
+    <img src="images/Thornton_1x2.png" width='800'/>
+</p>
+
+# Image Processing
+
+To process the images, I built a 
+
+<p align="center">
+    <img src="images/1x4_gray.png" width='800'/>
+</p>
 
 # Naive Bayes Classifier
 
