@@ -196,7 +196,7 @@ class ImagePipeline():
         self.features = None
         self.labels = None
 
-    def read(self, batch_mode=False, batch_size=1000):
+    def read(self, batch_mode=False, batch_size=1000,batch_resize_size=(32,32)):
         '''
         reads image and image names to self variables
         '''
@@ -224,7 +224,7 @@ class ImagePipeline():
                     img_lst = [io.imread(os.path.join(self.image_dir, fname)) for fname in names]
                     self.img_lst2.append(img_lst)
 
-                self.resize((64,64))
+                self.resize(batch_resize_size)
                 self.save()
         
         else:
@@ -296,8 +296,8 @@ if __name__ == "__main__":
     # df = importer.load_docs()
     # importer.to_csv('pg1_3_all.csv')
 
-    # img_pipe = ImagePipeline('../data/listing_images/full/')
-    # img_pipe.read(batch_mode=True)
+    img_pipe = ImagePipeline('../data/listing_images/full/')
+    img_pipe.read(batch_mode=True, batch_size=1000)
     # # img_pipe.resize((64,64))
     # # img_pipe.save()
 
