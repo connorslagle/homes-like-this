@@ -135,9 +135,29 @@ At 32x32 it becomes difficult to where an object begins and ends; however, small
 
 # Naive Bayes Classifier
 
-As an initial step, I wanted to see how a relatively simple model classified the images. I chose to use a Niave Bayes classifier as they have been shown to predict relatively well on raveled images. 
+As an initial step, I wanted to see how a relatively simple model classified the images. I chose to use a Niave Bayes (NB) classifier as they have been shown to predict relatively well on raveled images, although neighboring pixels are hardly independent. 
 
 Initially, I split the data into holdout and train/test groups with 20% of the data stored in the holdout set. An additional 20% of the data was heldout for testing, with the remainder comprising the train set. 
+
+Since I was not able to stratify my data set splits - I tried k-fold cross validation with the train/test data sets. Hopefully this would average out any uneven class proportions in the holdout set.
+
+For NB classifiers, a 'wide' dataset (number of features >> number of targets) is preferred as you can get a better estimation of the posterior probabilities with more priors. With this being the case, I trained my model on grayscaled images, size 256x256. I was both pleasanlty and negatively surprised when the results finished.
+
+| split | 4 Folds | 10 Folds | 14 Folds | 18 Folds
+|:---|---:|---:|---:|---:|
+| train | 0.224 | 0.220 | 0.219 | 0.219 |
+| test | 0.18 | 0.177 | 0.183 | 0.184
+
+You're eyes aren't deceiving you - that's an accuracy of 0.18. However, I was surprised that the accuracy was not affected very much by the number of k-folds.
+
+I chose a k-fold of 18 to train my final model on. **The accuracy on the holdout data was 0.147** - slightly above random guessing; for 7 classes, the expected accuract is 0.143.
+
+Although the accuracy leaves much to be desired, I was excited to look at the confusion matrices to see which cities scored the highest.
+
+<p align="center">
+    <img src="images/cm_test.png" width='450'/>
+    <img src="images/cm_holdout.png" width='450'/>
+</p>
 
 
 # Conclusion
