@@ -57,10 +57,10 @@ Scrapy is build on an asynchronous [Twisted](https://twistedmatrix.com/trac/) en
 With scrapy in my toolbelt, feeling confident, I tried to scrape Realtor.com - and was hit with a 403 - Unauthorized Request. I modified my code, tried again, and was redirected to their ['/robots.txt'](https://www.realtor.com/robots.txt) page. For those of you who are unaware of the 'robots.txt' rule of webscraping, as I was, here's a snippet from Realtor.com:
 
 <p align="center">
-    <img src="images/robots.png" width='800'/>
+    <img src="images/robots.png" width='400'/>
 </p>
 
-This file describes which robots are allowed to scrape the website, and no matter what 
+This file describes which robots are allowed to scrape the website - I assure you I was not on the list. Luckily, a 'downloader middleware' called [Scrapy-Selenium](https://github.com/clemfromspace/scrapy-selenium) allowed for Selenium controlled requests - disguising my Scrapy requests as Firefox requests. 
 
 On top of the typical home seach hyperparameters (bedrooms, bathrooms, pooltable, etc.), providing images 
 

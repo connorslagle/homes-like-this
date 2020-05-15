@@ -6,6 +6,10 @@ from ..items import SearchPageItem
 
 
 class ListingSpider(scrapy.Spider):
+    '''
+    Another temporary Spider to test functionality.
+    '''
+    
     name = "test"
 
     def start_requests(self):

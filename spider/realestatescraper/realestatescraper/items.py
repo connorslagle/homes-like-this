@@ -9,8 +9,11 @@ import scrapy
 
 
 class ListingItem(scrapy.Item):
-    # define the fields for your item here like:
-    # name = scrapy.Field()
+    '''
+    Container for data scraped from listing webpage.
+    '''
+
+    # define the fields for your item here:
 
     # images
     images = scrapy.Field()
@@ -22,17 +25,15 @@ class ListingItem(scrapy.Item):
     aux_metadata = scrapy.Field()
     from_url = scrapy.Field()
 
-    #prop description
+    # property description
     prop_desc = scrapy.Field()
 
 class SearchPageItem(scrapy.Item):
-    # define the fields for your item here like:
+    '''
+    Container for data scraped from search webpage.
+    '''
 
-    # # placeholder to pass img test
-    # images = scrapy.Field()
-    # image_paths = scrapy.Field()
-    # image_urls = scrapy.Field()
-    # image_id = scrapy.Field()
+    # define the fields for your item here:
     
     # meta data from search page
     search_url = scrapy.Field()
@@ -44,4 +45,3 @@ class SearchPageItem(scrapy.Item):
     baths = scrapy.Field()
     sqft = scrapy.Field()
     lotsqft = scrapy.Field()
-

@@ -6,6 +6,9 @@ from ..items import ListingItem
 
 
 class ListingSpider(scrapy.Spider):
+    '''
+    Temporary spider for testing functionality/xpaths
+    '''
     name = "temp"
 
     def start_requests(self):
@@ -18,11 +21,3 @@ class ListingSpider(scrapy.Spider):
     def parse_result(self, response, test):
         value=test['inner'][0]
         print(f'\n{value}\n')
-        # l = ItemLoader(item=ListingItem(), response=response)
-
-        # imgs_xpath = "//section[@id='ldp-hero-container']/div/div/div[1]/div[1]/div/img/@data-src"
-
-        # single_elem = Compose(lambda x: x[0])
-        # l.add_xpath('image_urls', imgs_xpath, single_elem)
-        # yield l.load_item()
-        # new imgs xpath //section[@id='ldp-hero-container']/div/div/div[1]/div[1]/div/img/@data-src

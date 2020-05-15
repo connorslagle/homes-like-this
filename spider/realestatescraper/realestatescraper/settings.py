@@ -8,11 +8,9 @@
 #     https://docs.scrapy.org/en/latest/topics/downloader-middleware.html
 #     https://docs.scrapy.org/en/latest/topics/spider-middleware.html
 
-from shutil import which
 
-BOT_NAME = 'lovingproject'
-# ROBOTSTXT_OBEY = False
-
+# Log identifier
+BOT_NAME = 'realestatescraper'
 SPIDER_MODULES = ['realestatescraper.spiders']
 NEWSPIDER_MODULE = 'realestatescraper.spiders'
 
@@ -37,9 +35,6 @@ AUTOTHROTTLE_TARGET_CONCURRENCY = 2
 # # Enable showing throttling stats for every response received:
 AUTOTHROTTLE_DEBUG = True
 
-# proxy pool enebled
-# PROXY_POOL_ENABLED = True
-
 # # Enable or disable downloader middlewares
 # # See https://docs.scrapy.org/en/latest/topics/downloader-middleware.html
 DOWNLOADER_MIDDLEWARES = {
@@ -55,14 +50,7 @@ ITEM_PIPELINES = {
    'realestatescraper.pipelines.MyImagesPipeline': 400,
    'realestatescraper.pipelines.MetadataPipeline': 300,
 }
-# image pipeline settings
-# IMAGES_STORE = '../../../images/listing_images/'
 
-# # make thumbnail images
-# IMAGES_THUMBS = {
-#     'small': (64, 64),
-#     'big': (128, 128),
-# }
 # image pipeline settings
 IMAGES_STORE = '/home/conslag/Documents/galvanize/capstones/homes-like-this/data/listing_images'
 
@@ -71,12 +59,20 @@ IMAGES_THUMBS = {
     'small': (64, 64),
 }
 
-# MEDIA_ALLOW_REDIRECTS = True
-
 # Scrapy-selenium
 SELENIUM_DRIVER_NAME = 'firefox'
 SELENIUM_DRIVER_EXECUTABLE_PATH = which('geckodriver')
 SELENIUM_DRIVER_ARGUMENTS=['-headless']  # '--headless' if using chrome instead of firefox
+
+
+'''
+Unused Options
+'''
+# ROBOTSTXT_OBEY = False
+
+# MEDIA_ALLOW_REDIRECTS = True
+
+# PROXY_POOL_ENABLED = True
 
 # data storage
 # FEEDS = {
@@ -86,6 +82,7 @@ SELENIUM_DRIVER_ARGUMENTS=['-headless']  # '--headless' if using chrome instead 
 #         'store_empty': False,
 #     }
 # }
+
 # Crawl responsibly by identifying yourself (and your website) on the user-agent
 # USER_AGENT = 'BingPreview'
 
@@ -96,25 +93,23 @@ SELENIUM_DRIVER_ARGUMENTS=['-headless']  # '--headless' if using chrome instead 
 # COOKIES_ENABLED = False
 
 # Disable Telnet Console (enabled by default)
-#TELNETCONSOLE_ENABLED = False
+# TELNETCONSOLE_ENABLED = False
 
 # Override the default request headers:
-#DEFAULT_REQUEST_HEADERS = {
+# DEFAULT_REQUEST_HEADERS = {
 #   'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
 #   'Accept-Language': 'en',
 #}
 
 # Enable or disable spider middlewares
 # See https://docs.scrapy.org/en/latest/topics/spider-middleware.html
-#SPIDER_MIDDLEWARES = {
+# SPIDER_MIDDLEWARES = {
 #    'realestatescraper.middlewares.RealestatescraperSpiderMiddleware': 543,
 #}
 
-
-
 # Enable or disable extensions
 # See https://docs.scrapy.org/en/latest/topics/extensions.html
-#EXTENSIONS = {
+# EXTENSIONS = {
 #    'scrapy.extensions.telnet.TelnetConsole': None,
 #}
 

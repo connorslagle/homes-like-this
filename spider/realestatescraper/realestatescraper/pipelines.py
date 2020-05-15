@@ -14,14 +14,20 @@ from scrapy.exceptions import DropItem
 from scrapy_selenium import SeleniumRequest
 from PIL import Image
 import pymongo
-import gridfs
+
 
 
 class MetadataPipeline():
     '''
-    Metadata will be stored in mongodb, in db 'listing_metadata'
-    db will have collections 'by_search_page', and 'by_listing'
+    Metadata retrieved from 'SearchPageItem' (container for scraped data
+    from search page).
+    
+    Metadata will be stored in mongodb, in db 'listings'
+    
+    db will have collections 'search_metadata', and 'listing_metadata',
+    each containing info scraped from search, listing pgs, respectfully.
     '''
+
     def open_spider(self, spider):
         self.conn = pymongo.MongoClient('localhost', 27017)
         self.db = self.conn['listings']
@@ -41,6 +47,9 @@ class MetadataPipeline():
 
 
 class MyImagesPipeline(ImagesPipeline): 
+    '''
+    Images from 'ListingItem' (container for imgs from listing page)
+    '''
 
     def file_path(self, request, response=None, info=None):
         return 'full/' + os.path.basename(urlparse(request.url).path)
