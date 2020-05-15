@@ -12,9 +12,10 @@ Connor Slagle
 1. [Motivation](#Motivation)
 2. [The Dataset](#The-Dataset)
 3. [Webscraping](##Webscraping)
-3. [Exploratory Data Analysis](#Exploratory-Data-Analysis)
-6. [Sensitivity of Pre-processing](#Sensitivity-of-Pre-processing)
-7. [Conclusion](#Conclusion)
+4. [Exploratory Data Analysis](#Exploratory-Data-Analysis)
+5. [Naive Bayes Classifier](#Naive-Bayes-Classifier)
+6. [Conclusion](#Conclusion)
+7. [Next Steps](#Next-Steps)
 8. [References](#References)
 
 # Motivation
@@ -64,58 +65,29 @@ This file describes which robots are allowed to scrape the website - I assure yo
 
 # Exploratory Data Analysis 
 
-After webscraping, the data was imported to Pandas. A random sample of 10 entries is shown below.
+After webscraping, the data was imported to Pandas. A random sample of 5 entries is shown below.
 
-| Index | Listing ID | Image Filename | Property Type    | List Price   |   Num. Beds |   Num. Baths | sq.ft.   | Address  | City | State  |   Zip Code |
+| Index | Listing ID | Address  | City | State  |   Zip Code | Image Filename | Property Type    | List Price   |   Num. Beds |   Num. Baths | sq.ft. |
 |---:|:---|:---|:---|:---|---:|---:|---:|:----|:---|:---|---:|
-| 2484 | Denver_CO_1_23      | 223e484a2b8bff331d50f61f1298ee56l-m166232535xd-w1020_h770_q80.jpg  | Listing for Sale | $374,900     |           3 |          2.5 | 1,440    | 1093-W-69th-Ave           | Denver      | CO      |      80221 |
-|  270 | Westminster_CO_1_1  | 48e340bc7e5741c4535c8cedec6b5b73l-m1745295948xd-w1020_h770_q80.jpg | House for Sale   | $335,000     |           3 |          2.0  | 1,850    | 3591-Kassler-Pl           | Westminster | CO      |      80031 |
-|  593 | Westminster_CO_1_2  | c9367ee2c1065a54b86bbb6b719c4d0fl-m2085618000xd-w1020_h770_q80.jpg | House for Sale   | $385,000     |           4 |          1.5 | 1,781    | 7941-Stuart-St            | Westminster | CO      |      80030 |
-| 3479 | Aurora_CO_1_32      | 092ddc990063b4f22a8389eeff4d4e95l-w1113822923xd-w1020_h770_q80.jpg | House for Sale   | $495,000     |           3 |          2.5 | 3,255    | 6632-S-Muscadine-Ct       | Aurora      | CO      |      80016 |
-| 4985 | Denver_CO_3_9       | 134f5b055d0d05ce7121ca72ad63f41dl-m2762133823xd-w1020_h770_q80.jpg | House for Sale   | $333,595     |           4 |          3.0 | 1,701    | 5380-N-Argonne-St         | Denver      | CO      |      80249 |
-| 4041 | Aurora_CO_1_37      | 51e1ac54c3eda191af9099e8d700a0bbl-m1243583007xd-w1020_h770_q80.jpg | Listing for Sale | $205,000     |           2 |          2.0 | 948      | 13333-E-Asbury-Dr-Apt-201 | Aurora      | CO      |      80014 |
-| 4542 | Aurora_CO_3_4       | 935601a1ccb6eabbcae4f1280dd3093fl-m2163664436xd-w1020_h770_q80.jpg | House for Sale   | $380,000     |           3 |          3.0   | 2,240    | 4285-S-Naples-Way         | Aurora      | CO      |      80013 |
-| 5517 | Westminster_CO_3_15 | ef033cccfb10ade895df2cf7b0d90a7al-m455617243xd-w1020_h770_q80.jpg  | Listing for Sale | $280,900     |           3 |          2.0   | 1,119    | 9477-W-89th-Cir           | Westminster | CO      |      80021 |
-| 2438 | Thornton_CO_1_21    | dcd04b91af5409a76d1a2d9a36a76da8l-m3559599740xd-w1020_h770_q80.jpg | House for Sale   | $380,000     |           5 |          2.0   | 1,872    | 9550-Kalamath-Cir         | Thornton    | CO      |      80260 |
-|  681 | Denver_CO_1_5       | 687253769e6802fe885cef389ba42df1l-m2578077891xd-w1020_h770_q80.jpg | House for Sale   | $379,900     |           4 |          2.0   | 2,086    | 8356-Mitze-Dr             | Denver      | CO      |      80221 |
-
-
-On top of the typical home seach hyperparameters (bedrooms, bathrooms, pooltable, etc.), providing images 
-
-
-# Project Outline
-
-1. Motivating question
-
-Can one optimize a home search by filtering listings based on images of rooms they already like?
-
-2. Brief thesis on method to tackle question
-
-In this project, I propose a machine learning algorithm... need to complete after body paragraphs
-
-3. Description of Data
-
-Data was collected from [Realtor.com](https://www.realtor.com/) via webscraping (Scrapy/Selenium); collecting listing images and metadata then storing the metadata in a NoSQL (MongoDB) database.
-
-For a proof of concept, listings were scraped from . 
+| 2484 | Denver_CO_1_23  |   1093-W-69th-Ave            | Denver      | CO      |      80221 | m166232535xd-w1020_h770_q80.jpg  | Listing for Sale | $374,900     |           3 |          2.5 | 1,440    |
+|  270 | Westminster_CO_1_1    |  3591-Kassler-Pl       | Westminster | CO      |      80031 | m1745295948xd-w1020_h770_q80.jpg | House for Sale   | $335,000     |           3 |          2.0  | 1,850   |
+|  593 | Westminster_CO_1_2   |   7941-Stuart-St        | Westminster | CO      |      80030 | m2085618000xd-w1020_h770_q80.jpg | House for Sale   | $385,000     |           4 |          1.5 | 1,781    | 
+| 4985 | Denver_CO_3_9    |   5380-N-Argonne-St         | Denver      | CO      |      80249 | m2762133823xd-w1020_h770_q80.jpg | House for Sale   | $333,595     |           4 |          3.0 | 1,701    | 
+| 3479 | Aurora_CO_1_32  |    6632-S-Muscadine-Ct       | Aurora      | CO      |      80016 | w1113822923xd-w1020_h770_q80.jpg | House for Sale   | $495,000     |           3 |          2.5 | 3,255    | 
 
 
 
+# Naive Bayes Classifier
 
 
 
-## Capstone 2
+# Conclusion
 
-Goals for Capstone 2: 
-- Scalable webscraper (done)
-- Data Cleaning Pipelines
-- Featurize images (NB, or CNN) and hard cluster
 
-## Capstone 3
+# Next Steps
 
-Goals for Capstone 3: 
-- Scrape more data (more cities/listings -> run on AWS)
-- Combine image features with metadata -> predict where to look by 
-- 
 
-# Part 1:
+
+# References
+
+

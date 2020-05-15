@@ -11,8 +11,9 @@ from skimage.color import rgb2gray
 
 class MongoImporter():
     '''
-    Class to import/format metadata from mongodb.
+    Class to import/format metadata from mongodb to pandas df. Has option to save to csv for easier processing.
     '''
+
     def __init__(self):
         self.conn = pymongo.MongoClient('localhost', 27017)
         self.db = self.conn['listings']
@@ -21,6 +22,7 @@ class MongoImporter():
         '''
         Pulls metadata from specified collection, returns raw documents
         '''
+
         if self.from_search_coll:
             coll = self.db['search_metadata']
         else:
@@ -33,11 +35,16 @@ class MongoImporter():
 
     def _square_docs(self):
         '''
-        Pops unwanted columns, truncates search_dict by 'listing_href' entries,
+        Pops unwanted columns, truncates search_dict by 'listing_href' entries.
+
+        Returns list of square dictionaries (len(values) is the same for all keys)
+            allows for pd.DataFrame.from_dict
         
         '''
+
         raw_docs = self._from_collection()
 
+        # if data from search_metadata collection
         if self.from_search_coll:
             fields_to_pop = ['_id', 'search_url', 'lotsqft']
             
@@ -64,6 +71,7 @@ class MongoImporter():
 
             fields_to_pop = ['_id', 'aux_metadata', 'prop_desc']
 
+            # complicated list comps - consider revising
             [[doc.pop(field) for field in fields_to_pop] for doc in raw_docs]
             [[doc['image_id'].append(doc['image_id'][0]) for _ in range(len(doc['image_urls'])-1)] for doc in raw_docs]
             sq_docs = raw_docs
@@ -72,13 +80,15 @@ class MongoImporter():
 
     def _concat_docs(self):
         '''
-        Concatenates documents to single pandas df
+        Concatenates list of sq. dicts to single pandas df. 
         '''
+
         self.from_search_coll = True
-        # breakpoint()
+
         search_docs = self._square_docs()
         search_df = pd.DataFrame()
-        # breakpoint()
+
+        # append search_metadata to single df
         for doc in search_docs:
             temp = pd.DataFrame.from_dict(doc)
             search_df = search_df.append(temp, ignore_index=True)
@@ -88,12 +98,18 @@ class MongoImporter():
         listing_docs = self._square_docs()
         listing_df = pd.DataFrame()
 
+        # append listing_metadata to single df
         for doc in listing_docs:
             temp = pd.DataFrame.from_dict(doc)
             listing_df = listing_df.append(temp, ignore_index=True)
         self.listing_df = listing_df
 
     def _join_dfs(self):
+        '''
+        Join dfs on image file name.
+
+        returns joined df
+        '''
         full_df = self.listing_df.join(self.search_df.set_index('listing_id'), on='image_id', how='right')
         full_df.reset_index(inplace=True)
         return full_df
@@ -106,7 +122,11 @@ class MongoImporter():
 
         return self.df
     
-    def _format_df(self, df):        
+    def _format_df(self, df):
+        '''
+        Pipeline for df data cleaning. Returns formatted df.
+        '''
+
         # reindex df, drop old index
         df.drop('index', axis=1, inplace=True)
 
@@ -151,7 +171,7 @@ class MongoImporter():
         # drop duplicate images
         df.drop_duplicates('image_file',inplace=True)
 
-        # if not in big 7 cities - drop
+        # if not in big 7 cities - drop, some misclassified on Realtor.com
         cities = ['Denver','Aurora','Arvada','Thornton','Lakewood','Centennial','Westminster']
 
         mask = [(elem not in cities) for elem in df.city]
@@ -161,7 +181,7 @@ class MongoImporter():
 
     def to_csv(self, file_name):
         '''
-        output csv with todays date
+        Save to csv file for easier data processing down the line.
         '''
         today_date = str(date.today())
         file_path = f'../data/metadata/{today_date}_{file_name}'
@@ -171,21 +191,21 @@ class MongoImporter():
     
 class ImagePipeline():
     '''
-    Class for processing/featurizing images
+    Class for importing, processing and featurizing images.
     '''
+
     def __init__(self, image_dir):
         self.image_dir = image_dir
-        # self.label_map = None
         self.save_dir = '../data/proc_images/'
 
+        # Empty lists to fill with img names/arrays
         self.img_lst2 = []
         self.img_names2 = []
 
+        # Featurization outputs
         self.features = None
         self.labels = None
 
-    # def _make_labels(self):
-    #     return {label: i for i, label in enumerate(self.image_dir)}
 
     def _empty_variables(self):
         """
@@ -198,8 +218,13 @@ class ImagePipeline():
 
     def read(self, batch_mode=False, batch_size=1000,batch_resize_size=(32,32)):
         '''
-        reads image and image names to self variables
+        Reads image/image names to self variables. Has batch importer modes, to save computer memory.
+
+        Batch import mode PROCESSES images - needed to reset class lists.
+
+        Review before processing.
         '''
+
         self._empty_variables()
 
         img_names = os.listdir(self.image_dir)
@@ -235,6 +260,11 @@ class ImagePipeline():
         
 
     def _square_image(self, img):
+        '''
+        Squares image based on largest side length.
+
+        returns grayscale, sq image.
+        '''
         y_len, x_len, _ = img.shape
 
         crop_len = min([x_len,y_len])
@@ -250,8 +280,9 @@ class ImagePipeline():
 
     def resize(self, shape):
         """
-        Resize all images in self.img_lst2 to a uniform square shape
+        Resize all images in self.img_lst2 to specified size (prefer base 2 numbers (32,64,128))
         """
+
         new_img_lst2 = []
         # breakpoint()
         for image in self.img_lst2[0]:
@@ -261,6 +292,10 @@ class ImagePipeline():
 
 
     def save(self):
+        '''
+        Saves images to save_dir. Subdir is img side length.
+        '''
+
         for fname, img in zip(self.img_names2[0], self.img_lst2):
             # breakpoint()
             io.imsave(os.path.join(f'{self.save_dir}{self.shape}/', fname), img)
@@ -292,18 +327,11 @@ class ImagePipeline():
 
 
 if __name__ == "__main__":
-    # importer = MongoImporter()
+    importer = MongoImporter()
     # df = importer.load_docs()
     # importer.to_csv('pg1_3_all.csv')
 
-    img_pipe = ImagePipeline('../data/listing_images/full/')
-    img_pipe.read(batch_mode=True, batch_size=1000)
+    # img_pipe = ImagePipeline('../data/listing_images/full/')
+    # img_pipe.read(batch_mode=True, batch_size=1000)
     # # img_pipe.resize((64,64))
     # # img_pipe.save()
-
-    
-    '''
-    # df = pd.DataFrame.from_dict(listing_docs[0])
-    # df2 = pd.DataFrame.from_dict(search_docs[0])
-    # df3 = df.join(df2.set_index('listing_id'), on='image_id', how='right') 
-    '''
