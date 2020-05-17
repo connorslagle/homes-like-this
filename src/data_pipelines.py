@@ -359,6 +359,6 @@ if __name__ == "__main__":
     # importer.to_csv('pg1_3_all.csv')
 
     img_pipe = ImagePipeline('../data/listing_images/full/',gray_imgs=False)
-    img_pipe.read(batch_mode=True, batch_size=500,batch_resize_size=(128,128))
+    img_pipe.read(batch_mode=True, batch_size=500,batch_resize_size=(256,256))
     # img_pipe.resize((64,64))
     # img_pipe.save()
