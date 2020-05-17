@@ -195,7 +195,7 @@ class ImagePipeline():
     Class for importing, processing and featurizing images.
     '''
 
-    def __init__(self, image_dir):
+    def __init__(self, image_dir, gray_imgs=True):
         self.image_dir = image_dir
         self.save_dir = '../data/proc_images/'
 
@@ -206,6 +206,7 @@ class ImagePipeline():
         # Featurization outputs
         self.features = None
         self.labels = None
+        self.gray_images = gray_imgs
 
 
     def _empty_variables(self):
@@ -252,7 +253,8 @@ class ImagePipeline():
 
 
                 self._square_image()
-                self._gray_image()
+                if self.gray_images:
+                    self._gray_image()
 
                 self._resize(batch_resize_size)
                 
@@ -272,7 +274,8 @@ class ImagePipeline():
         Squares image based on largest side length.
         '''
         cropped_lst = []
-        for img in self.img_lst2:
+        for img in self.img_lst2[0]:
+            # breakpoint()
             y_len, x_len, _ = img.shape
 
             crop_len = min([x_len,y_len])
@@ -316,10 +319,13 @@ class ImagePipeline():
         '''
         Saves images to save_dir. Subdir is img side length.
         '''
-
+        if self.gray_images:
+            gray_tag = 'gray'
+        else:
+            gray_tag = 'color'
         for fname, img in zip(self.img_names2[0], self.img_lst2):
 
-            io.imsave(os.path.join(f'{self.save_dir}{self.shape}/', fname), img)
+            io.imsave(os.path.join(f'{self.save_dir}{gray_tag}/{self.shape}/', fname), img)
 
     def _vectorize_features(self):
         """
@@ -348,11 +354,11 @@ class ImagePipeline():
 
 
 if __name__ == "__main__":
-    importer = MongoImporter()
+    # importer = MongoImporter()
     # df = importer.load_docs()
     # importer.to_csv('pg1_3_all.csv')
 
-    # img_pipe = ImagePipeline('../data/listing_images/full/')
-    # img_pipe.read(batch_mode=True, batch_size=1000)
-    # # img_pipe.resize((64,64))
-    # # img_pipe.save()
+    img_pipe = ImagePipeline('../data/listing_images/full/',gray_imgs=False)
+    img_pipe.read(batch_mode=True, batch_size=500,batch_resize_size=(128,128))
+    # img_pipe.resize((64,64))
+    # img_pipe.save()
