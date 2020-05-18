@@ -352,6 +352,22 @@ class ImagePipeline():
         self._vectorize_features()
         self._vectorize_labels()
 
+def load_data(file_dir, use_filter=False):
+    '''
+    Load images from specified directory.
+
+    Outputs featurized (raveled) images for NB Classification model.
+    '''
+
+    img_pipe = ImagePipeline(file_dir)
+    img_pipe.read()
+    if use_filter:
+        img_pipe._filter_image()
+    img_pipe.vectorize()
+    # breakpoint()
+    X_from_pipe = img_pipe.features
+    y_from_pipe = img_pipe.labels
+    return X_from_pipe, y_from_pipe
 
 if __name__ == "__main__":
     # importer = MongoImporter()
