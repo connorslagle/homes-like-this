@@ -226,7 +226,7 @@ def fname_to_city(df, X_in, y_in, cities_dict):
 
     return X_match, numerical_target
 
-def load_and_featurize_data(from_file):
+def load_and_featurize_data(from_file, image_dim = 3):
     target_ = {'Denver': 0, 'Arvada': 1, 'Aurora': 2, 'Lakewood':3,
                  'Centennial': 4,'Westminster':5, 'Thornton':6}
     
@@ -239,9 +239,9 @@ def load_and_featurize_data(from_file):
     X_train, X_test, y_train, y_test = train_test_split(X_tt, y_tt,stratify=y_tt)
 
     # reshape input into format Conv2D layer likes
-    X_train = X_train.reshape(X_train.shape[0], img_rows, img_cols, 1)
-    X_test = X_test.reshape(X_test.shape[0], img_rows, img_cols, 1)
-    X_holdout = X_holdout.reshape(X_holdout.shape[0], img_rows, img_cols, 1)
+    X_train = X_train.reshape(X_train.shape[0], img_rows, img_cols, image_dim)
+    X_test = X_test.reshape(X_test.shape[0], img_rows, img_cols, image_dim)
+    X_holdout = X_holdout.reshape(X_holdout.shape[0], img_rows, img_cols, image_dim)
 
     # don't change conversion or normalization
     X_train = X_train.astype('float32') # data was uint8 [0-255]
@@ -281,12 +281,11 @@ def define_model(nb_filters, kernel_size, input_shape, pool_size):
     model.add(Activation('relu'))
 
     model.add(MaxPooling2D(pool_size=pool_size)) # decreases size, helps prevent overfitting
-    model.add(Dropout(0.5)) # zeros out some fraction of inputs, helps prevent overfitting
+    # model.add(Dropout(0.5)) # zeros out some fraction of inputs, helps prevent overfitting
 
     # Second Conv/pool
     model.add(Conv2D(nb_filters, (kernel_size[0], kernel_size[1]),
-                        padding='same', 
-                        input_shape=input_shape)) #first conv. layer  KEEP
+                        padding='same')) #first conv. layer  KEEP
     model.add(Activation('relu')) # Activation specification necessary for Conv2D and Dense layers
 
     model.add(Conv2D(nb_filters, (kernel_size[0], kernel_size[1]), padding='same')) #2nd conv. layer KEEP
@@ -295,8 +294,19 @@ def define_model(nb_filters, kernel_size, input_shape, pool_size):
     model.add(MaxPooling2D(pool_size=pool_size)) # decreases size, helps prevent overfitting
     model.add(Dropout(0.5)) # zeros out some fraction of inputs, helps prevent overfitting
 
-    model.add(Flatten()) # necessary to flatten before going into conventional dense layer  KEEP
-    print('Model flattened out to ', model.output_shape)
+    # Third Conv/pool
+    # model.add(Conv2D(nb_filters, (kernel_size[0], kernel_size[1]),
+    #                     padding='same')) #first conv. layer  KEEP
+    # model.add(Activation('relu')) # Activation specification necessary for Conv2D and Dense layers
+
+    # model.add(Conv2D(nb_filters, (kernel_size[0], kernel_size[1]), padding='same')) #2nd conv. layer KEEP
+    # model.add(Activation('relu'))
+
+    # model.add(MaxPooling2D(pool_size=pool_size)) # decreases size, helps prevent overfitting
+    # model.add(Dropout(0.5)) # zeros out some fraction of inputs, helps prevent overfitting
+
+    # model.add(Flatten()) # necessary to flatten before going into conventional dense layer  KEEP
+    # print('Model flattened out to ', model.output_shape)
 
     # now start a typical neural network
     model.add(Dense(32)) # (only) 32 neurons in this layer, really?   KEEP
@@ -318,21 +328,21 @@ def define_model(nb_filters, kernel_size, input_shape, pool_size):
 
 if __name__ == '__main__':
     img_size = 32
-
+    img_dim = 3
     df = pd.read_csv('../data/metadata/2020-05-14_pg1_3_all.csv')
 
 
     # important inputs to the model: don't changes the ones marked KEEP 
-    batch_size = 30  # number of training samples used at a time to update the weights
+    batch_size = 10  # number of training samples used at a time to update the weights
     nb_classes = 7   # number of output possibilites: [0 - 9] KEEP
-    nb_epoch = 3       # number of passes through the entire train dataset before weights "final"
+    nb_epoch = 1       # number of passes through the entire train dataset before weights "final"
     img_rows, img_cols = img_size, img_size  # the size of the MNIST images KEEP
-    input_shape = (img_rows, img_cols, 1)  # 1 channel image input (grayscale) KEEP
-    nb_filters = 5  # number of convolutional filters to use
+    input_shape = (img_rows, img_cols, img_dim)  # 1 channel image input (grayscale) KEEP
+    nb_filters = 10  # number of convolutional filters to use
     pool_size = (2, 2) # pooling decreases image size, reduces computation, adds translational invariance
-    kernel_size = (5, 5) # convolutional kernel size, slides over image to learn features
+    kernel_size = (3, 3) # convolutional kernel size, slides over image to learn features
 
-    X_train, X_test, Y_train, Y_test, X_holdout, Y_holdout = load_and_featurize_data('../data/proc_images/{}/'.format(img_size))
+    X_train, X_test, Y_train, Y_test, X_holdout, Y_holdout = load_and_featurize_data('../data/proc_images/color/{}/'.format(img_size), image_dim= img_dim)
 
     model = define_model(nb_filters, kernel_size, input_shape, pool_size)
     
