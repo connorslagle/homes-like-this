@@ -185,7 +185,7 @@ class MongoImporter():
         Save to csv file for easier data processing down the line.
         '''
         today_date = str(date.today())
-        file_path = f'../data/metadata/{today_date}_{file_name}'
+        file_path = '../data/metadata/{}_{}'.format(today_date,file_name)
 
         self.df.to_csv(file_path)
 
@@ -325,7 +325,7 @@ class ImagePipeline():
             gray_tag = 'color'
         for fname, img in zip(self.img_names2[0], self.img_lst2):
 
-            io.imsave(os.path.join(f'{self.save_dir}{gray_tag}/{self.shape}/', fname), img)
+            io.imsave(os.path.join('{}{}/{}/'.format(self.save_dir,gray_tag,self.shape), fname), img)
 
     def _vectorize_features(self):
         """
@@ -368,6 +368,26 @@ def load_data(file_dir, use_filter=False):
     X_from_pipe = img_pipe.features
     y_from_pipe = img_pipe.labels
     return X_from_pipe, y_from_pipe
+
+def fname_to_city(df, X_in, y_in):
+    '''
+    Searches dataframe for filenames in y -> creates target with city as
+    categories.
+    
+    Returns: city_target and matching X
+    '''
+
+
+    city = []
+    idx = []
+    for elem in y_in: 
+        if elem in df.image_file.values: 
+            city.append(df.city[df.image_file == elem].values[0])
+            idx.append(y_in.index(elem))
+
+    X_match = X_in[idx,:]
+
+    return X_match, city
 
 if __name__ == "__main__":
     # importer = MongoImporter()
