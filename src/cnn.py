@@ -281,7 +281,7 @@ def define_model(nb_filters, kernel_size, input_shape, pool_size):
     model.add(Activation('relu'))
 
     model.add(MaxPooling2D(pool_size=pool_size)) # decreases size, helps prevent overfitting
-    # model.add(Dropout(0.5)) # zeros out some fraction of inputs, helps prevent overfitting
+    model.add(Dropout(0.5)) # zeros out some fraction of inputs, helps prevent overfitting
 
     # Second Conv/pool
     model.add(Conv2D(nb_filters, (kernel_size[0], kernel_size[1]),
@@ -335,7 +335,7 @@ if __name__ == '__main__':
     # important inputs to the model: don't changes the ones marked KEEP 
     batch_size = 10  # number of training samples used at a time to update the weights
     nb_classes = 7   # number of output possibilites: [0 - 9] KEEP
-    nb_epoch = 1       # number of passes through the entire train dataset before weights "final"
+    nb_epoch = 10       # number of passes through the entire train dataset before weights "final"
     img_rows, img_cols = img_size, img_size  # the size of the MNIST images KEEP
     input_shape = (img_rows, img_cols, img_dim)  # 1 channel image input (grayscale) KEEP
     nb_filters = 10  # number of convolutional filters to use
@@ -345,11 +345,12 @@ if __name__ == '__main__':
     X_train, X_test, Y_train, Y_test, X_holdout, Y_holdout = load_and_featurize_data('../data/proc_images/color/{}/'.format(img_size), image_dim= img_dim)
 
     model = define_model(nb_filters, kernel_size, input_shape, pool_size)
+    print(model.summary())
     
     # during fit process watch train and test error simultaneously
-    model.fit(X_train, Y_train, batch_size=batch_size, epochs=nb_epoch,
-            verbose=1, validation_data=(X_test, Y_test))
+    # model.fit(X_train, Y_train, batch_size=batch_size, epochs=nb_epoch,
+    #         verbose=1, validation_data=(X_test, Y_test))
 
-    score = model.evaluate(X_test, Y_test, verbose=0)
-    print('Test score:', score[0])
-    print('Test accuracy:', score[1]) # this is the one we care about
+    # score = model.evaluate(X_test, Y_test, verbose=0)
+    # print('Test score:', score[0])
+    # print('Test accuracy:', score[1]) # this is the one we care about
