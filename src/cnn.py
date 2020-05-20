@@ -21,9 +21,13 @@ from tensorflow import keras
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Dense, Dropout, Activation, Flatten
 from tensorflow.keras.layers import Conv2D, MaxPooling2D
-from tensorflow.keras.datasets import mnist
 from tensorflow.keras.utils import to_categorical
 from sklearn.model_selection import train_test_split
+
+# for test autoencoder
+from tensorflow.keras.layers import UpSampling2D, Reshape
+# import matplotlib.pyplot as plt
+
 
 
 class ImagePipeline():
@@ -231,6 +235,9 @@ def load_and_featurize_data(from_file, image_dim = 3):
     target_ = {'Denver': 0, 'Arvada': 1, 'Aurora': 2, 'Lakewood':3,
                  'Centennial': 4,'Westminster':5, 'Thornton':6}
     
+    # image size
+    img_rows, img_cols = 64, 64
+
     # the data, shuffled and split between train and test sets
     X_feat, y_target = load_data(from_file)
 
@@ -327,36 +334,85 @@ def define_model(nb_filters, kernel_size, input_shape, pool_size):
                 metrics=['accuracy'])
     return model
 
-if __name__ == '__main__':
 
+def build_autoencoder_model():
+        '''
+        If a model was not provided when instantiating the class, this method
+        builds the autoencoder model.
+        input: None
+        output: None
+        '''
+            
+        autoencoder = Sequential()
+        
+        # encoder layers
+        autoencoder.add(Conv2D(128,(3,3), activation='relu', padding='same',input_shape=(64,64,3)))
+        autoencoder.add(MaxPooling2D((2,2), padding = 'same'))
+        autoencoder.add(Conv2D(64,(3,3), activation='relu', padding='same'))
+        autoencoder.add(MaxPooling2D((2,2), padding = 'same'))
+        autoencoder.add(Conv2D(32,(3,3), activation='relu', padding='same'))
+        autoencoder.add(MaxPooling2D((2,2), padding = 'same'))
+        autoencoder.add(Conv2D(8,(3,3), activation='relu', padding='same'))
+        autoencoder.add(MaxPooling2D((2,2), padding = 'same'))
+
+        autoencoder.add(Flatten())
+        autoencoder.add(Reshape((4,4,8)))
+
+        # decoder layers
+        autoencoder.add(Conv2D(8,(3,3), activation='relu', padding='same'))
+        autoencoder.add(UpSampling2D((2,2)))
+        autoencoder.add(Conv2D(32,(3,3), activation='relu', padding='same'))
+        autoencoder.add(UpSampling2D((2,2)))
+        autoencoder.add(Conv2D(64,(3,3),activation='relu', padding='same'))
+        autoencoder.add(UpSampling2D((2,2)))
+        autoencoder.add(Conv2D(128,(3,3), activation='relu', padding='same'))
+        autoencoder.add(UpSampling2D((2,2)))
+        autoencoder.add(Conv2D(3,(3,3), activation='sigmoid', padding='same'))
+
+        # autoencoder.summary()
+
+        autoencoder.compile(optimizer='adam', loss='mean_squared_error')
+
+        return autoencoder
+
+if __name__ == '__main__':
+    # needed for tf gpu
     config = tf.compat.v1.ConfigProto()
     config.gpu_options.allow_growth = True
     tf.compat.v1.Session(config=config)
 
-    img_size = 32
+    img_size = 64
     img_dim = 3
     df = pd.read_csv('../data/metadata/2020-05-14_pg1_3_all.csv')
 
 
-    # important inputs to the model: don't changes the ones marked KEEP 
-    batch_size = 10  # number of training samples used at a time to update the weights
+    # # important inputs to the model: don't changes the ones marked KEEP 
+    # batch_size = 10  # number of training samples used at a time to update the weights
     nb_classes = 7   # number of output possibilites: [0 - 9] KEEP
-    nb_epoch = 10       # number of passes through the entire train dataset before weights "final"
-    img_rows, img_cols = img_size, img_size  # the size of the MNIST images KEEP
-    input_shape = (img_rows, img_cols, img_dim)  # 1 channel image input (grayscale) KEEP
-    nb_filters = 10  # number of convolutional filters to use
-    pool_size = (2, 2) # pooling decreases image size, reduces computation, adds translational invariance
-    kernel_size = (3, 3) # convolutional kernel size, slides over image to learn features
+    # nb_epoch = 10       # number of passes through the entire train dataset before weights "final"
+    # img_rows, img_cols = img_size, img_size  # the size of the MNIST images KEEP
+    # input_shape = (img_rows, img_cols, img_dim)  # 1 channel image input (grayscale) KEEP
+    # nb_filters = 10  # number of convolutional filters to use
+    # pool_size = (2, 2) # pooling decreases image size, reduces computation, adds translational invariance
+    # kernel_size = (3, 3) # convolutional kernel size, slides over image to learn features
 
-    X_train, X_test, Y_train, Y_test, X_holdout, Y_holdout = load_and_featurize_data('../data/proc_images/color/{}/'.format(img_size), image_dim= img_dim)
+    X_train, X_test, Y_train, Y_test, X_holdout, Y_holdout = load_and_featurize_data('../data/proc_images/color/{}/'.format(img_size))
 
-    model = define_model(nb_filters, kernel_size, input_shape, pool_size)
+    # model = define_model(nb_filters, kernel_size, input_shape, pool_size)
+    model = build_autoencoder_model()
     print(model.summary())
-    
-    # during fit process watch train and test error simultaneously
-    model.fit(X_train, Y_train, batch_size=batch_size, epochs=nb_epoch,
-            verbose=1, validation_data=(X_test, Y_test))
 
-    score = model.evaluate(X_test, Y_test, verbose=0)
-    print('Test score:', score[0])
-    print('Test accuracy:', score[1]) # this is the one we care about
+    # fitting
+    model.fit(X_train, X_train,
+                epochs=2,
+                batch_size=100,
+                validation_data=(X_test,X_test))
+
+    
+    # # during fit process watch train and test error simultaneously
+    # model.fit(X_train, X_train, batch_size=batch_size, epochs=nb_epoch,
+    #         verbose=1, validation_data=(X_test, Y_test))
+
+    # score = model.evaluate(X_test, Y_test, verbose=0)
+    # print('Test score:', score[0])
+    # print('Test accuracy:', score[1]) # this is the one we care about
