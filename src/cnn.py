@@ -16,6 +16,7 @@ from skimage.color import rgb2gray
 from skimage.filters import sobel
 np.random.seed(1337)  # for reproducibility
 
+import tensorflow as tf
 from tensorflow import keras
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Dense, Dropout, Activation, Flatten
@@ -277,22 +278,22 @@ def define_model(nb_filters, kernel_size, input_shape, pool_size):
                         input_shape=input_shape)) #first conv. layer  KEEP
     model.add(Activation('relu')) # Activation specification necessary for Conv2D and Dense layers
 
-    model.add(Conv2D(nb_filters, (kernel_size[0], kernel_size[1]), padding='same')) #2nd conv. layer KEEP
+    model.add(Conv2D(2*nb_filters, (kernel_size[0], kernel_size[1]), padding='same')) #2nd conv. layer KEEP
     model.add(Activation('relu'))
 
     model.add(MaxPooling2D(pool_size=pool_size)) # decreases size, helps prevent overfitting
     model.add(Dropout(0.5)) # zeros out some fraction of inputs, helps prevent overfitting
 
     # Second Conv/pool
-    model.add(Conv2D(nb_filters, (kernel_size[0], kernel_size[1]),
-                        padding='same')) #first conv. layer  KEEP
-    model.add(Activation('relu')) # Activation specification necessary for Conv2D and Dense layers
+    # model.add(Conv2D(nb_filters, (kernel_size[0], kernel_size[1]),
+    #                     padding='same')) #first conv. layer  KEEP
+    # model.add(Activation('relu')) # Activation specification necessary for Conv2D and Dense layers
 
-    model.add(Conv2D(nb_filters, (kernel_size[0], kernel_size[1]), padding='same')) #2nd conv. layer KEEP
-    model.add(Activation('relu'))
+    # model.add(Conv2D(nb_filters, (kernel_size[0], kernel_size[1]), padding='same')) #2nd conv. layer KEEP
+    # model.add(Activation('relu'))
 
-    model.add(MaxPooling2D(pool_size=pool_size)) # decreases size, helps prevent overfitting
-    model.add(Dropout(0.5)) # zeros out some fraction of inputs, helps prevent overfitting
+    # model.add(MaxPooling2D(pool_size=pool_size)) # decreases size, helps prevent overfitting
+    # model.add(Dropout(0.5)) # zeros out some fraction of inputs, helps prevent overfitting
 
     # Third Conv/pool
     # model.add(Conv2D(nb_filters, (kernel_size[0], kernel_size[1]),
@@ -305,8 +306,8 @@ def define_model(nb_filters, kernel_size, input_shape, pool_size):
     # model.add(MaxPooling2D(pool_size=pool_size)) # decreases size, helps prevent overfitting
     # model.add(Dropout(0.5)) # zeros out some fraction of inputs, helps prevent overfitting
 
-    # model.add(Flatten()) # necessary to flatten before going into conventional dense layer  KEEP
-    # print('Model flattened out to ', model.output_shape)
+    model.add(Flatten()) # necessary to flatten before going into conventional dense layer  KEEP
+    print('Model flattened out to ', model.output_shape)
 
     # now start a typical neural network
     model.add(Dense(32)) # (only) 32 neurons in this layer, really?   KEEP
@@ -327,6 +328,11 @@ def define_model(nb_filters, kernel_size, input_shape, pool_size):
     return model
 
 if __name__ == '__main__':
+
+    config = tf.compat.v1.ConfigProto()
+    config.gpu_options.allow_growth = True
+    tf.compat.v1.Session(config=config)
+
     img_size = 32
     img_dim = 3
     df = pd.read_csv('../data/metadata/2020-05-14_pg1_3_all.csv')
@@ -348,9 +354,9 @@ if __name__ == '__main__':
     print(model.summary())
     
     # during fit process watch train and test error simultaneously
-    # model.fit(X_train, Y_train, batch_size=batch_size, epochs=nb_epoch,
-    #         verbose=1, validation_data=(X_test, Y_test))
+    model.fit(X_train, Y_train, batch_size=batch_size, epochs=nb_epoch,
+            verbose=1, validation_data=(X_test, Y_test))
 
-    # score = model.evaluate(X_test, Y_test, verbose=0)
-    # print('Test score:', score[0])
-    # print('Test accuracy:', score[1]) # this is the one we care about
+    score = model.evaluate(X_test, Y_test, verbose=0)
+    print('Test score:', score[0])
+    print('Test accuracy:', score[1]) # this is the one we care about
