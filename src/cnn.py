@@ -1,10 +1,3 @@
-'''Trains a simple convnet on the MNIST dataset.
-based on a keras example by fchollet
-Find a way to improve the test accuracy to almost 99%!
-FYI, the number of layers and what they do is fine.
-But their parameters and other hyperparameters could use some work.
-'''
-
 import numpy as np
 import pandas as pd
 # from bson.objectid import ObjectId
@@ -26,7 +19,8 @@ from sklearn.model_selection import train_test_split
 
 # for test autoencoder
 from tensorflow.keras.layers import UpSampling2D, Reshape
-# import matplotlib.pyplot as plt
+import kmeans_test
+import matplotlib.pyplot as plt
 
 
 
@@ -375,6 +369,30 @@ def build_autoencoder_model():
 
         return autoencoder
 
+def plot_before_after(self,test,test_decoded,n=10):
+    '''
+    Plots the image and reconstructed image.
+    Input:
+    test: test dataset of image arrays
+    test_decoded: reconstructed test dataset image arrays (predict results)
+    Output: None (saves figure to a file)
+    '''
+    plt.figure(figsize=(n*2, 4))
+    for i in range(n):
+        # display original
+        ax = plt.subplot(2, n, i + 1)
+        plt.imshow(X[i])
+        ax.get_xaxis().set_visible(False)
+        ax.get_yaxis().set_visible(False)
+
+        # display reconstruction
+        ax = plt.subplot(2, n, i + 1 + n)
+        plt.imshow(test_decoded[i])
+        ax.get_xaxis().set_visible(False)
+        ax.get_yaxis().set_visible(False)
+
+    plt.savefig('before_after.png')
+
 if __name__ == '__main__':
     # needed for tf gpu
     config = tf.compat.v1.ConfigProto()
@@ -407,6 +425,11 @@ if __name__ == '__main__':
                 epochs=2,
                 batch_size=100,
                 validation_data=(X_test,X_test))
+
+    model.evaluate(X_test, X_test)
+
+    X_decoded = model.predict(X_train)
+
 
     
     # # during fit process watch train and test error simultaneously
