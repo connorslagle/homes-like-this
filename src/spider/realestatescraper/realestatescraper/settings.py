@@ -51,8 +51,8 @@ ITEM_PIPELINES = {
    'realestatescraper.pipelines.MetadataPipeline': 300,
 }
 
-# image pipeline settings
-IMAGES_STORE = '/home/conslag/Documents/galvanize/capstones/homes-like-this/data/listing_images'
+# # image pipeline settings
+# IMAGES_STORE = '/home/conslag/Documents/galvanize/capstones/homes-like-this/data/listing_images'
 
 # make thumbnail images
 IMAGES_THUMBS = {
@@ -63,6 +63,9 @@ IMAGES_THUMBS = {
 SELENIUM_DRIVER_NAME = 'firefox'
 SELENIUM_DRIVER_EXECUTABLE_PATH = which('geckodriver')
 SELENIUM_DRIVER_ARGUMENTS=['-headless']  # '--headless' if using chrome instead of firefox
+
+# S3 storage alternative
+IMAGES_STORE = 'S3://homes-like-this/listing_images'
 
 
 '''
