@@ -69,7 +69,7 @@ class MetadataPipeline():
         time_now = datetime.now()
         time_str = '{}_{}_{}_{}'.format(str(time_now.date()), time_now.hour, time_now.minute, time_now.second)
 
-        if 'image_id' not in item.keys():
+        if 'image_urls' not in item.keys():
             search_f = open('../../../data/jsondump/search_{}.json'.format(time_str),'wb')
             search_exp = JsonItemExporter(search_f)
             search_exp.start_exporting()
