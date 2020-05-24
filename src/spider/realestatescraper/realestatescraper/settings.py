@@ -8,6 +8,7 @@
 #     https://docs.scrapy.org/en/latest/topics/downloader-middleware.html
 #     https://docs.scrapy.org/en/latest/topics/spider-middleware.html
 
+from shutil import which
 
 # Log identifier
 BOT_NAME = 'realestatescraper'
@@ -65,7 +66,7 @@ SELENIUM_DRIVER_EXECUTABLE_PATH = which('geckodriver')
 SELENIUM_DRIVER_ARGUMENTS=['-headless']  # '--headless' if using chrome instead of firefox
 
 # S3 storage alternative
-IMAGES_STORE = 'S3://homes-like-this/listing_images'
+IMAGES_STORE = 's3://homes-like-this/listing_images'
 
 
 '''

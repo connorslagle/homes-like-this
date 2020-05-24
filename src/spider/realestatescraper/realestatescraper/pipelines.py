@@ -10,6 +10,7 @@ from urllib.parse import urlparse
 import json
 
 import scrapy
+from scrapy.exporters import JsonItemExporter
 from scrapy.pipelines.images import ImagesPipeline
 from scrapy.exceptions import DropItem
 from scrapy_selenium import SeleniumRequest
@@ -67,16 +68,43 @@ class MetadataPipeline():
     def process_item(self, item, spider):
         time_now = datetime.now()
         time_str = '{}_{}_{}_{}'.format(str(time_now.date()), time_now.hour, time_now.minute, time_now.second)
+
         if 'image_urls' not in item.keys():
-            self.s3object = self.boto3_connection.Object(self.bucker_name, 'search_metadata/{}.json'.format(time_str))
-            self.s3object.put(
-                Body=(bytes(json.dumps(item).encode('UTF-8')))
-            )
+            search_f = open('../../data/jsondump/search_{}.json'.format(time_str),'wb')
+            search_exp = JsonItemExporter(search_f)
+            search_exp.start_exporting()
+            search_exp.export_item(item)
+            search_exp.finish_exporting()
+
+            search_file_path = search_f.name
+            search_file_name = os.path.basename(search_f.name)
+            
+            search_f.close()
+            self.client.upload_file(search_file_path, self.bucket_name, 'search_metadata/{}'.format(search_file_name))
+
+            # with open(file_name, 'rb') as f:
+            #     self.client.upload_file()
+            #     self.s3object = self.boto3_connection.Object(self.bucket_name, 'search_metadata/{}'.format(file_name))
+            #     self.s3object.put(
+            #         Body=(f.readlines())
+            #     )
         else:
-            self.s3object = self.boto3_connection.Object(self.bucker_name, 'listing_metadata/{}.json'.format(time_str))
-            self.s3object.put(
-                Body=(bytes(json.dumps(item).encode('UTF-8')))
-            )
+            f = open('../../data/jsondumb/listing_{}.json'.format(time_str),'wb')
+            item_exp = JsonItemExporter(f)
+            item_exp.start_exporting()
+            item_exp.export_item(item)
+            item_exp.finish_exporting()
+
+            file_path = f.name
+            file_name = os.path.basename(f.name)
+
+            f.close()
+            self.client.upload_file(file_path, self.bucket_name, 'listing_metadata/{}'.format(file_name))
+            # with open(file_name, 'rb') as f:
+            #     self.s3object = self.boto3_connection.Object(self.bucket_name, 'listing_metadata/{}'.format(file_name))
+            #     self.s3object.put(
+            #         Body=(f.readlines())
+            #     )
 
         return item
 

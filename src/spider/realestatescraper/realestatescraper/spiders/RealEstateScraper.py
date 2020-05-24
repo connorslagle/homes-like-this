@@ -4,6 +4,7 @@ from scrapy.loader.processors import Compose
 from scrapy_selenium import SeleniumRequest
 from ..items import ListingItem, SearchPageItem
 
+
 class ListingSpider(scrapy.Spider):
     '''
     Main spider - used to collect imgs and metadata from Realtor.com
@@ -29,15 +30,15 @@ class ListingSpider(scrapy.Spider):
         Aurora, Thornton, Arvada, Centennial, Denver, Lakewood, Westminster
         '''
         
-        # start_urls = ['https://www.realtor.com/realestateandhomes-search/Aurora_CO/pg-1']
-        start_urls = [
-                'https://www.realtor.com/realestateandhomes-search/Aurora_CO/pg-3',
-                'https://www.realtor.com/realestateandhomes-search/Arvada_CO/pg-3',
-                'https://www.realtor.com/realestateandhomes-search/Centennial_CO/pg-3',
-                'https://www.realtor.com/realestateandhomes-search/Denver_CO/pg-3',
-                'https://www.realtor.com/realestateandhomes-search/Lakewood_CO/pg-3',
-                'https://www.realtor.com/realestateandhomes-search/Thornton_CO/pg-3',
-                'https://www.realtor.com/realestateandhomes-search/Westminster_CO/pg-3']
+        start_urls = ['https://www.realtor.com/realestateandhomes-search/Aurora_CO/pg-1']
+        # start_urls = [
+        #         'https://www.realtor.com/realestateandhomes-search/Aurora_CO/pg-3',
+        #         'https://www.realtor.com/realestateandhomes-search/Arvada_CO/pg-3',
+        #         'https://www.realtor.com/realestateandhomes-search/Centennial_CO/pg-3',
+        #         'https://www.realtor.com/realestateandhomes-search/Denver_CO/pg-3',
+        #         'https://www.realtor.com/realestateandhomes-search/Lakewood_CO/pg-3',
+        #         'https://www.realtor.com/realestateandhomes-search/Thornton_CO/pg-3',
+        #         'https://www.realtor.com/realestateandhomes-search/Westminster_CO/pg-3']
 
         for url in start_urls:
             yield SeleniumRequest(url=url, callback=self.parse_result)
