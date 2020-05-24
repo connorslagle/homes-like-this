@@ -17,6 +17,7 @@ from PIL import Image
 import pymongo
 import boto3
 import botocore
+from datetime import datetime
 
 
 
@@ -61,17 +62,21 @@ class MetadataPipeline():
         self.bucket_name = 'homes-like-this'
 
     def close_spider(self, spider):
-        self.conn.close()
+        pass
 
     def process_item(self, item, spider):
+        time_now = datetime.now()
+        time_str = '{}_{}_{}_{}'.format(str(time_now.date()), time_now.hour, time_now.minute, time_now.second)
         if 'image_urls' not in item.keys():
-            self.s3object = self.boto3_connection.Object(self.bucker_name, 'your_file.json')
+            self.s3object = self.boto3_connection.Object(self.bucker_name, 'search_metadata/{}.json'.format(time_str))
             self.s3object.put(
                 Body=(bytes(json.dumps(item).encode('UTF-8')))
             )
         else:
-            collection = self.db['listing_metadata']
-            collection.insert(dict(item))
+            self.s3object = self.boto3_connection.Object(self.bucker_name, 'listing_metadata/{}.json'.format(time_str))
+            self.s3object.put(
+                Body=(bytes(json.dumps(item).encode('UTF-8')))
+            )
 
         return item
 
@@ -80,7 +85,6 @@ class MyImagesPipeline(ImagesPipeline):
     '''
     Images from 'ListingItem' (container for imgs from listing page)
     '''
-
     def file_path(self, request, response=None, info=None):
         return 'full/' + os.path.basename(urlparse(request.url).path)
 
