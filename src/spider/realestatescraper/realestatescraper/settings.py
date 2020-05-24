@@ -18,21 +18,21 @@ NEWSPIDER_MODULE = 'realestatescraper.spiders'
 # Configure a delay for requests for the same website (default: 0)
 # See https://docs.scrapy.org/en/latest/topics/settings.html#download-delay
 # See also autothrottle settings and docs
-DOWNLOAD_DELAY = 5
+DOWNLOAD_DELAY = 20
 # The download delay setting will honor only one of:
-CONCURRENT_REQUESTS_PER_DOMAIN = 16
-CONCURRENT_REQUESTS_PER_IP = 16
+CONCURRENT_REQUESTS_PER_DOMAIN = 1
+CONCURRENT_REQUESTS_PER_IP = 1
 
 # Enable and configure the AutoThrottle extension (disabled by default)
 # See https://docs.scrapy.org/en/latest/topics/autothrottle.html
 AUTOTHROTTLE_ENABLED = True
 # # The initial download delay
-AUTOTHROTTLE_START_DELAY = 15
+AUTOTHROTTLE_START_DELAY = 30
 # # The maximum download delay to be set in case of high latencies
 AUTOTHROTTLE_MAX_DELAY = 60
 # # The average number of requests Scrapy should be sending in parallel to
 # # each remote server
-AUTOTHROTTLE_TARGET_CONCURRENCY = 2
+AUTOTHROTTLE_TARGET_CONCURRENCY = 1
 # # Enable showing throttling stats for every response received:
 AUTOTHROTTLE_DEBUG = True
 
@@ -42,7 +42,7 @@ DOWNLOADER_MIDDLEWARES = {
     'realestatescraper.middlewares.RealestatescraperDownloaderMiddleware': 543,
     'scrapy_selenium.SeleniumMiddleware': 600,
     'scrapy_proxy_pool.middlewares.ProxyPoolMiddleware': None,
-    'scrapy_proxy_pool.middlewares.BanDetectionMiddleware': None,
+    'scrapy_proxy_pool.middlewares.BanDetectionMiddleware': None
 }
 
 # Configure item pipelines
@@ -51,6 +51,10 @@ ITEM_PIPELINES = {
    'realestatescraper.pipelines.MyImagesPipeline': 400,
    'realestatescraper.pipelines.MetadataPipeline': 300,
 }
+
+# MEDIA_ALLOW_REDIRECTS = True
+
+# PROXY_POOL_ENABLED = True
 
 # # image pipeline settings
 # IMAGES_STORE = '/home/conslag/Documents/galvanize/capstones/homes-like-this/data/listing_images'
@@ -72,11 +76,9 @@ IMAGES_STORE = 's3://homes-like-this/listing_images'
 '''
 Unused Options
 '''
-# ROBOTSTXT_OBEY = False
+ROBOTSTXT_OBEY = True
 
-# MEDIA_ALLOW_REDIRECTS = True
 
-# PROXY_POOL_ENABLED = True
 
 # data storage
 # FEEDS = {
@@ -88,7 +90,7 @@ Unused Options
 # }
 
 # Crawl responsibly by identifying yourself (and your website) on the user-agent
-# USER_AGENT = 'BingPreview'
+USER_AGENT = 'BingPreview'
 
 # Configure maximum concurrent requests performed by Scrapy (default: 16)
 #CONCURRENT_REQUESTS = 32
