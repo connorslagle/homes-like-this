@@ -69,8 +69,8 @@ class MetadataPipeline():
         time_now = datetime.now()
         time_str = '{}_{}_{}_{}'.format(str(time_now.date()), time_now.hour, time_now.minute, time_now.second)
 
-        if 'image_urls' not in item.keys():
-            search_f = open('../../data/jsondump/search_{}.json'.format(time_str),'wb')
+        if 'image_id' not in item.keys():
+            search_f = open('../../../data/jsondump/search_{}.json'.format(time_str),'wb')
             search_exp = JsonItemExporter(search_f)
             search_exp.start_exporting()
             search_exp.export_item(item)
@@ -78,7 +78,7 @@ class MetadataPipeline():
 
             search_file_path = search_f.name
             search_file_name = os.path.basename(search_f.name)
-            
+
             search_f.close()
             self.client.upload_file(search_file_path, self.bucket_name, 'search_metadata/{}'.format(search_file_name))
 
@@ -89,7 +89,7 @@ class MetadataPipeline():
             #         Body=(f.readlines())
             #     )
         else:
-            f = open('../../data/jsondumb/listing_{}.json'.format(time_str),'wb')
+            f = open('../../../data/jsondump/listing_{}.json'.format(time_str),'wb')
             item_exp = JsonItemExporter(f)
             item_exp.start_exporting()
             item_exp.export_item(item)
