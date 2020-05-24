@@ -8,6 +8,7 @@
 #     https://docs.scrapy.org/en/latest/topics/downloader-middleware.html
 #     https://docs.scrapy.org/en/latest/topics/spider-middleware.html
 
+from shutil import which
 
 # Log identifier
 BOT_NAME = 'realestatescraper'
@@ -26,7 +27,7 @@ CONCURRENT_REQUESTS_PER_IP = 16
 # See https://docs.scrapy.org/en/latest/topics/autothrottle.html
 AUTOTHROTTLE_ENABLED = True
 # # The initial download delay
-AUTOTHROTTLE_START_DELAY = 15
+AUTOTHROTTLE_START_DELAY = 5
 # # The maximum download delay to be set in case of high latencies
 AUTOTHROTTLE_MAX_DELAY = 60
 # # The average number of requests Scrapy should be sending in parallel to
@@ -41,7 +42,7 @@ DOWNLOADER_MIDDLEWARES = {
     'realestatescraper.middlewares.RealestatescraperDownloaderMiddleware': 543,
     'scrapy_selenium.SeleniumMiddleware': 600,
     'scrapy_proxy_pool.middlewares.ProxyPoolMiddleware': None,
-    'scrapy_proxy_pool.middlewares.BanDetectionMiddleware': None,
+    'scrapy_proxy_pool.middlewares.BanDetectionMiddleware': None
 }
 
 # Configure item pipelines
@@ -51,8 +52,12 @@ ITEM_PIPELINES = {
    'realestatescraper.pipelines.MetadataPipeline': 300,
 }
 
-# image pipeline settings
-IMAGES_STORE = '/home/conslag/Documents/galvanize/capstones/homes-like-this/data/listing_images'
+# MEDIA_ALLOW_REDIRECTS = True
+
+# PROXY_POOL_ENABLED = True
+
+# # image pipeline settings
+IMAGES_STORE = '/home/conslag/Documents/galvanize/capstones/homes-like-this/data/jsondump'
 
 # make thumbnail images
 IMAGES_THUMBS = {
@@ -64,15 +69,16 @@ SELENIUM_DRIVER_NAME = 'firefox'
 SELENIUM_DRIVER_EXECUTABLE_PATH = which('geckodriver')
 SELENIUM_DRIVER_ARGUMENTS=['-headless']  # '--headless' if using chrome instead of firefox
 
+# S3 storage alternative
+# IMAGES_STORE = 's3://homes-like-this/listing_images'
+
 
 '''
 Unused Options
 '''
-# ROBOTSTXT_OBEY = False
+# ROBOTSTXT_OBEY = True
 
-# MEDIA_ALLOW_REDIRECTS = True
 
-# PROXY_POOL_ENABLED = True
 
 # data storage
 # FEEDS = {

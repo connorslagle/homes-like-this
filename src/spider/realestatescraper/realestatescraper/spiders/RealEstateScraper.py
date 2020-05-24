@@ -4,6 +4,7 @@ from scrapy.loader.processors import Compose
 from scrapy_selenium import SeleniumRequest
 from ..items import ListingItem, SearchPageItem
 
+
 class ListingSpider(scrapy.Spider):
     '''
     Main spider - used to collect imgs and metadata from Realtor.com
@@ -29,15 +30,15 @@ class ListingSpider(scrapy.Spider):
         Aurora, Thornton, Arvada, Centennial, Denver, Lakewood, Westminster
         '''
         
-        # start_urls = ['https://www.realtor.com/realestateandhomes-search/Aurora_CO/pg-1']
-        start_urls = [
-                'https://www.realtor.com/realestateandhomes-search/Aurora_CO/pg-3',
-                'https://www.realtor.com/realestateandhomes-search/Arvada_CO/pg-3',
-                'https://www.realtor.com/realestateandhomes-search/Centennial_CO/pg-3',
-                'https://www.realtor.com/realestateandhomes-search/Denver_CO/pg-3',
-                'https://www.realtor.com/realestateandhomes-search/Lakewood_CO/pg-3',
-                'https://www.realtor.com/realestateandhomes-search/Thornton_CO/pg-3',
-                'https://www.realtor.com/realestateandhomes-search/Westminster_CO/pg-3']
+        start_urls = ['https://www.realtor.com/realestateandhomes-search/Aurora_CO/pg-1']
+        # start_urls = [
+        #         'https://www.realtor.com/realestateandhomes-search/Aurora_CO/pg-3',
+        #         'https://www.realtor.com/realestateandhomes-search/Arvada_CO/pg-3',
+        #         'https://www.realtor.com/realestateandhomes-search/Centennial_CO/pg-3',
+        #         'https://www.realtor.com/realestateandhomes-search/Denver_CO/pg-3',
+        #         'https://www.realtor.com/realestateandhomes-search/Lakewood_CO/pg-3',
+        #         'https://www.realtor.com/realestateandhomes-search/Thornton_CO/pg-3',
+        #         'https://www.realtor.com/realestateandhomes-search/Westminster_CO/pg-3']
 
         for url in start_urls:
             yield SeleniumRequest(url=url, callback=self.parse_result)
@@ -113,7 +114,7 @@ class ListingSpider(scrapy.Spider):
                 yield SeleniumRequest(url=metadata_item['search_url'][0], callback=self.parse_result, 
                     cb_kwargs={'metadata_item': metadata_item, 'listing_counter': listing_counter})
                     
-        elif listing_counter > len(metadata_item['listing_href']):
+        elif listing_counter >= len(metadata_item['listing_href']):
             '''
             Moves to next search page. Restarts the scrape by not passing 'listing_counter'.
             '''
@@ -159,5 +160,10 @@ if __name__ == "__main__":
         from scrapy_selenium import SeleniumRequest
         fetch(SeleniumRequest(url='https://www.realtor.com/realestateandhomes-search/Aurora_CO/pg-1'))
 
+
+    AWS launch 5/25/20 @ 2:00pm
+    - ip: ec2-3-235-31-196.compute-1.amazonaws.com
+    - user: ec2-user
+    
     '''
 
