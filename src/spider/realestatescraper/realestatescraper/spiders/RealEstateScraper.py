@@ -114,7 +114,7 @@ class ListingSpider(scrapy.Spider):
                 yield SeleniumRequest(url=metadata_item['search_url'][0], callback=self.parse_result, 
                     cb_kwargs={'metadata_item': metadata_item, 'listing_counter': listing_counter})
                     
-        elif listing_counter > len(metadata_item['listing_href']):
+        elif listing_counter >= len(metadata_item['listing_href']):
             '''
             Moves to next search page. Restarts the scrape by not passing 'listing_counter'.
             '''

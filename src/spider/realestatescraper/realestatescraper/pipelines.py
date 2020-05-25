@@ -36,77 +36,77 @@ class MetadataPipeline():
     mongodb options
     '''
 
-    # def open_spider(self, spider):
-    #     self.conn = pymongo.MongoClient('localhost', 27017)
-    #     self.db = self.conn['listings']
+    def open_spider(self, spider):
+        self.conn = pymongo.MongoClient('localhost', 27017)
+        self.db = self.conn['listings']
 
-    # def close_spider(self, spider):
-    #     self.conn.close()
+    def close_spider(self, spider):
+        self.conn.close()
 
-    # def process_item(self, item, spider):
-    #     if 'image_urls' not in item.keys():
-    #         collection = self.db['search_metadata']
-    #         collection.insert(dict(item))
-    #     else:
-    #         collection = self.db['listing_metadata']
-    #         collection.insert(dict(item))
+    def process_item(self, item, spider):
+        if 'image_urls' not in item.keys():
+            collection = self.db['search_metadata']
+            collection.insert(dict(item))
+        else:
+            collection = self.db['listing_metadata']
+            collection.insert(dict(item))
 
-    #     return item
+        return item
     
     '''
     S3 options
     '''
 
-    def open_spider(self, spider):
-        self.boto3_connection = boto3.resource('s3')
-        self.client = boto3.client('s3')
-        self.bucket_name = 'homes-like-this'
+    # def open_spider(self, spider):
+    #     self.boto3_connection = boto3.resource('s3')
+    #     self.client = boto3.client('s3')
+    #     self.bucket_name = 'homes-like-this'
 
-    def close_spider(self, spider):
-        pass
+    # def close_spider(self, spider):
+    #     pass
 
-    def process_item(self, item, spider):
-        time_now = datetime.now()
-        time_str = '{}_{}_{}_{}'.format(str(time_now.date()), time_now.hour, time_now.minute, time_now.second)
+    # def process_item(self, item, spider):
+    #     time_now = datetime.now()
+    #     time_str = '{}_{}_{}_{}'.format(str(time_now.date()), time_now.hour, time_now.minute, time_now.second)
 
-        if 'image_urls' not in item.keys():
-            search_f = open('../../../data/jsondump/search_{}.json'.format(time_str),'wb')
-            search_exp = JsonItemExporter(search_f)
-            search_exp.start_exporting()
-            search_exp.export_item(item)
-            search_exp.finish_exporting()
+    #     if 'image_urls' not in item.keys():
+    #         search_f = open('../../../data/jsondump/search_{}.json'.format(time_str),'wb')
+    #         search_exp = JsonItemExporter(search_f)
+    #         search_exp.start_exporting()
+    #         search_exp.export_item(item)
+    #         search_exp.finish_exporting()
 
-            search_file_path = search_f.name
-            search_file_name = os.path.basename(search_f.name)
+    #         search_file_path = search_f.name
+    #         search_file_name = os.path.basename(search_f.name)
 
-            search_f.close()
-            self.client.upload_file(search_file_path, self.bucket_name, 'search_metadata/{}'.format(search_file_name))
+    #         search_f.close()
+    #         self.client.upload_file(search_file_path, self.bucket_name, 'search_metadata/{}'.format(search_file_name))
 
-            # with open(file_name, 'rb') as f:
-            #     self.client.upload_file()
-            #     self.s3object = self.boto3_connection.Object(self.bucket_name, 'search_metadata/{}'.format(file_name))
-            #     self.s3object.put(
-            #         Body=(f.readlines())
-            #     )
-        else:
-            f = open('../../../data/jsondump/listing_{}.json'.format(time_str),'wb')
-            item_exp = JsonItemExporter(f)
-            item_exp.start_exporting()
-            item_exp.export_item(item)
-            item_exp.finish_exporting()
+    #         # with open(file_name, 'rb') as f:
+    #         #     self.client.upload_file()
+    #         #     self.s3object = self.boto3_connection.Object(self.bucket_name, 'search_metadata/{}'.format(file_name))
+    #         #     self.s3object.put(
+    #         #         Body=(f.readlines())
+    #         #     )
+    #     else:
+    #         f = open('../../../data/jsondump/listing_{}.json'.format(time_str),'wb')
+    #         item_exp = JsonItemExporter(f)
+    #         item_exp.start_exporting()
+    #         item_exp.export_item(item)
+    #         item_exp.finish_exporting()
 
-            file_path = f.name
-            file_name = os.path.basename(f.name)
+    #         file_path = f.name
+    #         file_name = os.path.basename(f.name)
 
-            f.close()
-            self.client.upload_file(file_path, self.bucket_name, 'listing_metadata/{}'.format(file_name))
-            # with open(file_name, 'rb') as f:
-            #     self.s3object = self.boto3_connection.Object(self.bucket_name, 'listing_metadata/{}'.format(file_name))
-            #     self.s3object.put(
-            #         Body=(f.readlines())
-            #     )
+    #         f.close()
+    #         self.client.upload_file(file_path, self.bucket_name, 'listing_metadata/{}'.format(file_name))
+    #         # with open(file_name, 'rb') as f:
+    #         #     self.s3object = self.boto3_connection.Object(self.bucket_name, 'listing_metadata/{}'.format(file_name))
+    #         #     self.s3object.put(
+    #         #         Body=(f.readlines())
+    #         #     )
 
-        return item
+    #     return item
 
 
 class MyImagesPipeline(ImagesPipeline): 
