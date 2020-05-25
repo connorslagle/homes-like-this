@@ -164,6 +164,6 @@ if __name__ == "__main__":
     AWS launch 5/25/20 @ 2:00pm
     - ip: ec2-3-235-31-196.compute-1.amazonaws.com
     - user: ec2-user
-    
+    - ssh -i ~/.aws/pems/listing_scraper.pem ec2-user@ec2-3-235-31-196.compute-1.amazonaws.com
     '''
 
