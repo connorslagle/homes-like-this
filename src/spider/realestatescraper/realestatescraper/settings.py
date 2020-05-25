@@ -57,7 +57,10 @@ ITEM_PIPELINES = {
 # PROXY_POOL_ENABLED = True
 
 # # image pipeline settings
-IMAGES_STORE = '/home/conslag/Documents/galvanize/capstones/homes-like-this/data/jsondump'
+# IMAGES_STORE = '/home/conslag/Documents/galvanize/capstones/homes-like-this/data/jsondump'
+
+# for ec2
+IMAGES_STORE = '/home/ec2-user/homes-like-this/data/listing_images'
 
 # make thumbnail images
 IMAGES_THUMBS = {
