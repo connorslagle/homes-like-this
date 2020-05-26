@@ -42,8 +42,8 @@ AUTOTHROTTLE_DEBUG = True
 DOWNLOADER_MIDDLEWARES = {
     'realestatescraper.middlewares.RealestatescraperDownloaderMiddleware': 543,
     'scrapy_selenium.SeleniumMiddleware': 600,
-    'scrapy_proxy_pool.middlewares.ProxyPoolMiddleware': None,
-    'scrapy_proxy_pool.middlewares.BanDetectionMiddleware': None
+    'scrapy_proxy_pool.middlewares.ProxyPoolMiddleware': 300,
+    'scrapy_proxy_pool.middlewares.BanDetectionMiddleware': 450
 }
 
 # Configure item pipelines
@@ -53,9 +53,9 @@ ITEM_PIPELINES = {
    'realestatescraper.pipelines.MetadataPipeline': 300,
 }
 
-# MEDIA_ALLOW_REDIRECTS = True
+MEDIA_ALLOW_REDIRECTS = True
 
-# PROXY_POOL_ENABLED = True
+PROXY_POOL_ENABLED = True
 
 # # image pipeline settings
 IMAGES_STORE = '/home/conslag/Documents/galvanize/capstones/homes-like-this/data/listing_images/{}'.format(str(datetime.now().date()))
