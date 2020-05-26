@@ -9,6 +9,7 @@
 #     https://docs.scrapy.org/en/latest/topics/spider-middleware.html
 
 from shutil import which
+from datetime import datetime
 
 # Log identifier
 BOT_NAME = 'realestatescraper'
@@ -57,10 +58,10 @@ ITEM_PIPELINES = {
 # PROXY_POOL_ENABLED = True
 
 # # image pipeline settings
-# IMAGES_STORE = '/home/conslag/Documents/galvanize/capstones/homes-like-this/data/jsondump'
+IMAGES_STORE = '/home/conslag/Documents/galvanize/capstones/homes-like-this/data/listing_images/{}'.format(str(datetime.now().date()))
 
 # for ec2
-IMAGES_STORE = '/home/ec2-user/homes-like-this/data/listing_images'
+# IMAGES_STORE = '/home/ec2-user/homes-like-this/data/listing_images'
 
 # make thumbnail images
 IMAGES_THUMBS = {
