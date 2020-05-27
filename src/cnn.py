@@ -3,6 +3,7 @@ import pandas as pd
 # from bson.objectid import ObjectId
 from datetime import date
 import os
+import pickle
 from skimage import io
 from skimage.transform import resize
 from skimage.color import rgb2gray
@@ -225,12 +226,12 @@ def fname_to_city(df, X_in, y_in, cities_dict):
 
     return X_match, numerical_target
 
-def load_and_featurize_data(from_file, image_dim = 3):
+def load_and_featurize_data(from_file, img_size, image_dim = 3):
     target_ = {'Denver': 0, 'Arvada': 1, 'Aurora': 2, 'Lakewood':3,
                  'Centennial': 4,'Westminster':5, 'Thornton':6}
     
     # image size
-    img_rows, img_cols = 64, 64
+    img_rows, img_cols = img_size, img_size
 
     # the data, shuffled and split between train and test sets
     X_feat, y_target = load_data(from_file)
@@ -400,35 +401,59 @@ if __name__ == '__main__':
     tf.compat.v1.Session(config=config)
 
     img_size = 64
-    img_dim = 3
-    df = pd.read_csv('../data/metadata/2020-05-14_pg1_3_all.csv')
+    '''
+    If first time:
+    '''
+    # img_dim = 3
+    # df = pd.read_csv('../data/metadata/2020-05-14_pg1_3_all.csv')
 
 
-    # # important inputs to the model: don't changes the ones marked KEEP 
-    # batch_size = 10  # number of training samples used at a time to update the weights
-    nb_classes = 7   # number of output possibilites: [0 - 9] KEEP
-    # nb_epoch = 10       # number of passes through the entire train dataset before weights "final"
-    # img_rows, img_cols = img_size, img_size  # the size of the MNIST images KEEP
-    # input_shape = (img_rows, img_cols, img_dim)  # 1 channel image input (grayscale) KEEP
-    # nb_filters = 10  # number of convolutional filters to use
-    # pool_size = (2, 2) # pooling decreases image size, reduces computation, adds translational invariance
-    # kernel_size = (3, 3) # convolutional kernel size, slides over image to learn features
+    # # # important inputs to the model: don't changes the ones marked KEEP 
+    # # batch_size = 10  # number of training samples used at a time to update the weights
+    # nb_classes = 7   # number of output possibilites: [0 - 9] KEEP
+    # # nb_epoch = 10       # number of passes through the entire train dataset before weights "final"
+    # # img_rows, img_cols = img_size, img_size  # the size of the MNIST images KEEP
+    # # input_shape = (img_rows, img_cols, img_dim)  # 1 channel image input (grayscale) KEEP
+    # # nb_filters = 10  # number of convolutional filters to use
+    # # pool_size = (2, 2) # pooling decreases image size, reduces computation, adds translational invariance
+    # # kernel_size = (3, 3) # convolutional kernel size, slides over image to learn features
 
-    X_train, X_test, Y_train, Y_test, X_holdout, Y_holdout = load_and_featurize_data('../data/proc_images/color/{}/'.format(img_size))
+    # X_train, X_test, Y_train, Y_test, X_holdout, Y_holdout = load_and_featurize_data('../data/proc_images/color/{}/'.format(img_size), img_size)
 
-    # model = define_model(nb_filters, kernel_size, input_shape, pool_size)
+    # # pickle datasets
+    # X_test_filename, X_train_filename = '2020-05-14_color_{}_Xtest.pkl'.format(img_size), '2020-05-14_color_{}_Xtrain.pkl'.format(img_size)
+
+    # with open('../data/pkl/{}'.format(X_test_filename), 'wb') as f:
+    #     pickle.dump(X_test,f)
+    
+    # with open('../data/pkl/{}'.format(X_train_filename), 'wb') as f:
+    #     pickle.dump(X_train, f)
+
+    '''
+    runing with pkl'd X mats
+    '''
+    X_test_filename, X_train_filename = '2020-05-14_color_{}_Xtest.pkl'.format(img_size), '2020-05-14_color_{}_Xtrain.pkl'.format(img_size)
+
+    # unpickle
+    with open('../data/pkl/{}'.format(X_test_filename), 'rb') as f:
+        X_test = pickle.load(f)
+    
+    with open('../data/pkl/{}'.format(X_train_filename), 'rb') as f:
+        X_train = pickle.load(f)
+    
+
     model = build_autoencoder_model()
     print(model.summary())
 
-    # fitting
+    # # fitting
     model.fit(X_train, X_train,
                 epochs=2,
-                batch_size=100,
+                batch_size=10,
                 validation_data=(X_test,X_test))
 
-    model.evaluate(X_test, X_test)
+    # model.evaluate(X_test, X_test)
 
-    X_decoded = model.predict(X_train)
+    # X_decoded = model.predict(X_train)
 
 
     
