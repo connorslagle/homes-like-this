@@ -404,6 +404,8 @@ if __name__ == '__main__':
     config = tf.compat.v1.ConfigProto()
     config.gpu_options.allow_growth = True
     tf.compat.v1.Session(config=config)
+    # print("Num GPUs Available: ", len(tf.config.experimental.list_physical_devices('GPU')))
+
 
     img_size = 128
     '''
@@ -437,24 +439,24 @@ if __name__ == '__main__':
     '''
     runing with pkl'd X mats
     '''
-    X_test_filename, X_train_filename = '2020-05-14_color_{}_Xtest.pkl'.format(img_size), '2020-05-14_color_{}_Xtrain.pkl'.format(img_size)
+    # X_test_filename, X_train_filename = '2020-05-14_color_{}_Xtest.pkl'.format(img_size), '2020-05-14_color_{}_Xtrain.pkl'.format(img_size)
 
-    # unpickle
-    with open('../data/pkl/{}'.format(X_test_filename), 'rb') as f:
-        X_test = pickle.load(f)
+    # # unpickle
+    # with open('../data/pkl/{}'.format(X_test_filename), 'rb') as f:
+    #     X_test = pickle.load(f)
     
-    with open('../data/pkl/{}'.format(X_train_filename), 'rb') as f:
-        X_train = pickle.load(f)
+    # with open('../data/pkl/{}'.format(X_train_filename), 'rb') as f:
+    #     X_train = pickle.load(f)
     
 
-    model = build_autoencoder_model(img_size)
-    print(model.summary())
+    # model = build_autoencoder_model(img_size)
+    # print(model.summary())
 
-    # fitting
-    model.fit(X_train, X_train,
-                epochs=2,
-                batch_size=10,
-                validation_data=(X_test,X_test))
+    # # fitting
+    # model.fit(X_train, X_train,
+    #             epochs=2,
+    #             batch_size=10,
+    #             validation_data=(X_test,X_test))
 
     # model.evaluate(X_test, X_test)
 
