@@ -330,23 +330,26 @@ def define_model(nb_filters, kernel_size, input_shape, pool_size):
     return model
 
 
-def build_autoencoder_model():
+def build_autoencoder_model(img_size):
         '''
         If a model was not provided when instantiating the class, this method
         builds the autoencoder model.
         input: None
         output: None
         '''
+        img_size = int(img_size)
             
         autoencoder = Sequential()
         
         # encoder layers
-        autoencoder.add(Conv2D(128,(3,3), activation='relu', padding='same',input_shape=(64,64,3)))
+        autoencoder.add(Conv2D(128,(3,3), activation='relu', padding='same',input_shape=(img_size,img_size,3)))
         autoencoder.add(MaxPooling2D((2,2), padding = 'same'))
         autoencoder.add(Conv2D(64,(3,3), activation='relu', padding='same'))
         autoencoder.add(MaxPooling2D((2,2), padding = 'same'))
         autoencoder.add(Conv2D(32,(3,3), activation='relu', padding='same'))
         autoencoder.add(MaxPooling2D((2,2), padding = 'same'))
+        autoencoder.add(Conv2D(16,(3,3), activation='relu', padding='same'))    # added
+        autoencoder.add(MaxPooling2D((2,2), padding = 'same'))  # added
         autoencoder.add(Conv2D(8,(3,3), activation='relu', padding='same'))
         autoencoder.add(MaxPooling2D((2,2), padding = 'same'))
 
@@ -356,6 +359,8 @@ def build_autoencoder_model():
         # decoder layers
         autoencoder.add(Conv2D(8,(3,3), activation='relu', padding='same'))
         autoencoder.add(UpSampling2D((2,2)))
+        autoencoder.add(Conv2D(16,(3,3), activation='relu', padding='same'))    #added
+        autoencoder.add(UpSampling2D((2,2)))    # added
         autoencoder.add(Conv2D(32,(3,3), activation='relu', padding='same'))
         autoencoder.add(UpSampling2D((2,2)))
         autoencoder.add(Conv2D(64,(3,3),activation='relu', padding='same'))
@@ -400,7 +405,7 @@ if __name__ == '__main__':
     config.gpu_options.allow_growth = True
     tf.compat.v1.Session(config=config)
 
-    img_size = 64
+    img_size = 128
     '''
     If first time:
     '''
@@ -442,10 +447,10 @@ if __name__ == '__main__':
         X_train = pickle.load(f)
     
 
-    model = build_autoencoder_model()
+    model = build_autoencoder_model(img_size)
     print(model.summary())
 
-    # # fitting
+    # fitting
     model.fit(X_train, X_train,
                 epochs=2,
                 batch_size=10,
