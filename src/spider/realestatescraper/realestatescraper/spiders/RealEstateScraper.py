@@ -30,15 +30,15 @@ class ListingSpider(scrapy.Spider):
         Aurora, Thornton, Arvada, Centennial, Denver, Lakewood, Westminster
         '''
         
-        # start_urls = ['https://www.realtor.com/realestateandhomes-search/Aurora_CO/pg-1']
-        start_urls = [
-                'https://www.realtor.com/realestateandhomes-search/Aurora_CO/pg-1',
-                'https://www.realtor.com/realestateandhomes-search/Arvada_CO/pg-1',
-                'https://www.realtor.com/realestateandhomes-search/Centennial_CO/pg-1',
-                'https://www.realtor.com/realestateandhomes-search/Denver_CO/pg-1',
-                'https://www.realtor.com/realestateandhomes-search/Lakewood_CO/pg-1',
-                'https://www.realtor.com/realestateandhomes-search/Thornton_CO/pg-1',
-                'https://www.realtor.com/realestateandhomes-search/Westminster_CO/pg-1']
+        start_urls = ['https://www.realtor.com/realestateandhomes-search/Chicago_IL/pg-1']
+        # start_urls = [
+        #         'https://www.realtor.com/realestateandhomes-search/Aurora_CO/pg-1',
+        #         'https://www.realtor.com/realestateandhomes-search/Arvada_CO/pg-1',
+        #         'https://www.realtor.com/realestateandhomes-search/Centennial_CO/pg-1',
+        #         'https://www.realtor.com/realestateandhomes-search/Denver_CO/pg-1',
+        #         'https://www.realtor.com/realestateandhomes-search/Lakewood_CO/pg-1',
+        #         'https://www.realtor.com/realestateandhomes-search/Thornton_CO/pg-1',
+        #         'https://www.realtor.com/realestateandhomes-search/Westminster_CO/pg-1']
 
         for url in start_urls:
             yield SeleniumRequest(url=url, callback=self.parse_result)
@@ -149,6 +149,9 @@ if __name__ == "__main__":
         lot:            //ul[@data-testid='property-list-container']/li/div/div[2]/div[3]/div[1]/div/a/div[1]/div/ul/li[4]/span[1]/text()
         address:        //ul[@data-testid='property-list-container']/li/div/div[2]/div[3]/div[1]/div/a/div[2]/text()
         city_state_zip: //ul[@data-testid='property-list-container']/li/div/div[2]/div[3]/div[1]/div/a/div[2]/div/text()
+        next page       //a[@aria-label='Go to Next Page']/@href
+
+        example listing https://www.realtor.com/realestateandhomes-detail/260-E-Chestnut-St-Apt-2802_Chicago_IL_60611_M86338-52037
 
     individual listing page xpaths:
         photos (60x60):         //div[@class='ldp-hero-carousel-wrap']/div[1]/div/div/img/@src
@@ -159,11 +162,20 @@ if __name__ == "__main__":
     Shell cmds:
         from scrapy_selenium import SeleniumRequest
         fetch(SeleniumRequest(url='https://www.realtor.com/realestateandhomes-search/Aurora_CO/pg-1'))
+        fetch(SeleniumRequest(url='https://www.realtor.com/realestateandhomes-detail/260-E-Chestnut-St-Apt-2802_Chicago_IL_60611_M86338-52037'))
 
 
     AWS launch 5/25/20 @ 2:00pm
     - ip: ec2-3-235-31-196.compute-1.amazonaws.com
     - user: ec2-user
     - ssh -i ~/.aws/pems/listing_scraper.pem ec2-user@ec2-3-235-31-196.compute-1.amazonaws.com
+    
+    Chicago MA:
+    Chicago_IL
+    Aurora_IL
+    Elgin_IL
+    Joliet_IL
+    Naperville_IL
+    Kenosha_WI
     '''
 

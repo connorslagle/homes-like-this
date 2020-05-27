@@ -5,7 +5,7 @@
 # Ubuntu
 cd ~
 # anaconda
-bash ~/Downloads/Anaconda3-2020.02-Linux-x86_64.sh
+
 # python stuff
 pip install pymongo && pip install pandas && pip install numpy && pip install PIL && install boto3 && install botocore
 # scrapy
