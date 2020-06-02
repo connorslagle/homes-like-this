@@ -14,12 +14,11 @@ import tensorflow as tf
 from tensorflow import keras
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Dense, Dropout, Activation, Flatten
-from tensorflow.keras.layers import Conv2D, MaxPooling2D
+from tensorflow.keras.layers import Conv2D, MaxPooling2D, UpSampling2D, Reshape
 from tensorflow.keras.utils import to_categorical
 from sklearn.model_selection import train_test_split
 
 # for test autoencoder
-from tensorflow.keras.layers import UpSampling2D, Reshape
 import kmeans_test
 import matplotlib.pyplot as plt
 
@@ -211,8 +210,6 @@ def fname_to_city(df, X_in, y_in, cities_dict):
     
     Returns: city_target and matching X
     '''
-
-
     city = []
     idx = []
     for elem in y_in: 
