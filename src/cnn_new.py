@@ -48,7 +48,7 @@ class Autoencoder():
                     keras.layers.MaxPooling2D(
                         pool_size=(2,2),
                         padding='same'
-                    )(layer_list[0])
+                    )(layer_list[-1])
                 )
 
             else:
@@ -58,36 +58,70 @@ class Autoencoder():
                         kernel_size=(3,3),
                         strides=(1,1),
                         padding='same',
-                        activation='relu',
-                    )(layer_list[2*encode_layer-1])
+                        activation='relu'
+                    )(layer_list[-1])
                 )
 
                 layer_list.append(
                     keras.layers.MaxPooling2D(
                         pool_size=(2,2),
                         padding='same'
-                    )(layer_list[2*encode_layer])
+                    )(layer_list[-1])
                 )
         
         # conv dropout
         layer_list.append(
             keras.layers.SpatialDropout2D(
                 rate=0.5
-            )(layer_list[2*num_encode_layers-1])
+            )(layer_list[-1])
         )
 
-        self.encoder = keras.Model(inputs, layer_list[-1])
-
+        # self.encoder = keras.Model(inputs, layer_list[-1])
         self.latent = keras.layers.Flatten()(layer_list[-1])
 
-        
+        layer_list.append(
+            keras.layers.Reshape(
+                target_shape=(4,4,8)
+            )(layer_list[-1])
+        )
 
-        
+        for decode_layer in range(num_encode_layers)[::-1]:
+            layer_list.append(
+                keras.layers.Conv2D(
+                    filters=(init_num_filters // (2**decode_layer)),
+                    kernel_size=(3,3),
+                    strides=(1,1),
+                    padding='same',
+                    activation='relu'
+                )(layer_list[-1])
+            )
+
+            layer_list.append(
+                keras.layers.UpSampling2D(
+                    size=(2,2)
+                )(layer_list[-1])
+            )
+
+        layer_list.append(
+            keras.layers.Conv2D(
+                    filters=3,
+                    kernel_size=(3,3),
+                    strides=(1,1),
+                    padding='same',
+                    activation='sigmoid'
+            )(layer_list[-1])
+        )
+
+        self.encoder_decoder = keras.Model(inputs, layer_list[-1])
+        self.encoder_decoder.compile(
+            optimizer='adam',
+            loss='mean_squared_error'
+        )
 
 
 
 if __name__ == "__main__":
     model = Autoencoder()
     model.build_autoencoder(128,5)
-    encoder = model.encoder
+    encoder = model.encoder_decoder
     print(encoder.summary())
