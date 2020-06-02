@@ -21,10 +21,15 @@ class Autoencoder():
         self.encoded_images = []
         self.encoder = None
 
-    def build_autoencoder(self, init_num_filters, num_encode_layers, use_color_img=True):
+    def build_autoencoder(self, use_color_img=True):
         '''
         Functional API build of model
+        input shape = (128,128,x) where x=1,3 1=greyscale
+        num encode/decode layers = 5
         '''
+        init_num_filters = 128
+        num_encode_layers = 5
+
         if use_color_img:
             inputs = keras.Input(shape=(128,128,3))
         else:
@@ -69,15 +74,20 @@ class Autoencoder():
                     )(layer_list[-1])
                 )
         
-        # conv dropout
+
         layer_list.append(
             keras.layers.SpatialDropout2D(
                 rate=0.5
             )(layer_list[-1])
         )
 
-        # self.encoder = keras.Model(inputs, layer_list[-1])
-        self.latent = keras.layers.Flatten()(layer_list[-1])
+        layer_list.append(
+            keras.layers.Flatten()(layer_list[-1])
+        )
+
+        self.encoder = keras.Model(inputs, layer_list[-1])
+
+        self.latent = self.encoder.output
 
         layer_list.append(
             keras.layers.Reshape(
@@ -122,6 +132,6 @@ class Autoencoder():
 
 if __name__ == "__main__":
     model = Autoencoder()
-    model.build_autoencoder(128,5)
-    encoder = model.encoder_decoder
-    print(encoder.summary())
+    model.build_autoencoder()
+    model1 = model.encoder_decoder
+    print(model1.summary())

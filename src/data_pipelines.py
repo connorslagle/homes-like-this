@@ -223,7 +223,6 @@ class ImagePipeline():
         Reads image/image names to self variables. Has batch importer modes, to save computer memory.
 
         Batch import mode PROCESSES images - needed to reset class lists.
-
         Review before processing.
         '''
 
