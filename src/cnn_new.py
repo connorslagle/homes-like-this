@@ -171,11 +171,13 @@ class Autoencoder():
             self._use_gpu()
 
         if with_tensorboard:
+            tb_callback = TensorBoard(log_dir='../logs/{}'.format(self.NAME))
+
             self.autoencoder.fit(X_train, X_train,
                 epochs=num_epochs,
                 batch_size=batch_size_,
                 validation_data=(X_test,X_test),
-                callbacks=TensorBoard(log_dir='../logs/{}'.format(self.NAME)))
+                callbacks=[tb_callback])
         else:
             self.autoencoder.fit(X_train, X_train,
                 epochs=num_epochs,
