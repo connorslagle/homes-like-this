@@ -353,10 +353,12 @@ class ImagePipeline(MongoImporter):
         self._vectorize_features()
         self._vectorize_labels()
 
-    def build_Xy(self):
+    def build_Xy(self, use_grey_imgs=True):
         '''
         Returns X,y mats for cnn
         '''
+        self.gray_images = use_grey_imgs
+        
         self.read()
         self.vectorize()
         self.df = self.load_docs()
