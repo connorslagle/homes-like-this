@@ -363,9 +363,9 @@ class ImagePipeline(MongoImporter):
         
         self.read()
         self.vectorize()
-        if meta_from_csv.keys[0]:
+        if list(meta_from_csv.keys())[0]:
             self.df = pd.read_csv('../data/metadata/{}'.format(
-                meta_from_csv.values[0]
+                list(meta_from_csv.values())[0]
             ))
         else:
             # need mongo
