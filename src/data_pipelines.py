@@ -1,13 +1,18 @@
 import pymongo
 import numpy as np
 import pandas as pd
-from bson.objectid import ObjectId
 from datetime import date
 import os
 from skimage import io
 from skimage.transform import resize
 from skimage.color import rgb2gray
 from skimage.filters import sobel
+
+
+
+# class DataHandler():
+
+#     def __init__(self):
 
 
 class MongoImporter():
@@ -189,8 +194,7 @@ class MongoImporter():
 
         self.df.to_csv(file_path)
 
-    
-class ImagePipeline():
+class ImagePipeline(MongoImporter):
     '''
     Class for importing, processing and featurizing images.
     '''
@@ -198,6 +202,8 @@ class ImagePipeline():
     def __init__(self, image_dir, gray_imgs=True):
         self.image_dir = image_dir
         self.save_dir = '../data/proc_images/'
+        self.city_dict = {'Denver': 0, 'Arvada': 1, 'Aurora': 2, 'Lakewood':3,
+                        'Centennial': 4,'Westminster':5, 'Thornton':6}
 
         # Empty lists to fill with img names/arrays
         self.img_lst2 = []
@@ -210,15 +216,15 @@ class ImagePipeline():
 
 
     def _empty_variables(self):
-        """
+        '''
         Reset all the image related instance variables
-        """
+        '''
         self.img_lst2 = []
         self.img_names2 = []
         self.features = None
         self.labels = None
 
-    def read(self, batch_mode=False, batch_size=1000,batch_resize_size=(32,32)):
+    def read(self, batch_mode=False, batch_size=1000,batch_resize_size=(128,128)):
         '''
         Reads image/image names to self variables. Has batch importer modes, to save computer memory.
 
@@ -229,7 +235,6 @@ class ImagePipeline():
         self._empty_variables()
 
         img_names = os.listdir(self.image_dir)
-        
         
         if batch_mode:
             num_batches = (len(img_names) // batch_size) + 1
@@ -250,8 +255,8 @@ class ImagePipeline():
                     img_lst = [io.imread(os.path.join(self.image_dir, fname)) for fname in names]
                     self.img_lst2.append(img_lst)
 
-
                 self._square_image()
+
                 if self.gray_images:
                     self._gray_image()
 
@@ -266,7 +271,6 @@ class ImagePipeline():
 
         self.img_lst2 = self.img_lst2[0]
 
-        
 
     def _square_image(self):
         '''
@@ -302,9 +306,9 @@ class ImagePipeline():
         self.img_lst2 = filter_imgs
 
     def _resize(self, shape):
-        """
+        '''
         Resize all images in self.img_lst2 to specified size (prefer base 2 numbers (32,64,128))
-        """
+        '''
 
         new_img_lst2 = []
         for image in self.img_lst2:
@@ -327,66 +331,84 @@ class ImagePipeline():
             io.imsave(os.path.join('{}{}/{}/'.format(self.save_dir,gray_tag,self.shape), fname), img)
 
     def _vectorize_features(self):
-        """
+        '''
         Take a list of images and vectorize all the images. Returns a feature matrix where each
         row represents an image
-        """
+        '''
         imgs = [np.ravel(img) for img in self.img_lst2]
         
         self.features = np.r_['0', imgs]
 
 
     def _vectorize_labels(self):
-        """
+        '''
         Convert file names to a list of y labels (in the example it would be either cat or dog, 1 or 0)
-        """
+        '''
         # Get the labels with the dimensions of the number of image files
         self.labels = self.img_names2[0]
 
     def vectorize(self):
-        """
+        '''
         Return (feature matrix, the response) if output is True, otherwise set as instance variable.
         Run at the end of all transformations
-        """
+        '''
         self._vectorize_features()
         self._vectorize_labels()
 
-def load_data(file_dir, use_filter=False):
-    '''
-    Load images from specified directory.
+    def build_Xy(self):
+        '''
+        Returns X,y mats for cnn
+        '''
+        self.read()
+        self.vectorize()
+        self.df = self.load_docs()
 
-    Outputs featurized (raveled) images for NB Classification model.
-    '''
+        city = []
+        idx = []
+        for elem in self.labels:
+            if elem in self.df.image_file.values:
+                city.append(self.df.city[self.df.image_file == elem].values[0])
+                idx.append(self.labels.index(elem))
 
-    img_pipe = ImagePipeline(file_dir)
-    img_pipe.read()
-    if use_filter:
-        img_pipe._filter_image()
-    img_pipe.vectorize()
-    # breakpoint()
-    X_from_pipe = img_pipe.features
-    y_from_pipe = img_pipe.labels
-    return X_from_pipe, y_from_pipe
+        self.X = self.features[idx,:]
+        self.y = [self.city_dict[key] for key in city]
 
-def fname_to_city(df, X_in, y_in):
-    '''
-    Searches dataframe for filenames in y -> creates target with city as
-    categories.
+        X_tt, self.X_holdout, y_tt, self.y_holdout = train_test_split(self.X, np.array(self.y), stratify=np.array(self.y))
+        X_train, X_test, y_train, y_test = train_test_split(X_tt, y_tt,stratify=y_tt)
+
+
+
+
+
+def load_and_featurize_data(from_file, img_size, image_dim = 3):
+
     
-    Returns: city_target and matching X
-    '''
 
+    # reshape input into format Conv2D layer likes
+    X_train = X_train.reshape(X_train.shape[0], img_rows, img_cols, image_dim)
+    X_test = X_test.reshape(X_test.shape[0], img_rows, img_cols, image_dim)
+    X_holdout = X_holdout.reshape(X_holdout.shape[0], img_rows, img_cols, image_dim)
 
-    city = []
-    idx = []
-    for elem in y_in: 
-        if elem in df.image_file.values: 
-            city.append(df.city[df.image_file == elem].values[0])
-            idx.append(y_in.index(elem))
+    # don't change conversion or normalization
+    X_train = X_train.astype('float32') # data was uint8 [0-255]
+    X_test = X_test.astype('float32')  # data was uint8 [0-255]
+    X_holdout = X_holdout.astype('float32')
+    X_train /= 255 # normalizing (scaling from 0 to 1)
+    X_test /= 255  # normalizing (scaling from 0 to 1)
+    X_holdout /= 255
 
-    X_match = X_in[idx,:]
+    print('X_train shape:', X_train.shape)
+    print(X_train.shape[0], 'train samples')
+    print(X_test.shape[0], 'test samples')
+    print(X_holdout.shape[0], 'holdout samples')
 
-    return X_match, city
+    # convert class vectors to binary class matrices (don't change)
+    Y_train = to_categorical(y_train, nb_classes) # cool
+    Y_test = to_categorical(y_test, nb_classes)   
+    Y_holdout = to_categorical(y_holdout, nb_classes)
+    # in Ipython you should compare Y_test to y_test
+    return X_train, X_test, Y_train, Y_test, X_holdout, Y_holdout
+
 
 if __name__ == "__main__":
     # importer = MongoImporter()
