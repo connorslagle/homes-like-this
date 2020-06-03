@@ -198,6 +198,31 @@ class Autoencoder():
 
         self._save_fig('elbow_{}.png'.format(self.NAME))
 
+    def top_9_from_clusters(self, X_test):
+        '''
+        Plot top 9 from each cluster in 3x3 grid
+        '''
+        centers = self.kmeans.cluster_centers_
+        cluster_labels = self.kmeans.labels_
+
+        tops = {}
+        distances = {}
+
+        for label in np.unique(cluster_labels)[::1]:
+            dist = cosine_distances(layers[np.where(cluster_labels == label)], centers[label,:].reshape(1,-1))
+            top_dist = dist[np.argsort(dist.T)[::-1][0][:9]]
+            top_ = X_test[np.argsort(dist.T)[::-1][0][:9]]
+            tops[label] = top_
+            distances[label] = top_dist
+        
+        fig, axes = plt.subplots(3,3,figsize=(12,12))
+        for label in np.unique(cluster_labels)[::1]:
+            for ax, img in zip(axes.flatten(), tops[label]):
+                ax.imshow(img)
+                ax.set_axis_off()
+            fig.suptitle('Top 9: Cluster {}\n Model: {}'.format(label, self.NAME))
+            self._save_fig('top9_cluster_{}_{}.png'.format(label, self.NAME))
+
     def silhouette_plot(self):
         '''
         Plots silhouette plot, fill in later.
