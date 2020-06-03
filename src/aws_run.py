@@ -38,7 +38,7 @@ if __name__ == "__main__":
         model.build_autoencoder()
 
     # fit model
-    model.fit_(X_train, X_test, int(args.epochs), int(args.batchsize))
+    model.fit_(X_train, X_test, int(args.epochs), int(args.batchsize), use_gpu=False)
     
     # save
     model.save_model()
