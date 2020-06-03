@@ -11,6 +11,7 @@ import tensorflow as tf
 from tensorflow import keras
 from tensorflow.keras import layers
 from tensorflow.keras.callbacks import TensorBoard
+from tensorflow.keras import backend as K
 
 # sk imports
 from sklearn.cluster import KMeans
@@ -112,8 +113,6 @@ class Autoencoder():
 
         self.encoder = keras.Model(inputs, layer_list[-1])
 
-        self.latent = self.encoder.output
-
         layer_list.append(
             layers.Reshape(
                 target_shape=(4,4,8)
@@ -183,6 +182,8 @@ class Autoencoder():
                 epochs=num_epochs,
                 batch_size=batch_size_,
                 validation_data=(X_test,X_test))
+
+        self._extract_latent(X_test)
             
     def kmean_cluster(self, X_test, num_clusters, set_seed=True):
         '''
@@ -272,6 +273,23 @@ class Autoencoder():
         '''
         plt.savefig('../images/{}'.format(file_name), dpi=100)
         plt.close('all')
+
+    def _extract_latent(self, X_test):
+        '''
+        Extract encoded latent features
+        '''
+
+        batches = np.split(X_test,X_test.shape[0])
+        for i,batch in enumerate(batches):
+            get_layer_output = K.function([self.autoencoder.layers[0].input],
+                                        [self.autoencoder.layers[12].output])
+            layer_output = get_layer_output([batch])[0]
+
+            if i == 0:
+                final_layers = layer_output
+            else:
+                final_layers = np.vstack((final_layers,layer_output))
+        self.latent = final_layers
 
 
 if __name__ == "__main__":
