@@ -1,13 +1,17 @@
+# general imports
 import pymongo
 import numpy as np
 import pandas as pd
-from bson.objectid import ObjectId
-from datetime import date
+from datetime import datetime
 import os
+import pickle
+
+# sk imports
 from skimage import io
 from skimage.transform import resize
 from skimage.color import rgb2gray
 from skimage.filters import sobel
+from sklearn.model_selection import train_test_split
 
 
 class MongoImporter():
@@ -189,15 +193,17 @@ class MongoImporter():
 
         self.df.to_csv(file_path)
 
-    
-class ImagePipeline():
+class ImagePipeline(MongoImporter):
     '''
     Class for importing, processing and featurizing images.
+    Subclass of MongoImporter to add img clusters to db
     '''
 
     def __init__(self, image_dir, gray_imgs=True):
         self.image_dir = image_dir
         self.save_dir = '../data/proc_images/'
+        self.city_dict = {'Denver': 0, 'Arvada': 1, 'Aurora': 2, 'Lakewood':3,
+                        'Centennial': 4,'Westminster':5, 'Thornton':6}
 
         # Empty lists to fill with img names/arrays
         self.img_lst2 = []
@@ -210,27 +216,25 @@ class ImagePipeline():
 
 
     def _empty_variables(self):
-        """
+        '''
         Reset all the image related instance variables
-        """
+        '''
         self.img_lst2 = []
         self.img_names2 = []
         self.features = None
         self.labels = None
 
-    def read(self, batch_mode=False, batch_size=1000,batch_resize_size=(32,32)):
+    def read(self, batch_mode=False, batch_size=1000,batch_resize_size=(128,128)):
         '''
         Reads image/image names to self variables. Has batch importer modes, to save computer memory.
 
         Batch import mode PROCESSES images - needed to reset class lists.
-
         Review before processing.
         '''
 
         self._empty_variables()
 
         img_names = os.listdir(self.image_dir)
-        
         
         if batch_mode:
             num_batches = (len(img_names) // batch_size) + 1
@@ -251,8 +255,8 @@ class ImagePipeline():
                     img_lst = [io.imread(os.path.join(self.image_dir, fname)) for fname in names]
                     self.img_lst2.append(img_lst)
 
-
                 self._square_image()
+
                 if self.gray_images:
                     self._gray_image()
 
@@ -267,7 +271,6 @@ class ImagePipeline():
 
         self.img_lst2 = self.img_lst2[0]
 
-        
 
     def _square_image(self):
         '''
@@ -303,9 +306,9 @@ class ImagePipeline():
         self.img_lst2 = filter_imgs
 
     def _resize(self, shape):
-        """
+        '''
         Resize all images in self.img_lst2 to specified size (prefer base 2 numbers (32,64,128))
-        """
+        '''
 
         new_img_lst2 = []
         for image in self.img_lst2:
@@ -328,66 +331,110 @@ class ImagePipeline():
             io.imsave(os.path.join('{}{}/{}/'.format(self.save_dir,gray_tag,self.shape), fname), img)
 
     def _vectorize_features(self):
-        """
+        '''
         Take a list of images and vectorize all the images. Returns a feature matrix where each
         row represents an image
-        """
+        '''
         imgs = [np.ravel(img) for img in self.img_lst2]
         
         self.features = np.r_['0', imgs]
 
 
     def _vectorize_labels(self):
-        """
+        '''
         Convert file names to a list of y labels (in the example it would be either cat or dog, 1 or 0)
-        """
+        '''
         # Get the labels with the dimensions of the number of image files
         self.labels = self.img_names2[0]
 
     def vectorize(self):
-        """
+        '''
         Return (feature matrix, the response) if output is True, otherwise set as instance variable.
         Run at the end of all transformations
-        """
+        '''
         self._vectorize_features()
         self._vectorize_labels()
 
-def load_data(file_dir, use_filter=False):
-    '''
-    Load images from specified directory.
+    def build_Xy(self, meta_from_csv={True:'2020-05-14_pg1_3_all.csv'}, set_seed=True):
+        '''
+        Returns X,y mats for cnn
+        '''
+        # self.gray_images = use_grey_imgs
+        
+        self.read()
+        self.vectorize()
+        if list(meta_from_csv.keys())[0]:
+            self.df = pd.read_csv('../data/metadata/{}'.format(
+                list(meta_from_csv.values())[0]
+            ))
+        else:
+            # need mongo
+            self.df = self.load_docs()
 
-    Outputs featurized (raveled) images for NB Classification model.
-    '''
+        city = []
+        idx = []
+        for elem in self.labels:
+            if elem in self.df.image_file.values:
+                city.append(self.df.city[self.df.image_file == elem].values[0])
+                idx.append(self.labels.index(elem))
 
-    img_pipe = ImagePipeline(file_dir)
-    img_pipe.read()
-    if use_filter:
-        img_pipe._filter_image()
-    img_pipe.vectorize()
-    # breakpoint()
-    X_from_pipe = img_pipe.features
-    y_from_pipe = img_pipe.labels
-    return X_from_pipe, y_from_pipe
+        self.X = self.features[idx,:]
+        self.y = [self.city_dict[key] for key in city]
 
-def fname_to_city(df, X_in, y_in):
-    '''
-    Searches dataframe for filenames in y -> creates target with city as
-    categories.
-    
-    Returns: city_target and matching X
-    '''
+        if set_seed:
+            X_tt, X_holdout, y_tt, self.y_holdout = train_test_split(self.X, np.array(self.y), stratify=np.array(self.y), random_state=33)
+            X_train, X_test, self.y_train, self.y_test = train_test_split(X_tt, y_tt,stratify=y_tt, random_state=33)
+        else:
+            X_tt, X_holdout, y_tt, self.y_holdout = train_test_split(self.X, np.array(self.y), stratify=np.array(self.y))
+            X_train, X_test, self.y_train, self.y_test = train_test_split(X_tt, y_tt,stratify=y_tt)
 
+        self.X_train_ravel = X_train
+        self.X_test_ravel = X_test
+        self.X_holdout_ravel = X_holdout
+        
+        self._save_Xy()
 
-    city = []
-    idx = []
-    for elem in y_in: 
-        if elem in df.image_file.values: 
-            city.append(df.city[df.image_file == elem].values[0])
-            idx.append(y_in.index(elem))
+        if self.gray_images:
+            X_train = X_train.reshape(X_train.shape[0], 128, 128, 1)
+            X_test = X_test.reshape(X_test.shape[0], 128, 128, 1)
+            X_holdout = X_holdout.reshape(X_holdout.shape[0], 128, 128, 1)
+        else:
+            X_train = X_train.reshape(X_train.shape[0], 128, 128, 3)
+            X_test = X_test.reshape(X_test.shape[0], 128, 128, 3)
+            X_holdout = X_holdout.reshape(X_holdout.shape[0], 128, 128, 3)
 
-    X_match = X_in[idx,:]
+        X_train = X_train.astype('float32') # data was uint8 [0-255]
+        X_test = X_test.astype('float32')  # data was uint8 [0-255]
+        X_holdout = X_holdout.astype('float32')
 
-    return X_match, city
+        self.X_train = X_train/255 # normalizing (scaling from 0 to 1)
+        self.X_test = X_test/255  # normalizing (scaling from 0 to 1)
+        self.X_holdout = X_holdout/255
+
+    def _save_Xy(self):
+        '''
+        Save Xy matrices as pkl files to use without calling pipeline
+        '''
+        X_dict = {'train':self.X_train_ravel, 'test':self.X_test_ravel, 'holdout':self.X_holdout_ravel}
+        y_dict = {'train':self.y_train, 'test':self.y_test, 'holdout':self.y_holdout}
+
+        if self.gray_images:
+            color_tag = 'gray'
+        else: 
+            color_tag = 'rgb'
+        
+        X_fname = '../data/Xs/{}_{}'.format(
+            color_tag, str(datetime.now().date())
+        )
+        with open(X_fname, 'wb') as f:
+            pickle.dump(X_dict, f)
+        
+        y_fname = '../data/ys/{}_{}'.format(
+            color_tag, str(datetime.now().date())
+        )
+        with open(y_fname, 'wb') as f:
+            pickle.dump(y_dict, f)
+
 
 if __name__ == "__main__":
     # importer = MongoImporter()

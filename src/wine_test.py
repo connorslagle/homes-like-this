@@ -6,10 +6,13 @@ from sklearn.model_selection import train_test_split
 from keras import backend as K
 from theano import function
 import matplotlib.pyplot as plt
-import kmeans 
+import kmeans_test 
 import pickle
 
-from cnn import load_and_featurize_data
+import tensorflow as tf
+from cnn import load_and_featurize_data, ImagePipeline, load_data, fname_to_city
+
+
 
 class Autoencoder():
 
@@ -192,13 +195,48 @@ class Autoencoder():
         '''
         kmeans.show_cluster(n_clusters,df_filepath)
 
-if __name__ == "__main__":
-    # needed for gpu tf
+if __name__=='__main__':
+    # X = np.load('../data/64x64/image_array_cnn.npy')
+    # # X = X[:500]
+    # train, test = train_test_split(X, test_size=0.2)
+
+    # my params -------------
+    # needed for tf gpu
     config = tf.compat.v1.ConfigProto()
     config.gpu_options.allow_growth = True
     tf.compat.v1.Session(config=config)
 
-    # load images
-    img_size = 32
+    img_size = 64
+    img_dim = 3
     df = pd.read_csv('../data/metadata/2020-05-14_pg1_3_all.csv')
-    X_train, X_test, Y_train, Y_test, X_holdout, Y_holdout = load_and_featurize_data('../data/proc_images/color/{}/'.format(img_size), image_dim= img_dim)
+
+    X_train, X_test, Y_train, Y_test, X_holdout, Y_holdout = load_and_featurize_data('../data/proc_images/color/{}/'.format(img_size))
+
+    #building model
+    
+
+    #if building the model from scratch
+    # cnn = Autoencoder()
+    # cnn.build_autoencoder_model()
+    # batch_size = 100
+    # epochs = 2
+    # cnn.fit(train,test,batch_size,epochs)
+    # scores = cnn.get_rmse(test)
+    # print(scores)
+    # cnn.plot_loss()
+
+    #if passing in a model
+    filename = 'model200'
+    model = pickle.load(open(filename, 'rb'))
+    cnn = Autoencoder(model)
+
+    #plot before and after images
+    # X_decoded = cnn.predict(X)
+    # cnn.plot_before_after(X,X_decoded,10)
+
+    layers = cnn.get_layers(X,8)
+
+    df_filepath = '../data/64x64/sorted_df.csv'
+    n_clusters = 7
+    cnn.execute_kmeans(n_clusters,df_filepath)
+    cnn.show_cluster(n_clusters,df_filepath)

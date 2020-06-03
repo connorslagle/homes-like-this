@@ -1,15 +1,9 @@
-'''Trains a simple convnet on the MNIST dataset.
-based on a keras example by fchollet
-Find a way to improve the test accuracy to almost 99%!
-FYI, the number of layers and what they do is fine.
-But their parameters and other hyperparameters could use some work.
-'''
-
 import numpy as np
 import pandas as pd
 # from bson.objectid import ObjectId
 from datetime import date
 import os
+import pickle
 from skimage import io
 from skimage.transform import resize
 from skimage.color import rgb2gray
@@ -20,13 +14,13 @@ import tensorflow as tf
 from tensorflow import keras
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Dense, Dropout, Activation, Flatten
-from tensorflow.keras.layers import Conv2D, MaxPooling2D
+from tensorflow.keras.layers import Conv2D, MaxPooling2D, UpSampling2D, Reshape
 from tensorflow.keras.utils import to_categorical
 from sklearn.model_selection import train_test_split
 
 # for test autoencoder
-from tensorflow.keras.layers import UpSampling2D, Reshape
-# import matplotlib.pyplot as plt
+import kmeans_test
+import matplotlib.pyplot as plt
 
 
 
@@ -216,8 +210,6 @@ def fname_to_city(df, X_in, y_in, cities_dict):
     
     Returns: city_target and matching X
     '''
-
-
     city = []
     idx = []
     for elem in y_in: 
@@ -231,12 +223,12 @@ def fname_to_city(df, X_in, y_in, cities_dict):
 
     return X_match, numerical_target
 
-def load_and_featurize_data(from_file, image_dim = 3):
+def load_and_featurize_data(from_file, img_size, image_dim = 3):
     target_ = {'Denver': 0, 'Arvada': 1, 'Aurora': 2, 'Lakewood':3,
                  'Centennial': 4,'Westminster':5, 'Thornton':6}
     
     # image size
-    img_rows, img_cols = 64, 64
+    img_rows, img_cols = img_size, img_size
 
     # the data, shuffled and split between train and test sets
     X_feat, y_target = load_data(from_file)
@@ -335,23 +327,26 @@ def define_model(nb_filters, kernel_size, input_shape, pool_size):
     return model
 
 
-def build_autoencoder_model():
+def build_autoencoder_model(img_size):
         '''
         If a model was not provided when instantiating the class, this method
         builds the autoencoder model.
         input: None
         output: None
         '''
+        img_size = int(img_size)
             
         autoencoder = Sequential()
         
         # encoder layers
-        autoencoder.add(Conv2D(128,(3,3), activation='relu', padding='same',input_shape=(64,64,3)))
+        autoencoder.add(Conv2D(128,(3,3), activation='relu', padding='same',input_shape=(img_size,img_size,3)))
         autoencoder.add(MaxPooling2D((2,2), padding = 'same'))
         autoencoder.add(Conv2D(64,(3,3), activation='relu', padding='same'))
         autoencoder.add(MaxPooling2D((2,2), padding = 'same'))
         autoencoder.add(Conv2D(32,(3,3), activation='relu', padding='same'))
         autoencoder.add(MaxPooling2D((2,2), padding = 'same'))
+        autoencoder.add(Conv2D(16,(3,3), activation='relu', padding='same'))    # added
+        autoencoder.add(MaxPooling2D((2,2), padding = 'same'))  # added
         autoencoder.add(Conv2D(8,(3,3), activation='relu', padding='same'))
         autoencoder.add(MaxPooling2D((2,2), padding = 'same'))
 
@@ -361,6 +356,8 @@ def build_autoencoder_model():
         # decoder layers
         autoencoder.add(Conv2D(8,(3,3), activation='relu', padding='same'))
         autoencoder.add(UpSampling2D((2,2)))
+        autoencoder.add(Conv2D(16,(3,3), activation='relu', padding='same'))    #added
+        autoencoder.add(UpSampling2D((2,2)))    # added
         autoencoder.add(Conv2D(32,(3,3), activation='relu', padding='same'))
         autoencoder.add(UpSampling2D((2,2)))
         autoencoder.add(Conv2D(64,(3,3),activation='relu', padding='same'))
@@ -375,38 +372,91 @@ def build_autoencoder_model():
 
         return autoencoder
 
+def plot_before_after(self,test,test_decoded,n=10):
+    '''
+    Plots the image and reconstructed image.
+    Input:
+    test: test dataset of image arrays
+    test_decoded: reconstructed test dataset image arrays (predict results)
+    Output: None (saves figure to a file)
+    '''
+    plt.figure(figsize=(n*2, 4))
+    for i in range(n):
+        # display original
+        ax = plt.subplot(2, n, i + 1)
+        plt.imshow(X[i])
+        ax.get_xaxis().set_visible(False)
+        ax.get_yaxis().set_visible(False)
+
+        # display reconstruction
+        ax = plt.subplot(2, n, i + 1 + n)
+        plt.imshow(test_decoded[i])
+        ax.get_xaxis().set_visible(False)
+        ax.get_yaxis().set_visible(False)
+
+    plt.savefig('before_after.png')
+
 if __name__ == '__main__':
     # needed for tf gpu
     config = tf.compat.v1.ConfigProto()
     config.gpu_options.allow_growth = True
     tf.compat.v1.Session(config=config)
 
-    img_size = 64
-    img_dim = 3
-    df = pd.read_csv('../data/metadata/2020-05-14_pg1_3_all.csv')
+    img_size = 128
+    '''
+    If first time:
+    '''
+    # img_dim = 3
+    # df = pd.read_csv('../data/metadata/2020-05-14_pg1_3_all.csv')
 
 
-    # # important inputs to the model: don't changes the ones marked KEEP 
-    # batch_size = 10  # number of training samples used at a time to update the weights
-    nb_classes = 7   # number of output possibilites: [0 - 9] KEEP
-    # nb_epoch = 10       # number of passes through the entire train dataset before weights "final"
-    # img_rows, img_cols = img_size, img_size  # the size of the MNIST images KEEP
-    # input_shape = (img_rows, img_cols, img_dim)  # 1 channel image input (grayscale) KEEP
-    # nb_filters = 10  # number of convolutional filters to use
-    # pool_size = (2, 2) # pooling decreases image size, reduces computation, adds translational invariance
-    # kernel_size = (3, 3) # convolutional kernel size, slides over image to learn features
+    # # # important inputs to the model: don't changes the ones marked KEEP 
+    # # batch_size = 10  # number of training samples used at a time to update the weights
+    # nb_classes = 7   # number of output possibilites: [0 - 9] KEEP
+    # # nb_epoch = 10       # number of passes through the entire train dataset before weights "final"
+    # # img_rows, img_cols = img_size, img_size  # the size of the MNIST images KEEP
+    # # input_shape = (img_rows, img_cols, img_dim)  # 1 channel image input (grayscale) KEEP
+    # # nb_filters = 10  # number of convolutional filters to use
+    # # pool_size = (2, 2) # pooling decreases image size, reduces computation, adds translational invariance
+    # # kernel_size = (3, 3) # convolutional kernel size, slides over image to learn features
 
-    X_train, X_test, Y_train, Y_test, X_holdout, Y_holdout = load_and_featurize_data('../data/proc_images/color/{}/'.format(img_size))
+    # X_train, X_test, Y_train, Y_test, X_holdout, Y_holdout = load_and_featurize_data('../data/proc_images/color/{}/'.format(img_size), img_size)
 
-    # model = define_model(nb_filters, kernel_size, input_shape, pool_size)
-    model = build_autoencoder_model()
+    # # pickle datasets
+    # X_test_filename, X_train_filename = '2020-05-14_color_{}_Xtest.pkl'.format(img_size), '2020-05-14_color_{}_Xtrain.pkl'.format(img_size)
+
+    # with open('../data/pkl/{}'.format(X_test_filename), 'wb') as f:
+    #     pickle.dump(X_test,f)
+    
+    # with open('../data/pkl/{}'.format(X_train_filename), 'wb') as f:
+    #     pickle.dump(X_train, f)
+
+    '''
+    runing with pkl'd X mats
+    '''
+    X_test_filename, X_train_filename = '2020-05-14_color_{}_Xtest.pkl'.format(img_size), '2020-05-14_color_{}_Xtrain.pkl'.format(img_size)
+
+    # unpickle
+    with open('../data/pkl/{}'.format(X_test_filename), 'rb') as f:
+        X_test = pickle.load(f)
+    
+    with open('../data/pkl/{}'.format(X_train_filename), 'rb') as f:
+        X_train = pickle.load(f)
+    
+
+    model = build_autoencoder_model(img_size)
     print(model.summary())
 
     # fitting
     model.fit(X_train, X_train,
                 epochs=2,
-                batch_size=100,
+                batch_size=10,
                 validation_data=(X_test,X_test))
+
+    # model.evaluate(X_test, X_test)
+
+    # X_decoded = model.predict(X_train)
+
 
     
     # # during fit process watch train and test error simultaneously
