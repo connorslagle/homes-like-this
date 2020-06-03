@@ -1,18 +1,16 @@
+# general imports
 import pymongo
 import numpy as np
 import pandas as pd
 from datetime import date
 import os
+
+# sk imports
 from skimage import io
 from skimage.transform import resize
 from skimage.color import rgb2gray
 from skimage.filters import sobel
-
-
-
-# class DataHandler():
-
-#     def __init__(self):
+from sklearn.model_selection import train_test_split
 
 
 class MongoImporter():
@@ -373,41 +371,31 @@ class ImagePipeline(MongoImporter):
         self.X = self.features[idx,:]
         self.y = [self.city_dict[key] for key in city]
 
-        X_tt, self.X_holdout, y_tt, self.y_holdout = train_test_split(self.X, np.array(self.y), stratify=np.array(self.y))
-        X_train, X_test, y_train, y_test = train_test_split(X_tt, y_tt,stratify=y_tt)
+        X_tt, X_holdout, y_tt, self.y_holdout = train_test_split(self.X, np.array(self.y), stratify=np.array(self.y))
+        X_train, X_test, self.y_train, self.y_test = train_test_split(X_tt, y_tt,stratify=y_tt)
 
+        if self.gray_images:
+            X_train = X_train.reshape(X_train.shape[0], 128, 128, 1)
+            X_test = X_test.reshape(X_test.shape[0], 128, 128, 1)
+            X_holdout = X_holdout.reshape(X_holdout.shape[0], 128, 128, 1)
+        else:
+            X_train = X_train.reshape(X_train.shape[0], 128, 128, 3)
+            X_test = X_test.reshape(X_test.shape[0], 128, 128, 3)
+            X_holdout = X_holdout.reshape(X_holdout.shape[0], 128, 128, 3)
 
+        X_train = X_train.astype('float32') # data was uint8 [0-255]
+        X_test = X_test.astype('float32')  # data was uint8 [0-255]
+        X_holdout = X_holdout.astype('float32')
 
+        self.X_train = X_train/255 # normalizing (scaling from 0 to 1)
+        self.X_test = X_test/255  # normalizing (scaling from 0 to 1)
+        self.X_holdout = X_holdout/255
 
+    def _save_Xy(self):
+        '''
+        
+        '''
 
-def load_and_featurize_data(from_file, img_size, image_dim = 3):
-
-    
-
-    # reshape input into format Conv2D layer likes
-    X_train = X_train.reshape(X_train.shape[0], img_rows, img_cols, image_dim)
-    X_test = X_test.reshape(X_test.shape[0], img_rows, img_cols, image_dim)
-    X_holdout = X_holdout.reshape(X_holdout.shape[0], img_rows, img_cols, image_dim)
-
-    # don't change conversion or normalization
-    X_train = X_train.astype('float32') # data was uint8 [0-255]
-    X_test = X_test.astype('float32')  # data was uint8 [0-255]
-    X_holdout = X_holdout.astype('float32')
-    X_train /= 255 # normalizing (scaling from 0 to 1)
-    X_test /= 255  # normalizing (scaling from 0 to 1)
-    X_holdout /= 255
-
-    print('X_train shape:', X_train.shape)
-    print(X_train.shape[0], 'train samples')
-    print(X_test.shape[0], 'test samples')
-    print(X_holdout.shape[0], 'holdout samples')
-
-    # convert class vectors to binary class matrices (don't change)
-    Y_train = to_categorical(y_train, nb_classes) # cool
-    Y_test = to_categorical(y_test, nb_classes)   
-    Y_holdout = to_categorical(y_holdout, nb_classes)
-    # in Ipython you should compare Y_test to y_test
-    return X_train, X_test, Y_train, Y_test, X_holdout, Y_holdout
 
 
 if __name__ == "__main__":
