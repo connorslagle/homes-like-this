@@ -2,8 +2,9 @@
 import pymongo
 import numpy as np
 import pandas as pd
-from datetime import date
+from datetime import datetime
 import os
+import pickle
 
 # sk imports
 from skimage import io
@@ -353,15 +354,20 @@ class ImagePipeline(MongoImporter):
         self._vectorize_features()
         self._vectorize_labels()
 
-    def build_Xy(self, use_grey_imgs=True):
+    def build_Xy(self, meta_from_csv={True:'2020-05-14_pg1_3_all.csv'}):
         '''
         Returns X,y mats for cnn
         '''
-        self.gray_images = use_grey_imgs
+        # self.gray_images = use_grey_imgs
         
         self.read()
         self.vectorize()
-        self.df = self.load_docs()
+        if meta_from_csv.keys[0]:
+            self.df = pd.read_csv('../data/metadata/{}'.format(
+                meta_from_csv.values[0]
+            ))
+        else:
+            self.df = self.load_docs()
 
         city = []
         idx = []
@@ -375,6 +381,8 @@ class ImagePipeline(MongoImporter):
 
         X_tt, X_holdout, y_tt, self.y_holdout = train_test_split(self.X, np.array(self.y), stratify=np.array(self.y))
         X_train, X_test, self.y_train, self.y_test = train_test_split(X_tt, y_tt,stratify=y_tt)
+
+        self._save_Xy()
 
         if self.gray_images:
             X_train = X_train.reshape(X_train.shape[0], 128, 128, 1)
@@ -395,9 +403,29 @@ class ImagePipeline(MongoImporter):
 
     def _save_Xy(self):
         '''
-        
+        Save Xy matrices as pkl files to use without calling pipeline
         '''
+        X_dict = {'train':self.X_train, 'test':self.X_test, 'holdout':self.X_holdout}
+        y_dict = {'train':self.y_train, 'test':self.y_test, 'holdout':self.y_holdout}
 
+        if self.gray_images:
+            color_tag = 'gray'
+        else: 
+            color_tag = 'rgb'
+        
+        X_fname = '../data/Xs/{}_{}'.format(
+            color_tag, str(datetime.now().date())
+        )
+        with open(X_fname, 'wb') as f:
+            pickle.dump(X_dict, f)
+        
+        y_fname = '../data/ys/{}_{}'.format(
+            color_tag, str(datetime.now().date())
+        )
+        with open(y_fname, 'wb') as f:
+            pickle.dump(y_dict, f)
+
+            
 
 
 if __name__ == "__main__":

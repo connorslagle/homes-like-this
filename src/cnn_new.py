@@ -54,8 +54,10 @@ class Autoencoder():
 
         if use_color_img:
             inputs = keras.Input(shape=(128,128,3))
+            out_filter = 3
         else:
             inputs = keras.Input(shape=(128,128,1))
+            out_filter = 1
             
         layer_list = []
         for encode_layer in range(num_encode_layers):
@@ -136,7 +138,7 @@ class Autoencoder():
 
         layer_list.append(
             layers.Conv2D(
-                    filters=3,
+                    filters=out_filter,
                     kernel_size=(3,3),
                     strides=(1,1),
                     padding='same',
@@ -262,6 +264,6 @@ class Autoencoder():
 
 if __name__ == "__main__":
     model = Autoencoder()
-    model.build_autoencoder()
+    model.build_autoencoder(use_color_img=False)
     model1 = model.encoder_decoder
     print(model1.summary())
