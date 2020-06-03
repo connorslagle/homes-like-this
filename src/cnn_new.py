@@ -1,5 +1,7 @@
 # conventional import
 import numpy as np
+import pickle
+from datetime import datetime
 
 # tf imports
 import tensorflow as tf
@@ -20,6 +22,19 @@ class Autoencoder():
         '''
         self.encoded_images = []
         self.encoder = None
+        self.latent = None
+        self.encoder_decoder = None
+        self.config = None
+
+
+    def use_gpu(self):
+        '''
+        Sets tf environment for gpu operation
+        '''
+        self.config = tf.compat.v1.ConfigProto()
+        self.config.gpu_options.allow_growth = True
+        tf.compat.v1.Session(config=self.config)
+
 
     def build_autoencoder(self, use_color_img=True):
         '''
@@ -128,6 +143,55 @@ class Autoencoder():
             loss='mean_squared_error'
         )
 
+    
+    def fit_(self, X_train, X_test, num_epochs, batch_size_, callbacks=None):
+        '''
+        Fits Autoencoder to data
+        '''
+        self.NAME = "new_ae_10eps_10batch_128_5down5up_50do_128feats_listings"
+
+        if callbacks is not None:
+
+            self.encoder_decoder.fit(X_train, X_train,
+                epochs=num_epochs,
+                batch_size=batch_size_,
+                validation_data=(X_test,X_test),
+                callbacks=callbacks)
+        else:
+            self.encoder_decoder.fit(X_train, X_train,
+                epochs=num_epochs,
+                batch_size=batch_size_,
+                validation_data=(X_test,X_test))
+            
+
+    def kmean_cluster(self, num_clusters):
+        '''
+        Cluster encoded images to means
+        '''
+        pass
+
+
+    def save_model(self):
+        '''
+        Method to save model and latent features
+        '''
+        self.encoder_decoder.save('../models/{}_{}_{}'.format(
+            self.NAME, str(datetime.now().date()), str(datetime.now().time())
+        ))
+
+        with open('../models/{}_{}_{}_xtest_encode.pkl'.format(
+            self.NAME, str(datetime.now().date()), str(datetime.now().time())
+        ), 'wb') as f:
+            pickle.dump(self.latent,f)
+
+
+    def load_model(self,model_fname, latent_fname):
+        '''
+        Load previously saved model and latent features.
+        '''
+        self.encoder_decoder = keras.models.load_model('../models/{}'.format(model_fname))
+        with open('../models/{}'.format(latent_fname), 'rb') as f:
+            self.latent = pickle.load(f)
 
 
 if __name__ == "__main__":
