@@ -12,11 +12,11 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Run cnn on AWS')
     parser.add_argument('-e','--epochs',help='Set number of Epochs to run')
     parser.add_argument('-b','--batchsize',help='Set batch size for training')
-    parser.add_argument('-g','--grayscale', help='Use grayscale imgs, bool')
+    parser.add_argument('-g','--grayscale', help='Use grayscale imgs, bool, 0 or 1')
     args = parser.parse_args()
 
     # grayscale tag
-    use_gray = bool(args.grayscale)
+    use_gray = bool(int(args.grayscale))
 
     if use_gray:
         # load data
