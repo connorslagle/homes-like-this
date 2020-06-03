@@ -196,6 +196,7 @@ class MongoImporter():
 class ImagePipeline(MongoImporter):
     '''
     Class for importing, processing and featurizing images.
+    Subclass of MongoImporter to add img clusters to db
     '''
 
     def __init__(self, image_dir, gray_imgs=True):
@@ -354,7 +355,7 @@ class ImagePipeline(MongoImporter):
         self._vectorize_features()
         self._vectorize_labels()
 
-    def build_Xy(self, meta_from_csv={True:'2020-05-14_pg1_3_all.csv'}):
+    def build_Xy(self, meta_from_csv={True:'2020-05-14_pg1_3_all.csv'}, set_seed=True):
         '''
         Returns X,y mats for cnn
         '''
@@ -367,6 +368,7 @@ class ImagePipeline(MongoImporter):
                 meta_from_csv.values[0]
             ))
         else:
+            # need mongo
             self.df = self.load_docs()
 
         city = []
@@ -379,8 +381,12 @@ class ImagePipeline(MongoImporter):
         self.X = self.features[idx,:]
         self.y = [self.city_dict[key] for key in city]
 
-        X_tt, X_holdout, y_tt, self.y_holdout = train_test_split(self.X, np.array(self.y), stratify=np.array(self.y))
-        X_train, X_test, self.y_train, self.y_test = train_test_split(X_tt, y_tt,stratify=y_tt)
+        if set_seed:
+            X_tt, X_holdout, y_tt, self.y_holdout = train_test_split(self.X, np.array(self.y), stratify=np.array(self.y), random_state=33)
+            X_train, X_test, self.y_train, self.y_test = train_test_split(X_tt, y_tt,stratify=y_tt, random_state=33)
+        else:
+            X_tt, X_holdout, y_tt, self.y_holdout = train_test_split(self.X, np.array(self.y), stratify=np.array(self.y))
+            X_train, X_test, self.y_train, self.y_test = train_test_split(X_tt, y_tt,stratify=y_tt)
 
         self._save_Xy()
 
@@ -424,8 +430,6 @@ class ImagePipeline(MongoImporter):
         )
         with open(y_fname, 'wb') as f:
             pickle.dump(y_dict, f)
-
-            
 
 
 if __name__ == "__main__":

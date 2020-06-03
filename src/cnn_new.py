@@ -19,10 +19,11 @@ from sklearn.metrics.pairwise import cosine_distances
 
 
 class Autoencoder():
-    def __init__(self):
+    def __init__(self, gray_imgs=True):
         '''
         This class will build CNN autoencoder.
         '''
+        self.gray_imgs = True
         self._clear_variables()
 
     def _clear_variables(self):
@@ -43,7 +44,7 @@ class Autoencoder():
         self.config.gpu_options.allow_growth = True
         tf.compat.v1.Session(config=self.config)
 
-    def build_autoencoder(self, use_color_img=True):
+    def build_autoencoder(self):
         '''
         Functional API build of model
         input shape = (128,128,x) where x=1,3 1=greyscale
@@ -52,12 +53,12 @@ class Autoencoder():
         init_num_filters = 128
         num_encode_layers = 5
 
-        if use_color_img:
-            inputs = keras.Input(shape=(128,128,3))
-            out_filter = 3
-        else:
+        if self.gray_imgs:
             inputs = keras.Input(shape=(128,128,1))
             out_filter = 1
+        else:
+            inputs = keras.Input(shape=(128,128,3))
+            out_filter = 3
             
         layer_list = []
         for encode_layer in range(num_encode_layers):
@@ -146,8 +147,8 @@ class Autoencoder():
             )(layer_list[-1])
         )
 
-        self.encoder_decoder = keras.Model(inputs, layer_list[-1])
-        self.encoder_decoder.compile(
+        self.autoencoder = keras.Model(inputs, layer_list[-1])
+        self.autoencoder.compile(
             optimizer='adam',
             loss='mean_squared_error'
         )
@@ -156,30 +157,39 @@ class Autoencoder():
         '''
         Fits Autoencoder to data
         '''
-        self.NAME = "new_ae_{}eps_{}batch_128_5down5up_50do_128feats_listings".format(
-            num_epochs, batch_size_
-        )
+        if self.gray_imgs:
+            self.NAME = "new_ae_{}_{}eps_{}batch_128_5down5up_50do_128feats_listings".format(
+                'gray', num_epochs, batch_size_
+            )
+        else:
+            self.NAME = "new_ae_{}_{}eps_{}batch_128_5down5up_50do_128feats_listings".format(
+                'color', num_epochs, batch_size_
+            )
+
 
         if use_gpu:
             self._use_gpu()
 
         if with_tensorboard:
-            self.encoder_decoder.fit(X_train, X_train,
+            self.autoencoder.fit(X_train, X_train,
                 epochs=num_epochs,
                 batch_size=batch_size_,
                 validation_data=(X_test,X_test),
                 callbacks=TensorBoard(log_dir='../logs/{}'.format(self.NAME)))
         else:
-            self.encoder_decoder.fit(X_train, X_train,
+            self.autoencoder.fit(X_train, X_train,
                 epochs=num_epochs,
                 batch_size=batch_size_,
                 validation_data=(X_test,X_test))
             
-    def kmean_cluster(self, X_test, num_clusters):
+    def kmean_cluster(self, X_test, num_clusters, set_seed=True):
         '''
         Cluster encoded images to means
         '''
-        self.kmeans = KMeans(n_clusters=num_clusters)
+        if set_seed:
+            self.kmeans = KMeans(n_clusters=num_clusters, random_state=33)
+        else:
+            self.kmeans = KMeans(n_clusters=num_clusters)
         self.kmeans.fit(X_test)
     
     def elbow_plot(self, X_test, max_k, f_name):
@@ -235,7 +245,7 @@ class Autoencoder():
         '''
         Method to save model and latent features
         '''
-        self.encoder_decoder.save('../models/{}_{}_{}'.format(
+        self.autoencoder.save('../models/{}_{}_{}'.format(
             self.NAME, str(datetime.now().date()), str(datetime.now().time())
         ))
 
@@ -250,7 +260,7 @@ class Autoencoder():
         '''
         self._clear_variables()
 
-        self.encoder_decoder = keras.models.load_model('../models/{}'.format(model_fname))
+        self.autoencoder = keras.models.load_model('../models/{}'.format(model_fname))
         with open('../models/{}'.format(latent_fname), 'rb') as f:
             self.latent = pickle.load(f)
     
@@ -263,7 +273,7 @@ class Autoencoder():
 
 
 if __name__ == "__main__":
-    model = Autoencoder()
-    model.build_autoencoder(use_color_img=False)
-    model1 = model.encoder_decoder
+    model = Autoencoder(gray_imgs=True)
+    model.build_autoencoder()
+    model1 = model.autoencoder
     print(model1.summary())

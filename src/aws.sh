@@ -12,6 +12,8 @@ mkdir -p ~/homes-like-this/data/proc_imgs/128/color
 mkdir -p ~/homes-like-this/data/proc_imgs/128/gray
 mkdir -p ~/homes-like-this/data/Xs
 mkdir -p ~/homes-like-this/data/ys
+mkdir -p ~/homes-like-this/models
+
 
 # load imgs from s3
 export AWS_PROFILE='connor_iam'
