@@ -388,6 +388,10 @@ class ImagePipeline(MongoImporter):
             X_tt, X_holdout, y_tt, self.y_holdout = train_test_split(self.X, np.array(self.y), stratify=np.array(self.y))
             X_train, X_test, self.y_train, self.y_test = train_test_split(X_tt, y_tt,stratify=y_tt)
 
+        self.X_train_ravel = X_train
+        self.X_test_ravel = X_test
+        self.X_holdout_ravel = X_holdout
+        
         self._save_Xy()
 
         if self.gray_images:
@@ -411,7 +415,7 @@ class ImagePipeline(MongoImporter):
         '''
         Save Xy matrices as pkl files to use without calling pipeline
         '''
-        X_dict = {'train':self.X_train, 'test':self.X_test, 'holdout':self.X_holdout}
+        X_dict = {'train':self.X_train_ravel, 'test':self.X_test_ravel, 'holdout':self.X_holdout_ravel}
         y_dict = {'train':self.y_train, 'test':self.y_test, 'holdout':self.y_holdout}
 
         if self.gray_images:
