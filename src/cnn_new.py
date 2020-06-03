@@ -24,7 +24,7 @@ class Autoencoder():
         '''
         This class will build CNN autoencoder.
         '''
-        self.gray_imgs = True
+        self.gray_imgs = gray_imgs
         self._clear_variables()
 
     def _clear_variables(self):
