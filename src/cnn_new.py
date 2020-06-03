@@ -171,7 +171,7 @@ class Autoencoder():
             self._use_gpu()
 
         if with_tensorboard:
-            tb_callback = TensorBoard(log_dir='../logs/{}'.format(self.NAME))
+            tb_callback = TensorBoard(log_dir='../logs/{}'.format(self.NAME), update_freq='epoch')
 
             self.autoencoder.fit(X_train, X_train,
                 epochs=num_epochs,
