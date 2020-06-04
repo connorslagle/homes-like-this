@@ -174,11 +174,11 @@ class Autoencoder():
         Fits Autoencoder to data
         '''
         if self.gray_imgs:
-            self.NAME = "ae_convT_{}_{}eps_{}batch_128_5down5up_50doall_2mnorm_128feats_listings".format(
+            self.NAME = "ae_convT_{}_{}eps_{}batch_128_5down5up_50doall_2norm_128feats_listings".format(
                 'gray', num_epochs, batch_size_
             )
         else:
-            self.NAME = "ae_convT_{}_{}eps_{}batch_128_5down5up_50doall_2mnorm_128feats_listings".format(
+            self.NAME = "ae_convT_{}_{}eps_{}batch_128_5down5up_50doall_2norm_128feats_listings".format(
                 'color', num_epochs, batch_size_
             )
 
