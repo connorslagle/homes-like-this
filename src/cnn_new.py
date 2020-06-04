@@ -122,7 +122,7 @@ class Autoencoder():
 
         for decode_layer in range(num_encode_layers)[::-1]:
             layer_list.append(
-                layers.Conv2D(
+                layers.Conv2DTranspose(
                     filters=(init_num_filters // (2**decode_layer)),
                     kernel_size=(3,3),
                     strides=(1,1),
@@ -138,7 +138,7 @@ class Autoencoder():
             )
 
         layer_list.append(
-            layers.Conv2D(
+            layers.Conv2DTranspose(
                     filters=out_filter,
                     kernel_size=(3,3),
                     strides=(1,1),
@@ -158,11 +158,11 @@ class Autoencoder():
         Fits Autoencoder to data
         '''
         if self.gray_imgs:
-            self.NAME = "new_ae_{}_{}eps_{}batch_128_5down5up_50do_128feats_listings".format(
+            self.NAME = "ae_convT_{}_{}eps_{}batch_128_5down5up_50do_128feats_listings".format(
                 'gray', num_epochs, batch_size_
             )
         else:
-            self.NAME = "new_ae_{}_{}eps_{}batch_128_5down5up_50do_128feats_listings".format(
+            self.NAME = "ae_convT_{}_{}eps_{}batch_128_5down5up_50do_128feats_listings".format(
                 'color', num_epochs, batch_size_
             )
 
