@@ -12,7 +12,7 @@ from tensorflow import keras
 from tensorflow.keras import layers
 from tensorflow.keras.callbacks import TensorBoard
 from tensorflow.keras import backend as K
-from tensorflow.keras.preprocessing import ImageDataGenerator
+from tensorflow.keras.preprocessing.image import ImageDataGenerator
 
 # sk imports
 from sklearn.cluster import KMeans
