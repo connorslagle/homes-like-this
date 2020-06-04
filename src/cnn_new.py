@@ -188,13 +188,13 @@ class Autoencoder():
 
                 self.autoencoder.fit(datagen.flow(X_train, X_train, batch_size=batch_size_),
                     epochs=num_epochs,
-                    steps_per_batch=len(X_test)/batch_size_,
+                    steps_per_epoch=len(X_test)/batch_size_,
                     validation_data=(X_test,X_test),
                     callbacks=[tb_callback])
             else:
                 self.autoencoder.fit(datagen.flow(X_train, X_train, batch_size=batch_size_),
                     epochs=num_epochs,
-                    steps_per_batch=len(X_test)/batch_size_,
+                    steps_per_epoch=len(X_test)/batch_size_,
                     validation_data=(X_test,X_test))
         else:
             if with_tensorboard:
