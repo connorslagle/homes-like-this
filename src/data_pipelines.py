@@ -435,6 +435,8 @@ class ImagePipeline(MongoImporter):
         with open(y_fname, 'wb') as f:
             pickle.dump(y_dict, f)
 
+    
+
 
 if __name__ == "__main__":
     # importer = MongoImporter()

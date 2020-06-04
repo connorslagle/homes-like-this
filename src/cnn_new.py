@@ -319,6 +319,30 @@ class Autoencoder():
                 final_layers = np.vstack((final_layers,layer_output))
         self.latent = final_layers
 
+    def load_Xy(self, date):
+        '''
+        Load Xy matrices to use without calling pipeline.
+        '''
+        if self.gray_imgs:
+            X_fname = '../data/Xs/gray_{}'.format(date)
+            with open(X_fname, 'rb') as f:
+                self.X_gray = pickle.load(f)
+            y_fname = '../data/ys'
+            with open(X_fname, 'rb') as f:
+                self.X_gray = pickle.load(f)
+        else: 
+            X_fname = '../data/Xs/rgb_{}'.format(date)
+            with open(X_fname, 'rb') as f:
+                self.X_rgb = pickle.load(f)
+        
+        
+        
+        y_fname = '../data/ys/{}_{}'.format(
+            color_tag, str(datetime.now().date())
+        )
+        with open(y_fname, 'wb') as f:
+            pickle.dump(y_dict, f)
+
 
 if __name__ == "__main__":
     model = Autoencoder(gray_imgs=True)
