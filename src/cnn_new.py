@@ -83,6 +83,12 @@ class Autoencoder():
                     )(layer_list[-1])
                 )
 
+                layer_list.append(
+                    layers.SpatialDropout2D(
+                        rate=0.5
+                    )(layer_list[-1])
+                )
+
             else:
                 layer_list.append(
                     layers.Conv2D(
@@ -100,13 +106,12 @@ class Autoencoder():
                         padding='same'
                     )(layer_list[-1])
                 )
-        
 
-        layer_list.append(
-            layers.SpatialDropout2D(
-                rate=0.5
-            )(layer_list[-1])
-        )
+                layer_list.append(
+                    layers.SpatialDropout2D(
+                        rate=0.5
+                    )(layer_list[-1])
+                )
 
         layer_list.append(
             layers.Flatten()(layer_list[-1])
@@ -310,7 +315,7 @@ class Autoencoder():
         batches = np.split(X_test,X_test.shape[0])
         for i,batch in enumerate(batches):
             get_layer_output = K.function([self.autoencoder.layers[0].input],
-                                        [self.autoencoder.layers[12].output])
+                                        [self.autoencoder.layers[16].output])
             layer_output = get_layer_output([batch])[0]
 
             if i == 0:
@@ -327,21 +332,17 @@ class Autoencoder():
             X_fname = '../data/Xs/gray_{}'.format(date)
             with open(X_fname, 'rb') as f:
                 self.X_gray = pickle.load(f)
-            y_fname = '../data/ys'
-            with open(X_fname, 'rb') as f:
-                self.X_gray = pickle.load(f)
+            y_fname = '../data/ys/gray_{}'.format(date)
+            with open(y_fname, 'rb') as f:
+                self.y_gray = pickle.load(f)
         else: 
             X_fname = '../data/Xs/rgb_{}'.format(date)
             with open(X_fname, 'rb') as f:
-                self.X_rgb = pickle.load(f)
+                self.X_gray = pickle.load(f)
+            y_fname = '../data/ys/rgb_{}'.format(date)
+            with open(y_fname, 'rb') as f:
+                self.y_gray = pickle.load(f)
         
-        
-        
-        y_fname = '../data/ys/{}_{}'.format(
-            color_tag, str(datetime.now().date())
-        )
-        with open(y_fname, 'wb') as f:
-            pickle.dump(y_dict, f)
 
 
 if __name__ == "__main__":
