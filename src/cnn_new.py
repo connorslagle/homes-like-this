@@ -171,6 +171,8 @@ class Autoencoder():
             self._use_gpu()
 
         if data_aug:
+            self.NAME = self.NAME + '_datagen'
+
             datagen = ImageDataGenerator(
                 featurewise_center=True,
                 featurewise_std_normalization=True,
