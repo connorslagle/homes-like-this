@@ -136,13 +136,20 @@ class Autoencoder():
                     kernel_size=(3,3),
                     strides=(1,1),
                     padding='same',
-                    activation='relu'
+                    activation='relu',
+                    kernel_constraint=max_norm(max_norm_value)
                 )(layer_list[-1])
             )
 
             layer_list.append(
                 layers.UpSampling2D(
                     size=(2,2)
+                )(layer_list[-1])
+            )
+
+            layer_list.append(
+                layers.SpatialDropout2D(
+                    rate=0.5
                 )(layer_list[-1])
             )
 
