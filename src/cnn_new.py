@@ -74,7 +74,7 @@ class Autoencoder():
                     padding='same',
                     activation='relu',
                     use_bias=True,
-                    kernel_constraint=max_norm(max_norm_value)
+                    kernel_constraint=max_norm(max_norm_value, axis=[0,1,2])
                 )(inputs)
 
                 layer_list.append(encode_1)
@@ -100,7 +100,7 @@ class Autoencoder():
                         strides=(1,1),
                         padding='same',
                         activation='relu',
-                        kernel_constraint=max_norm(max_norm_value)
+                        kernel_constraint=max_norm(max_norm_value, axis=[0,1,2])
                     )(layer_list[-1])
                 )
 
@@ -137,7 +137,7 @@ class Autoencoder():
                     strides=(1,1),
                     padding='same',
                     activation='relu',
-                    kernel_constraint=max_norm(max_norm_value)
+                    kernel_constraint=max_norm(max_norm_value, axis=[0,1,2])
                 )(layer_list[-1])
             )
 
