@@ -13,6 +13,7 @@ from tensorflow.keras import layers
 from tensorflow.keras.callbacks import TensorBoard
 from tensorflow.keras import backend as K
 from tensorflow.keras.preprocessing.image import ImageDataGenerator
+from tensorflow.keras.constraints import max_norm
 
 # sk imports
 from sklearn.cluster import KMeans
@@ -52,6 +53,7 @@ class Autoencoder():
         input shape = (128,128,x) where x=1,3 1=greyscale
         num encode/decode layers = 5
         '''
+        max_norm_value = 2.0
         init_num_filters = 128
         num_encode_layers = 5
 
@@ -71,7 +73,8 @@ class Autoencoder():
                     strides=(1,1),
                     padding='same',
                     activation='relu',
-                    use_bias=True
+                    use_bias=True,
+                    kernel_constraint=max_norm(max_norm_value)
                 )(inputs)
 
                 layer_list.append(encode_1)
@@ -96,7 +99,8 @@ class Autoencoder():
                         kernel_size=(3,3),
                         strides=(1,1),
                         padding='same',
-                        activation='relu'
+                        activation='relu',
+                        kernel_constraint=max_norm(max_norm_value)
                     )(layer_list[-1])
                 )
 
@@ -163,11 +167,11 @@ class Autoencoder():
         Fits Autoencoder to data
         '''
         if self.gray_imgs:
-            self.NAME = "ae_convT_{}_{}eps_{}batch_128_5down5up_50do_128feats_listings".format(
+            self.NAME = "ae_convT_{}_{}eps_{}batch_128_5down5up_50do_2mnorm_128feats_listings".format(
                 'gray', num_epochs, batch_size_
             )
         else:
-            self.NAME = "ae_convT_{}_{}eps_{}batch_128_5down5up_50do_128feats_listings".format(
+            self.NAME = "ae_convT_{}_{}eps_{}batch_128_5down5up_50do_2mnorm_128feats_listings".format(
                 'color', num_epochs, batch_size_
             )
 
