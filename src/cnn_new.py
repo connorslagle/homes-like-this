@@ -12,6 +12,7 @@ from tensorflow import keras
 from tensorflow.keras import layers
 from tensorflow.keras.callbacks import TensorBoard
 from tensorflow.keras import backend as K
+from tensorflow.keras.preprocessing import ImageDataGenerator
 
 # sk imports
 from sklearn.cluster import KMeans
@@ -152,7 +153,7 @@ class Autoencoder():
             loss='mean_squared_error'
         )
 
-    def fit_(self, X_train, X_test, num_epochs, batch_size_, use_gpu=True, with_tensorboard=True):
+    def fit_(self, X_train, X_test, num_epochs, batch_size_, use_gpu=True, data_aug=True, with_tensorboard=True):
         '''
         Fits Autoencoder to data
         '''
@@ -169,19 +170,44 @@ class Autoencoder():
         if use_gpu:
             self._use_gpu()
 
-        if with_tensorboard:
-            tb_callback = TensorBoard(log_dir='../logs/{}'.format(self.NAME), update_freq='epoch')
+        if data_aug:
+            datagen = ImageDataGenerator(
+                featurewise_center=True,
+                featurewise_std_normalization=True,
+                rotation_range=20,
+                width_shift_range=0.2,
+                height_shift_range=0.2,
+                horizontal_flip=True
+            )
+            datagen.fit(X_train)
 
-            self.autoencoder.fit(X_train, X_train,
-                epochs=num_epochs,
-                batch_size=batch_size_,
-                validation_data=(X_test,X_test),
-                callbacks=[tb_callback])
+            if with_tensorboard:
+                tb_callback = TensorBoard(log_dir='../logs/{}'.format(self.NAME), update_freq='epoch')
+
+                self.autoencoder.fit(datagen.flow(X_train, X_train, batch_size=batch_size_),
+                    epochs=num_epochs,
+                    steps_per_batch=len(X_test)/batch_size_,
+                    validation_data=(X_test,X_test),
+                    callbacks=[tb_callback])
+            else:
+                self.autoencoder.fit(datagen.flow(X_train, X_train, batch_size=batch_size_),
+                    epochs=num_epochs,
+                    steps_per_batch=len(X_test)/batch_size_,
+                    validation_data=(X_test,X_test))
         else:
-            self.autoencoder.fit(X_train, X_train,
-                epochs=num_epochs,
-                batch_size=batch_size_,
-                validation_data=(X_test,X_test))
+            if with_tensorboard:
+                tb_callback = TensorBoard(log_dir='../logs/{}'.format(self.NAME), update_freq='epoch')
+
+                self.autoencoder.fit(X_train, X_train,
+                    epochs=num_epochs,
+                    batch_size=batch_size_,
+                    validation_data=(X_test,X_test),
+                    callbacks=[tb_callback])
+            else:
+                self.autoencoder.fit(X_train, X_train,
+                    epochs=num_epochs,
+                    batch_size=batch_size_,
+                    validation_data=(X_test,X_test))
 
         self._extract_latent(X_test)
             
