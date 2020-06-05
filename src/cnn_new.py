@@ -280,7 +280,7 @@ class Autoencoder():
             fig, axes = plt.subplots(3,3,figsize=(12,12))
             for ax, img in zip(axes.flatten(), tops[label]):
                 if self.gray_imgs:
-                    ax.imshow(img.squeeze())
+                    ax.imshow(img.squeeze(), cmap='gray')
                 else:
                     ax.imshow(img)
                 ax.set_axis_off()
