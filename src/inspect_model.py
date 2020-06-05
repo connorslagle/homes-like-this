@@ -65,7 +65,7 @@ if __name__ == "__main__":
     # gray.kmean_cluster(gray.latent,7)
     rgb._extract_latent(X_rgb_holdout)
     rgb.kmean_cluster(rgb.latent,7,set_seed=False)
-    rgb.top_9_from_clusters(X_rgb_holdout,rgb.latent, 'RGB Latent Holdout', gray_imgs=False)
+    # rgb.top_9_from_clusters(X_rgb_holdout,rgb.latent, 'RGB Latent Holdout', gray_imgs=False)
 
     rgb.elbow_plot(rgb.latent,20,'Color_Only')
 
@@ -76,14 +76,14 @@ if __name__ == "__main__":
 
     gray._extract_latent(X_gray_holdout)
     gray.kmean_cluster(gray.latent,7,set_seed=False)
-    rgb.top_9_from_clusters(X_gray_holdout, gray.latent, 'Gray Latent Holdout')
+    # rgb.top_9_from_clusters(X_gray_holdout, gray.latent, 'Gray Latent Holdout')
 
     gray.elbow_plot(gray.latent,20,'Gray_Only')
 
     combo = np.hstack((rgb.latent,gray.latent))
 
     rgb.kmean_cluster(combo,7,set_seed=False)
-    rgb.top_9_from_clusters(X_rgb_holdout, combo, 'Ensemble Latent Holdout', gray_imgs=False)
+    # rgb.top_9_from_clusters(X_rgb_holdout, combo, 'Ensemble Latent Holdout', gray_imgs=False)
 
     rgb.elbow_plot(combo,20,'Ensemble')
 
