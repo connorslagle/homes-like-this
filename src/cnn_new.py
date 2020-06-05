@@ -258,7 +258,7 @@ class Autoencoder():
 
         self._save_fig('elbow_{}.png'.format(f_name))
 
-    def top_9_from_clusters(self, X_test, latent, model_name):
+    def top_9_from_clusters(self, X_test, latent, model_name, gray_imgs=True):
         '''
         Plot top 9 from each cluster in 3x3 grid
         '''
@@ -279,7 +279,7 @@ class Autoencoder():
         for label in np.unique(cluster_labels)[::1]:
             fig, axes = plt.subplots(3,3,figsize=(12,12))
             for ax, img in zip(axes.flatten(), tops[label]):
-                if self.gray_imgs:
+                if gray_imgs:
                     ax.imshow(img.squeeze(), cmap='gray')
                 else:
                     ax.imshow(img)

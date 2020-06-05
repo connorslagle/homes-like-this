@@ -65,13 +65,13 @@ if __name__ == "__main__":
     # gray.kmean_cluster(gray.latent,7)
     rgb._extract_latent(X_rgb_holdout)
     rgb.kmean_cluster(rgb.latent,7,set_seed=False)
-    rgb.top_9_from_clusters(X_rgb_holdout,rgb.latent, 'RGB Latent Holdout')
+    rgb.top_9_from_clusters(X_rgb_holdout,rgb.latent, 'RGB Latent Holdout', gray_imgs=False)
 
     gray._extract_latent(X_gray_holdout)
     gray.kmean_cluster(gray.latent,7,set_seed=False)
-    gray.top_9_from_clusters(X_gray_holdout, gray.latent, 'Gray Latent Holdout')
+    rgb.top_9_from_clusters(X_gray_holdout, gray.latent, 'Gray Latent Holdout')
 
     combo = np.hstack((rgb.latent,gray.latent))
 
     rgb.kmean_cluster(combo,7,set_seed=False)
-    rgb.top_9_from_clusters(X_rgb_holdout, combo, 'Ensemble Latent Holdout')
+    rgb.top_9_from_clusters(X_rgb_holdout, combo, 'Ensemble Latent Holdout', gray_imgs=False)
