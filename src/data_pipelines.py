@@ -385,7 +385,7 @@ class ImagePipeline(MongoImporter):
             X_tt, X_holdout, y_tt, self.y_holdout = train_test_split(self.X, np.array(self.y), stratify=np.array(self.y), random_state=33)
             X_train, X_test, self.y_train, self.y_test = train_test_split(X_tt, y_tt,stratify=y_tt, random_state=33)
         else:
-            X_tt, X_holdout, y_tt, self.y_holdout = train_test_split(self.X, np.array(self.y), stratify=np.array(self.y))
+            X_tt, X_holdout, y_tt, self.y_holdout = train_test_split(self.X, np.array(self.y), stratify=np.array(self.y), random_state=33)
             X_train, X_test, self.y_train, self.y_test = train_test_split(X_tt, y_tt,stratify=y_tt)
 
         self.X_train_ravel = X_train
