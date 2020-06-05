@@ -4,7 +4,7 @@ import pickle
 from datetime import datetime
 import matplotlib.pyplot as plt
 plt.style.use('ggplot')
-plt.rcParams.update({'font.size': 18})
+plt.rcParams.update({'font.size': 20})
 import pdb
 
 # tf imports
