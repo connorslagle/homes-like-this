@@ -16,12 +16,12 @@ if __name__ == "__main__":
     tf.compat.v1.Session(config=config)
 
     # model names updated on friday
-    gray_fname = 'models/rand_ae_convT_gray_3eps_128batch_128_5down5up_50do_2norm_128feats_2020-06-05_11:49:49.291655_datagen_2020-06-05_11:53:46.657751'
-    rgb_fname = 'models/rand_ae_convT_color_5eps_128batch_128_5down5up_50do_2norm_128feats_2020-06-05_11:56:06.697486_datagen_2020-06-05_12:00:55.866913'
+    gray_fname = 'rand_ae_convT_gray_3eps_128batch_128_5down5up_50do_2norm_128feats_2020-06-05_11:49:49.291655_datagen_2020-06-05_11:53:46.657751'
+    rgb_fname = 'rand_ae_convT_color_5eps_128batch_128_5down5up_50do_2norm_128feats_2020-06-05_11:56:06.697486_datagen_2020-06-05_12:00:55.866913'
 
     # latent fnames
-    gray_latent_fname = 'models/rand_ae_convT_gray_3eps_128batch_128_5down5up_50do_2norm_128feats_2020-06-05_11:49:49.291655_datagen_2020-06-05_11:53:47.323588_xtest_encode.pkl'
-    rgb_latent_fname = 'models/rand_ae_convT_color_5eps_128batch_128_5down5up_50do_2norm_128feats_2020-06-05_11:56:06.697486_datagen_2020-06-05_12:00:56.525856_xtest_encode.pkl'
+    gray_latent_fname = 'rand_ae_convT_gray_3eps_128batch_128_5down5up_50do_2norm_128feats_2020-06-05_11:49:49.291655_datagen_2020-06-05_11:53:47.323588_xtest_encode.pkl'
+    rgb_latent_fname = 'rand_ae_convT_color_5eps_128batch_128_5down5up_50do_2norm_128feats_2020-06-05_11:56:06.697486_datagen_2020-06-05_12:00:56.525856_xtest_encode.pkl'
 
     # load data
 
@@ -45,7 +45,7 @@ if __name__ == "__main__":
     # rgb.elbow_plot(rgb.latent,20,'Color_Only')
     # gray.elbow_plot(gray.latent,20,'Gray_Only')
 
-    combo = np.hstack((rgb.latent,gray.latent))
+    # combo = np.hstack((rgb.latent,gray.latent))
 
     # rgb.elbow_plot(combo,20,'Ensemble')
 
@@ -64,17 +64,17 @@ if __name__ == "__main__":
 
     # gray.kmean_cluster(gray.latent,7)
     rgb._extract_latent(X_rgb_holdout)
-    rgb.kmean_cluster(rgb.latent,7,set_seed=False)
-    rgb.top_9_from_clusters(X_rgb_holdout,rgb.latent, 'RGB Latent Holdout')
+    # rgb.kmean_cluster(rgb.latent,7,set_seed=False)
+    # rgb.top_9_from_clusters(X_rgb_holdout,rgb.latent, 'RGB Latent Holdout')
 
-    gray._extract_latent(X_rgb_holdout)
-    rgb.kmean_cluster(gray.latent,7,set_seed=False)
-    rgb.top_9_from_clusters(X_rgb_holdout, gray.latent, 'Gray Latent Holdout')
+    # gray._extract_latent(X_rgb_holdout)
+    # rgb.kmean_cluster(gray.latent,7,set_seed=False)
+    # rgb.top_9_from_clusters(X_rgb_holdout, gray.latent, 'Gray Latent Holdout')
 
-    combo = np.hstack((rgb.latent,gray.latent))
+    # combo = np.hstack((rgb.latent,gray.latent))
 
-    rgb.kmean_cluster(combo,7,set_seed=False)
-    rgb.top_9_from_clusters(X_rgb_holdout, combo, 'Ensemble Latent Holdout')
+    # rgb.kmean_cluster(combo,7,set_seed=False)
+    # rgb.top_9_from_clusters(X_rgb_holdout, combo, 'Ensemble Latent Holdout')
 
     # gray.top_9_from_clusters(X_rgb_test,gray_fname)
     # rgb.top_9_from_clusters(X_rgb_test, rgb_fname)
