@@ -67,6 +67,11 @@ if __name__ == "__main__":
     rgb.kmean_cluster(rgb.latent,7,set_seed=False)
     rgb.top_9_from_clusters(X_rgb_holdout,rgb.latent, 'RGB Latent Holdout', gray_imgs=False)
 
+    rgb_score = rgb.autoencoder.evaluate(X_rgb_holdout, X_rgb_holdout)
+    gray_score = gray.autoencoder.evaluate(X_gray_holdout, X_gray_holdout)
+
+    print('RGB RMSE: {}\tGray RMSE:{}'.format(np.round(rgb_score,2), np.round(gray_score,2))
+
     gray._extract_latent(X_gray_holdout)
     gray.kmean_cluster(gray.latent,7,set_seed=False)
     rgb.top_9_from_clusters(X_gray_holdout, gray.latent, 'Gray Latent Holdout')
