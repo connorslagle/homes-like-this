@@ -21,7 +21,7 @@ if __name__ == "__main__":
     if use_gray:
         # load data
         pipeline = ImagePipeline('../data/proc_imgs/128/gray')
-        pipeline.build_Xy()
+        pipeline.build_Xy(set_seed=False)
         X_train, X_test = pipeline.X_train, pipeline.X_test
 
         # build model
@@ -30,7 +30,7 @@ if __name__ == "__main__":
     else:
         # load data
         pipeline = ImagePipeline('../data/proc_imgs/128/color', gray_imgs=False)
-        pipeline.build_Xy()
+        pipeline.build_Xy(set_seed=False)
         X_train, X_test = pipeline.X_train, pipeline.X_test
 
         # build model
