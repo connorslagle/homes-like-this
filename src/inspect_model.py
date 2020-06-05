@@ -56,10 +56,10 @@ if __name__ == "__main__":
     X_rgb_holdout = X_rgb['holdout'].reshape(X_rgb['holdout'].shape[0], 128, 128, 3)
 
 
-    X_gray_test = X_gray_test.astype('float32') 
+    X_gray_holdout = X_gray_holdout.astype('float32') 
     X_rgb_holdout = X_rgb_holdout.astype('float32') 
 
-    X_gray_test = X_gray_test/255
+    X_gray_holdout = X_gray_holdout/255
     X_rgb_holdout = X_rgb_holdout/255    
 
     # gray.kmean_cluster(gray.latent,7)
