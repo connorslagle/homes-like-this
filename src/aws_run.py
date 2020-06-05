@@ -18,28 +18,28 @@ if __name__ == "__main__":
     # grayscale tag
     use_gray = bool(int(args.grayscale))
 
-    for _ in range(5):
-        if use_gray:
-            # load data
-            pipeline = ImagePipeline('../data/proc_imgs/128/gray')
-            pipeline.build_Xy(set_seed=False)
-            X_train, X_test = pipeline.X_train, pipeline.X_test
 
-            # build model
-            model = Autoencoder()
-            model.build_autoencoder()
-        else:
-            # load data
-            pipeline = ImagePipeline('../data/proc_imgs/128/color', gray_imgs=False)
-            pipeline.build_Xy(set_seed=False)
-            X_train, X_test = pipeline.X_train, pipeline.X_test
+    if use_gray:
+        # load data
+        pipeline = ImagePipeline('../data/proc_imgs/128/gray')
+        pipeline.build_Xy(set_seed=False)
+        X_train, X_test = pipeline.X_train, pipeline.X_test
 
-            # build model
-            model = Autoencoder(gray_imgs=False)
-            model.build_autoencoder()
+        # build model
+        model = Autoencoder()
+        model.build_autoencoder()
+    else:
+        # load data
+        pipeline = ImagePipeline('../data/proc_imgs/128/color', gray_imgs=False)
+        pipeline.build_Xy(set_seed=False)
+        X_train, X_test = pipeline.X_train, pipeline.X_test
 
-        # fit model
-        model.fit_(X_train, X_test, int(args.epochs), int(args.batchsize))
-        
-        # save
-        model.save_model()
+        # build model
+        model = Autoencoder(gray_imgs=False)
+        model.build_autoencoder()
+
+    # fit model
+    model.fit_(X_train, X_test, int(args.epochs), int(args.batchsize))
+    
+    # save
+    model.save_model()
