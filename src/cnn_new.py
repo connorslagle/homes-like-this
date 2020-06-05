@@ -309,8 +309,8 @@ class Autoencoder():
         '''
         self._clear_variables()
 
-        self.autoencoder = keras.models.load_model('../models_aws/{}'.format(model_fname))
-        with open('../models_aws/{}'.format(latent_fname), 'rb') as f:
+        self.autoencoder = keras.models.load_model('../models/{}'.format(model_fname))
+        with open('../models/{}'.format(latent_fname), 'rb') as f:
             self.latent = pickle.load(f)
     
     def _save_fig(self, file_name):
