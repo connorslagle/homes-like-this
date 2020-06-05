@@ -230,7 +230,7 @@ class Autoencoder():
 
         self._extract_latent(X_test)
             
-    def kmean_cluster(self, X_test, num_clusters, set_seed=True):
+    def kmean_cluster(self, latents, num_clusters, set_seed=True):
         '''
         Cluster encoded images to means
         '''
@@ -238,7 +238,7 @@ class Autoencoder():
             self.kmeans = KMeans(n_clusters=num_clusters, random_state=33)
         else:
             self.kmeans = KMeans(n_clusters=num_clusters)
-        self.kmeans.fit(X_test)
+        self.kmeans.fit(latents)
     
     def elbow_plot(self, latents, max_k, f_name):
         '''
@@ -258,7 +258,7 @@ class Autoencoder():
 
         self._save_fig('elbow_{}.png'.format(f_name))
 
-    def top_9_from_clusters(self, X_test, model_name):
+    def top_9_from_clusters(self, X_test, latent, model_name):
         '''
         Plot top 9 from each cluster in 3x3 grid
         '''
@@ -269,7 +269,7 @@ class Autoencoder():
         distances = {}
 
         for label in np.unique(cluster_labels)[::1]:
-            dist = cosine_distances(self.latent[np.where(cluster_labels == label)], centers[label,:].reshape(1,-1))
+            dist = cosine_distances(latent[np.where(cluster_labels == label)], centers[label,:].reshape(1,-1))
             top_dist = dist[np.argsort(dist.T)[::-1][0][:9]]
             top_ = X_test[np.argsort(dist.T)[::-1][0][:9]]
             tops[label] = top_
@@ -355,7 +355,7 @@ class Autoencoder():
             y_fname = '../data/ys_aws/rgb_{}'.format(date)
             with open(y_fname, 'rb') as f:
                 self.y_rgb = pickle.load(f)
-        
+
 
 
 if __name__ == "__main__":
