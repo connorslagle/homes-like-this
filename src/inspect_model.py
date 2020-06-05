@@ -33,14 +33,14 @@ if __name__ == "__main__":
     '''
     Elbow plots
     '''
-    # concat both feats for kmeans
-    # plot rgb/ gray only elbows
-    # rgb.elbow_plot(rgb.latent,20,'rgb_test')
-    # gray.elbow_plot(gray.latent,20,'gray_test')
+    concat both feats for kmeans
+    plot rgb/ gray only elbows
+    rgb.elbow_plot(rgb.latent,20,'Color_Only')
+    gray.elbow_plot(gray.latent,20,'Gray_Only')
 
     combo = np.hstack((rgb.latent,gray.latent))
 
-    # rgb.elbow_plot(combo,20,'combo_test')
+    rgb.elbow_plot(combo,20,'Ensemble')
 
     '''
     top 9 imgs
