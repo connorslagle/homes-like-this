@@ -279,7 +279,10 @@ class Autoencoder():
         for label in np.unique(cluster_labels)[::1]:
             fig, axes = plt.subplots(3,3,figsize=(12,12))
             for ax, img in zip(axes.flatten(), tops[label]):
-                ax.imshow(img)
+                if self.gray_imgs:
+                    ax.imshow(img.squeeze())
+                else:
+                    ax.imshow(img)
                 ax.set_axis_off()
             fig.suptitle('Top 9: Cluster {}\n Model: {}'.format(label, model_name))
             self._save_fig('clusters/top9_cluster_{}_{}.png'.format(label, model_name))
