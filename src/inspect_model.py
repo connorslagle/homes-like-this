@@ -52,7 +52,7 @@ if __name__ == "__main__":
     '''
     top 9 imgs
     '''
-    # X_gray_holdout = X_gray['holdout'].reshape(X_gray['holdout'].shape[0], 128, 128, 1)
+    X_gray_holdout = X_gray['holdout'].reshape(X_gray['holdout'].shape[0], 128, 128, 1)
     X_rgb_holdout = X_rgb['holdout'].reshape(X_rgb['holdout'].shape[0], 128, 128, 3)
 
 
@@ -67,9 +67,9 @@ if __name__ == "__main__":
     rgb.kmean_cluster(rgb.latent,7,set_seed=False)
     rgb.top_9_from_clusters(X_rgb_holdout,rgb.latent, 'RGB Latent Holdout')
 
-    gray._extract_latent(X_rgb_holdout)
-    rgb.kmean_cluster(gray.latent,7,set_seed=False)
-    rgb.top_9_from_clusters(X_rgb_holdout, gray.latent, 'Gray Latent Holdout')
+    gray._extract_latent(X_gray_holdout)
+    gray.kmean_cluster(gray.latent,7,set_seed=False)
+    gray.top_9_from_clusters(X_gray_holdout, gray.latent, 'Gray Latent Holdout')
 
     combo = np.hstack((rgb.latent,gray.latent))
 
