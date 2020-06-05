@@ -67,6 +67,8 @@ if __name__ == "__main__":
     rgb.kmean_cluster(rgb.latent,7,set_seed=False)
     rgb.top_9_from_clusters(X_rgb_holdout,rgb.latent, 'RGB Latent Holdout', gray_imgs=False)
 
+    rgb.elbow_plot(rgb.latent,20,'Color_Only')
+
     rgb_score = rgb.autoencoder.evaluate(X_rgb_holdout, X_rgb_holdout)
     gray_score = gray.autoencoder.evaluate(X_gray_holdout, X_gray_holdout)
 
@@ -76,7 +78,17 @@ if __name__ == "__main__":
     gray.kmean_cluster(gray.latent,7,set_seed=False)
     rgb.top_9_from_clusters(X_gray_holdout, gray.latent, 'Gray Latent Holdout')
 
+    gray.elbow_plot(gray.latent,20,'Gray_Only')
+
     combo = np.hstack((rgb.latent,gray.latent))
 
     rgb.kmean_cluster(combo,7,set_seed=False)
     rgb.top_9_from_clusters(X_rgb_holdout, combo, 'Ensemble Latent Holdout', gray_imgs=False)
+
+    rgb.elbow_plot(combo,20,'Ensemble')
+
+
+    '''
+    1393/1393 [==============================] - 4s 3ms/sample - loss: 0.0404       RGB
+    1393/1393 [==============================] - 3s 2ms/sample - loss: 0.0366       Gray
+    '''
