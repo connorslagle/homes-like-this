@@ -5,6 +5,7 @@ from datetime import datetime
 import matplotlib.pyplot as plt
 plt.style.use('ggplot')
 plt.rcParams.update({'font.size': 18})
+import pdb
 
 # tf imports
 import tensorflow as tf
@@ -147,11 +148,11 @@ class Autoencoder():
                 )(layer_list[-1])
             )
 
-            layer_list.append(
-                layers.SpatialDropout2D(
-                    rate=0.5
-                )(layer_list[-1])
-            )
+            # layer_list.append(
+            #     layers.SpatialDropout2D(
+            #         rate=0.5
+            #     )(layer_list[-1])
+            # )
 
         layer_list.append(
             layers.Conv2DTranspose(
@@ -239,7 +240,7 @@ class Autoencoder():
             self.kmeans = KMeans(n_clusters=num_clusters)
         self.kmeans.fit(X_test)
     
-    def elbow_plot(self, X_test, max_k, f_name):
+    def elbow_plot(self, latents, max_k, f_name):
         '''
         Plot elbow plot
         '''
@@ -247,17 +248,17 @@ class Autoencoder():
 
         rss_lst = []
         for k in range(1, max_k):
-            self.kmean_cluster(X_test, k)
+            self.kmean_cluster(latents, k)
             rss_lst.append(self.kmeans.inertia_)
         
         ax.plot(range(1, max_k), rss_lst)
         ax.set_ylabel('RSS')
         ax.set_xlabel('Number of Clusters')
-        ax.set_title('Elbow Plot for Model:\n{}'.format(self.NAME))
+        ax.set_title('Elbow Plot for Model:\n{}'.format(f_name))
 
-        self._save_fig('elbow_{}.png'.format(self.NAME))
+        self._save_fig('elbow_{}.png'.format(f_name))
 
-    def top_9_from_clusters(self, X_test):
+    def top_9_from_clusters(self, X_test, model_name):
         '''
         Plot top 9 from each cluster in 3x3 grid
         '''
@@ -268,19 +269,20 @@ class Autoencoder():
         distances = {}
 
         for label in np.unique(cluster_labels)[::1]:
-            dist = cosine_distances(layers[np.where(cluster_labels == label)], centers[label,:].reshape(1,-1))
+            dist = cosine_distances(self.latent[np.where(cluster_labels == label)], centers[label,:].reshape(1,-1))
             top_dist = dist[np.argsort(dist.T)[::-1][0][:9]]
             top_ = X_test[np.argsort(dist.T)[::-1][0][:9]]
             tops[label] = top_
             distances[label] = top_dist
+        # pdb.set_trace()
         
-        fig, axes = plt.subplots(3,3,figsize=(12,12))
         for label in np.unique(cluster_labels)[::1]:
+            fig, axes = plt.subplots(3,3,figsize=(12,12))
             for ax, img in zip(axes.flatten(), tops[label]):
                 ax.imshow(img)
                 ax.set_axis_off()
-            fig.suptitle('Top 9: Cluster {}\n Model: {}'.format(label, self.NAME))
-            self._save_fig('top9_cluster_{}_{}.png'.format(label, self.NAME))
+            fig.suptitle('Top 9: Cluster {}\n Model: {}'.format(label, model_name))
+            self._save_fig('clusters/top9_cluster_{}_{}.png'.format(label, model_name))
 
     def silhouette_plot(self):
         '''
@@ -307,8 +309,8 @@ class Autoencoder():
         '''
         self._clear_variables()
 
-        self.autoencoder = keras.models.load_model('../models/{}'.format(model_fname))
-        with open('../models/{}'.format(latent_fname), 'rb') as f:
+        self.autoencoder = keras.models.load_model('../models_aws/{}'.format(model_fname))
+        with open('../models_aws/{}'.format(latent_fname), 'rb') as f:
             self.latent = pickle.load(f)
     
     def _save_fig(self, file_name):
@@ -340,19 +342,19 @@ class Autoencoder():
         Load Xy matrices to use without calling pipeline.
         '''
         if self.gray_imgs:
-            X_fname = '../data/Xs/gray_{}'.format(date)
+            X_fname = '../data/Xs_aws/gray_{}'.format(date)
             with open(X_fname, 'rb') as f:
                 self.X_gray = pickle.load(f)
-            y_fname = '../data/ys/gray_{}'.format(date)
+            y_fname = '../data/ys_aws/gray_{}'.format(date)
             with open(y_fname, 'rb') as f:
                 self.y_gray = pickle.load(f)
         else: 
-            X_fname = '../data/Xs/rgb_{}'.format(date)
+            X_fname = '../data/Xs_aws/rgb_{}'.format(date)
             with open(X_fname, 'rb') as f:
-                self.X_gray = pickle.load(f)
-            y_fname = '../data/ys/rgb_{}'.format(date)
+                self.X_rgb = pickle.load(f)
+            y_fname = '../data/ys_aws/rgb_{}'.format(date)
             with open(y_fname, 'rb') as f:
-                self.y_gray = pickle.load(f)
+                self.y_rgb = pickle.load(f)
         
 
 

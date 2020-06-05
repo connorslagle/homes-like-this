@@ -1,5 +1,7 @@
 # general imports
 import pickle
+import numpy as np
+import pdb
 
 # other file imports
 from cnn_new import Autoencoder
@@ -16,21 +18,44 @@ if __name__ == "__main__":
 
     # load data
 
-    X_test_gray = gray_pipe.X_test
-
-
-    X_test_rgb = rgb_pipe.X_test
-
-    # load model/latents
-
     rgb = Autoencoder(gray_imgs=False)
     gray = Autoencoder()
 
-    X_test_gray = 
+    rgb.load_Xy('2020-06-04')
+    gray.load_Xy('2020-06-04')
+    
+    X_rgb = rgb.X_rgb
+    X_gray = gray.X_gray
 
     rgb.load_model(rgb_fname, rgb_latent_fname)
     gray.load_model(gray_fname, gray_latent_fname)
 
+    '''
+    Elbow plots
+    '''
     # concat both feats for kmeans
-    
-    
+    # plot rgb/ gray only elbows
+    # rgb.elbow_plot(rgb.latent,20,'rgb_test')
+    # gray.elbow_plot(gray.latent,20,'gray_test')
+
+    combo = np.hstack((rgb.latent,gray.latent))
+
+    # rgb.elbow_plot(combo,20,'combo_test')
+
+    '''
+    top 9 imgs
+    '''
+    X_gray_test = X_gray['test'].reshape(X_gray['test'].shape[0], 128, 128, 1)
+    X_rgb_test = X_rgb['test'].reshape(X_rgb['test'].shape[0], 128, 128, 3)
+
+    X_gray_test = X_gray_test.astype('float32') 
+    X_rgb_test = X_rgb_test.astype('float32') 
+
+    X_gray_test = X_gray_test/255
+    X_rgb_test = X_rgb_test/255    
+
+    gray.kmean_cluster(gray.latent,7)
+    rgb.kmean_cluster(rgb.latent,7)
+
+    gray.top_9_from_clusters(X_rgb_test,gray_fname)
+    rgb.top_9_from_clusters(X_rgb_test, rgb_fname)
