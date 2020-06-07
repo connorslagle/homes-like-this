@@ -28,7 +28,7 @@ if __name__ == "__main__":
     epoch_list = np.array([epochs//2, epochs, epochs*2]).astype(int)
     batch_list = np.array([batch_1-5, batch_1, batch_1+5]).astype(int)
 
-    for batch in batch_list:
+    for _ in range(4):
         if use_gray:
             # load data
             pipeline = ImagePipeline('../data/proc_imgs/128/gray')
@@ -49,7 +49,7 @@ if __name__ == "__main__":
             model.build_autoencoder(init_filter, layers)
 
         # fit model
-        model.fit_(X_train, X_test, epochs, batch)
+        model.fit_(X_train, X_test, epochs, batch_1)
         
         # save
         model.save_model()
