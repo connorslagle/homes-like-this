@@ -154,11 +154,11 @@ class Autoencoder():
                 )(layer_list[-1])
             )
 
-            # layer_list.append(
-            #     layers.SpatialDropout2D(
-            #         rate=0.5
-            #     )(layer_list[-1])
-            # )
+            layer_list.append(
+                layers.SpatialDropout2D(
+                    rate=0.5
+                )(layer_list[-1])
+            )
 
         layer_list.append(
             layers.Conv2DTranspose(
@@ -181,12 +181,12 @@ class Autoencoder():
         Fits Autoencoder to data
         '''
         if self.gray_imgs:
-            self.NAME = "ae_convT_{}_{}eps_{}batch_{}initfilts_{}layers_128img__50do_2norm_128feats_{}_{}".format(
+            self.NAME = "ae_convT_{}_{}eps_{}batch_{}initfilts_{}layers_128img__50doall_2norm_128feats_{}_{}".format(
                 'gray', num_epochs, batch_size_, self.init_num_filters, self.num_encode_layers \
                         , str(datetime.now().date()), str(datetime.now().time())
             )
         else:
-            self.NAME = "ae_convT_{}_{}eps_{}batch_{}initfilts_{}layers_128img__50do_2norm_128feats_{}_{}".format(
+            self.NAME = "ae_convT_{}_{}eps_{}batch_{}initfilts_{}layers_128img__50doall_2norm_128feats_{}_{}".format(
                 'color', num_epochs, batch_size_, self.init_num_filters, self.num_encode_layers \
                         , str(datetime.now().date()), str(datetime.now().time())
             )
