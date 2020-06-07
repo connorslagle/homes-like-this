@@ -21,14 +21,14 @@ if __name__ == "__main__":
 
     # up/down params for exploratory run
     epochs = int(args.epochs)
-    batch = int(args.batchsize)
+    batch_1 = int(args.batchsize)
     layers = 5
     init_filter = 64
 
     epoch_list = np.array([epochs//2, epochs, epochs*2]).astype(int)
-    batch_list = np.array([batch/2, batch, batch*2]).astype(int)
+    batch_list = np.array([batch_1-5, batch_1, batch_1+5]).astype(int)
 
-    for _ in range(3):
+    for batch in batch_list:
         if use_gray:
             # load data
             pipeline = ImagePipeline('../data/proc_imgs/128/gray')

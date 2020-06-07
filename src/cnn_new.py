@@ -48,7 +48,7 @@ class Autoencoder():
         self.config.gpu_options.allow_growth = True
         tf.compat.v1.Session(config=self.config)
 
-    def build_autoencoder(self, init_num_filters, num_encode_layers, max_norm_value=2):
+    def build_autoencoder(self, init_num_filters, num_encode_layers, enc_do=0.5, dec_do=0.3, max_norm_value=2):
         '''
         Functional API build of model
         input shape = (128,128,x) where x=1,3 1=greyscale
@@ -91,7 +91,7 @@ class Autoencoder():
 
                 layer_list.append(
                     layers.SpatialDropout2D(
-                        rate=0.5
+                        rate=enc_do
                     )(layer_list[-1])
                 )
 
@@ -116,7 +116,7 @@ class Autoencoder():
 
                 layer_list.append(
                     layers.SpatialDropout2D(
-                        rate=0.5
+                        rate=enc_do
                     )(layer_list[-1])
                 )
 
@@ -156,7 +156,7 @@ class Autoencoder():
 
             layer_list.append(
                 layers.SpatialDropout2D(
-                    rate=0.5
+                    rate=dec_do
                 )(layer_list[-1])
             )
 
@@ -181,12 +181,12 @@ class Autoencoder():
         Fits Autoencoder to data
         '''
         if self.gray_imgs:
-            self.NAME = "ae_convT_{}_{}eps_{}batch_{}initfilts_{}layers_128img__50doall_2norm_128feats_{}_{}".format(
+            self.NAME = "ae_convT_{}_{}eps_{}batch_{}initfilts_{}layers_128img__5030do_2norm_128feats_{}_{}".format(
                 'gray', num_epochs, batch_size_, self.init_num_filters, self.num_encode_layers \
                         , str(datetime.now().date()), str(datetime.now().time())
             )
         else:
-            self.NAME = "ae_convT_{}_{}eps_{}batch_{}initfilts_{}layers_128img__50doall_2norm_128feats_{}_{}".format(
+            self.NAME = "ae_convT_{}_{}eps_{}batch_{}initfilts_{}layers_128img__5030do_2norm_128feats_{}_{}".format(
                 'color', num_epochs, batch_size_, self.init_num_filters, self.num_encode_layers \
                         , str(datetime.now().date()), str(datetime.now().time())
             )
