@@ -57,6 +57,8 @@ class Autoencoder():
         128 init layers --> 5 encoding layers for 128 feats
 
         '''
+        self.init_num_filters = init_num_filters
+        self.num_encode_layers = num_encode_layers
 
         if self.gray_imgs:
             inputs = keras.Input(shape=(128,128,1))
@@ -179,12 +181,14 @@ class Autoencoder():
         Fits Autoencoder to data
         '''
         if self.gray_imgs:
-            self.NAME = "rand_ae_convT_{}_{}eps_{}batch_128_5down5up_50do_2norm_128feats_{}_{}".format(
-                'gray', num_epochs, batch_size_, str(datetime.now().date()), str(datetime.now().time())
+            self.NAME = "ae_convT_{}_{}eps_{}batch_{}initfilts_{}layers_128img__50do_2norm_128feats_{}_{}".format(
+                'gray', num_epochs, batch_size_, self.init_num_filters, self.num_encode_layers \
+                        , str(datetime.now().date()), str(datetime.now().time())
             )
         else:
-            self.NAME = "rand_ae_convT_{}_{}eps_{}batch_128_5down5up_50do_2norm_128feats_{}_{}".format(
-                'color', num_epochs, batch_size_, str(datetime.now().date()), str(datetime.now().time())
+            self.NAME = "ae_convT_{}_{}eps_{}batch_{}initfilts_{}layers_128img__50do_2norm_128feats_{}_{}".format(
+                'color', num_epochs, batch_size_, self.init_num_filters, self.num_encode_layers \
+                        , str(datetime.now().date()), str(datetime.now().time())
             )
 
 
