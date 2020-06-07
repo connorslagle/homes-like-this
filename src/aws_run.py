@@ -28,11 +28,11 @@ if __name__ == "__main__":
     epoch_list = np.array([epochs//2, epochs, epochs*2]).astype(int)
     batch_list = np.array([batch/2, batch, batch*2]).astype(int)
 
-    for elem in batch_list:
+    for _ in range(3):
         if use_gray:
             # load data
             pipeline = ImagePipeline('../data/proc_imgs/128/gray')
-            pipeline.build_Xy(set_seed=True)
+            pipeline.build_Xy(set_seed=False)
             X_train, X_test = pipeline.X_train, pipeline.X_test
 
             # build model
@@ -41,7 +41,7 @@ if __name__ == "__main__":
         else:
             # load data
             pipeline = ImagePipeline('../data/proc_imgs/128/color', gray_imgs=False)
-            pipeline.build_Xy(set_seed=True)
+            pipeline.build_Xy(set_seed=False)
             X_train, X_test = pipeline.X_train, pipeline.X_test
 
             # build model
@@ -49,7 +49,7 @@ if __name__ == "__main__":
             model.build_autoencoder(init_filter, layers)
 
         # fit model
-        model.fit_(X_train, X_test, epochs, elem)
+        model.fit_(X_train, X_test, epochs, batch)
         
         # save
         model.save_model()
