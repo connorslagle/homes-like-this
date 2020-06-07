@@ -1,3 +1,4 @@
+import numpy as np
 import pandas as pd
 import glob
 from os import listdir
@@ -5,6 +6,9 @@ from os.path import isfile, join
 import matplotlib.pyplot as plt
 plt.style.use('ggplot')
 plt.rcParams.update({'font.size':20})
+
+from sklearn.cluster import KMeans
+from sklearn.metrics import silhouette_score
 
 
 # from data_pipelines import ImagePipeline
@@ -50,7 +54,77 @@ def tt_holdout_error_curves(tb_csv_dir):
     plt.savefig('../images/tt_error.png',dpi=200)
     plt.close('all')
     return val
+
+def pca_var(exp_variance_ratio):
+    x_vals = range(len(exp_variance_ratio))
+    y_vals = np.cumsum(exp_variance_ratio)
+
+    fig, ax = plt.subplots(1, figsize=(10,10))
+    ax.plot(x_vals, y_vals, label='PCA')
+    ax.axhline(0.90, color='k', label='0.90 Goal')
+    ax.set_ylabel('Cumulative Variance Ratio')
+    ax.set_xlabel('Number of Components')
+    ax.set_title('PCA Explained Variance vs Number of Components')
+    ax.legend()
+
+    plt.savefig('../images/pca_var.png', dpi=200)
+    plt.close('all')
+
+def pca_var_all(rgb_ratio_list, gray_ratio_list):
+
+    x_vals = range(len(rgb_ratio_list))
+
+    rgb_vals = np.cumsum(rgb_ratio_list)
+    gray_vals = np.cumsum(gray_ratio_list)
+
+    fig, ax = plt.subplots(1, figsize=(10,10))
+    ax.plot(x_vals, rgb_vals, label='Color Image')
+    ax.plot(x_vals, gray_vals, label='Gray Image')
+    ax.axhline(0.90, color='k', label='0.90 Goal')
+    ax.set_ylim([0,1])
+    ax.set_ylabel('Cumulative Variance Ratio')
+    ax.set_xlabel('Number of Components')
+    ax.set_title('PCA Explained Variance\nRGB and Gray')
+    ax.legend()
+
+    plt.savefig('../images/pca_var_all.png', dpi=200)
+    plt.close('all')
+
+def elbow_plot(latents, max_k,title):
+    '''
+    Plot elbow plot
+    '''
+    fig, ax = plt.subplots(1, figsize=(10,10))
+
+    rss_lst = []
+    for k in range(1, max_k):
+        kmeans = KMeans(k, init=latents[:k,:],random_state=33)
+        kmeans.fit(latents)
+        rss_lst.append(kmeans.inertia_)
     
+    ax.plot(range(1, max_k), rss_lst)
+    ax.set_ylabel('RSS')
+    ax.set_xlabel('Number of Clusters')
+    ax.set_title('Elbow Plot for PCA')
+
+    plt.savefig('../images/pca_kmeans_elbow_{}.png'.format(title), dpi=200)
+    plt.close('all')
+
+def silhouette(latents, num_clusters):
+    pass
+
+def six_hist(sil_values, labels, color):
+    fig, axes = plt.subplots(3,2, figsize=(10,10))
+    cluster_vals = np.unique(labels)
+
+    for ax, cluster in zip(axes.flatten(), cluster_vals):
+        ax.hist(sil_values[np.where(labels == cluster)], bins=50)
+        # ax.set_title('Cluster {}'.format(cluster))
+        ax.set_xlabel('Silhouette Score')
+        ax.set_ylabel('Count')
+    
+    plt.savefig('../images/six_sil_pca_{}.png'.format(color), dpi=200)
+    plt.close('all')
 
 if __name__ == "__main__":
     path = '/home/conslag/Documents/galvanize/capstones/homes-like-this/data/models'

@@ -18,6 +18,14 @@ if __name__ == "__main__":
     # grayscale tag
     use_gray = bool(int(args.grayscale))
 
+    # up/down params for exploratory run
+    epochs = int(args.epochs)
+    batch = int(args.batchsize)
+    layers = [5]
+    init_filters = [32,64,128]
+
+    epoch_list = [epochs/2, epochs, epochs*2]
+
 
     if use_gray:
         # load data

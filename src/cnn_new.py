@@ -48,15 +48,15 @@ class Autoencoder():
         self.config.gpu_options.allow_growth = True
         tf.compat.v1.Session(config=self.config)
 
-    def build_autoencoder(self):
+    def build_autoencoder(self, init_num_filters, num_encode_layers, max_norm_value=2):
         '''
         Functional API build of model
         input shape = (128,128,x) where x=1,3 1=greyscale
         num encode/decode layers = 5
+
+        128 init layers --> 5 encoding layers for 128 feats
+
         '''
-        max_norm_value = 2.0
-        init_num_filters = 128
-        num_encode_layers = 5
 
         if self.gray_imgs:
             inputs = keras.Input(shape=(128,128,1))
@@ -124,9 +124,13 @@ class Autoencoder():
 
         self.encoder = keras.Model(inputs, layer_list[-1])
 
+
+        resize_side = int(128/(2**num_encode_layers))
+        resize_layers = int(init_num_filters/(2**(num_encode_layers-1)))
+
         layer_list.append(
             layers.Reshape(
-                target_shape=(4,4,8)
+                target_shape=(resize_side,resize_side,resize_layers)
             )(layer_list[-1])
         )
 
@@ -363,6 +367,6 @@ class Autoencoder():
 
 if __name__ == "__main__":
     model = Autoencoder(gray_imgs=True)
-    model.build_autoencoder()
+    model.build_autoencoder(32,5)
     model1 = model.autoencoder
     print(model1.summary())
