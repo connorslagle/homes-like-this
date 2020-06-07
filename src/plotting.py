@@ -98,7 +98,7 @@ def elbow_plot(latents, max_k,title):
 
     rss_lst = []
     for k in range(1, max_k):
-        kmeans = KMeans(k,random_state=33)
+        kmeans = KMeans(k, init=latents[:k,:],random_state=33)
         kmeans.fit(latents)
         rss_lst.append(kmeans.inertia_)
     
@@ -110,9 +110,21 @@ def elbow_plot(latents, max_k,title):
     plt.savefig('../images/pca_kmeans_elbow_{}.png'.format(title), dpi=200)
     plt.close('all')
 
-def silhouette_score(latents, num_clusters):
-    
+def silhouette(latents, num_clusters):
+    pass
 
+def six_hist(sil_values, labels, color):
+    fig, axes = plt.subplots(3,2, figsize=(10,10))
+    cluster_vals = np.unique(labels)
+
+    for ax, cluster in zip(axes.flatten(), cluster_vals):
+        ax.hist(sil_values[np.where(labels == cluster)], bins=50)
+        # ax.set_title('Cluster {}'.format(cluster))
+        ax.set_xlabel('Silhouette Score')
+        ax.set_ylabel('Count')
+    
+    plt.savefig('../images/six_sil_pca_{}.png'.format(color), dpi=200)
+    plt.close('all')
 
 if __name__ == "__main__":
     path = '/home/conslag/Documents/galvanize/capstones/homes-like-this/data/models'
