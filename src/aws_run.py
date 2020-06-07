@@ -1,6 +1,7 @@
 # general imports
 import argparse
 import pickle
+import numpy as np
 
 # other file imports
 from cnn_new import Autoencoder
@@ -21,12 +22,13 @@ if __name__ == "__main__":
     # up/down params for exploratory run
     epochs = int(args.epochs)
     batch = int(args.batchsize)
-    layers = [5]
-    init_filters = [32,64,128]
+    layers = 5
+    init_filter = 64
 
-    epoch_list = [epochs/2, epochs, epochs*2]
+    epoch_list = np.array([epochs//2, epochs, epochs*2]).astype(int)
+    batch_list = np.array([batch/2, batch, batch*2]).astype(int)
 
-    for init_filter in init_filters:
+    for elem in batch_list:
         if use_gray:
             # load data
             pipeline = ImagePipeline('../data/proc_imgs/128/gray')
@@ -35,7 +37,7 @@ if __name__ == "__main__":
 
             # build model
             model = Autoencoder()
-            model.build_autoencoder(init_filter, layers[0])
+            model.build_autoencoder(init_filter, layers)
         else:
             # load data
             pipeline = ImagePipeline('../data/proc_imgs/128/color', gray_imgs=False)
@@ -44,10 +46,10 @@ if __name__ == "__main__":
 
             # build model
             model = Autoencoder(gray_imgs=False)
-            model.build_autoencoder(init_filter, layers[0])
+            model.build_autoencoder(init_filter, layers)
 
         # fit model
-        model.fit_(X_train, X_test, epochs, batch)
+        model.fit_(X_train, X_test, epochs, elem)
         
         # save
         model.save_model()
