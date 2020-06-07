@@ -336,7 +336,7 @@ class Autoencoder():
         Extract encoded latent features
         '''
         print('\nShape of X:{}\n'.format(X_test.shape))
-        batches = np.split(X_test,X_test.shape[0])
+        batches = np.split(X_test,95)
         for i,batch in enumerate(batches):
             get_layer_output = K.function([self.autoencoder.layers[0].input],
                                         [self.autoencoder.layers[16].output])
