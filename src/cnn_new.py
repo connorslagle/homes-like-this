@@ -154,11 +154,11 @@ class Autoencoder():
                 )(layer_list[-1])
             )
 
-            # layer_list.append(
-            #     layers.SpatialDropout2D(
-            #         rate=0.5
-            #     )(layer_list[-1])
-            # )
+            layer_list.append(
+                layers.SpatialDropout2D(
+                    rate=0.5
+                )(layer_list[-1])
+            )
 
         layer_list.append(
             layers.Conv2DTranspose(
