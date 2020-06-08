@@ -138,7 +138,7 @@ def six_hist(sil_values, labels, color):
     plt.savefig('../images/six_sil_pca_{}.png'.format(color), dpi=200)
     plt.close('all')
 
-def plot_before_after(test,test_decoded,n=10):
+def plot_before_after(test,test_decoded,fname,n=10):
     '''
     Plots the image and reconstructed image.
     Input:
@@ -160,7 +160,7 @@ def plot_before_after(test,test_decoded,n=10):
         ax.get_xaxis().set_visible(False)
         ax.get_yaxis().set_visible(False)
 
-    plt.savefig('../images/before_after.png',dpi=100)
+    plt.savefig('../images/before_after_{}.png'.format(fname),dpi=100)
     plt.close('all')
 
 if __name__ == "__main__":

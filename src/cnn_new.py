@@ -372,6 +372,6 @@ class Autoencoder():
 
 if __name__ == "__main__":
     model = Autoencoder(gray_imgs=True)
-    model.build_autoencoder(128,6)
+    model.build_autoencoder(64,6)
     model1 = model.autoencoder
     print(model1.summary())
