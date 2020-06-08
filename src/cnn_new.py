@@ -48,7 +48,7 @@ class Autoencoder():
         self.config.gpu_options.allow_growth = True
         tf.compat.v1.Session(config=self.config)
 
-    def build_autoencoder(self, init_num_filters, num_encode_layers, enc_do=0.5, dec_do=0.5, max_norm_value=2, kernel_size=(5,5)):
+    def build_autoencoder(self, init_num_filters, num_encode_layers, enc_do=0.5, dec_do=0.5, max_norm_value=2, kernel_size=(3,3)):
         '''
         Functional API build of model
         input shape = (128,128,x) where x=1,3 1=greyscale
