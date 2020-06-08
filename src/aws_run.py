@@ -27,30 +27,31 @@ if __name__ == "__main__":
     init_filter = 64
 
     epoch_list = np.array([epochs//2, epochs, epochs*2]).astype(int)
-    batch_list = np.array([batch_1-5, batch_1, batch_1+5]).astype(int)
+    batch_list = np.array([batch_1-10, batch_1, batch_1+10]).astype(int)
 
     for kernel in kernel_sizes:
-        if use_gray:
-            # load data
-            pipeline = ImagePipeline('../data/proc_imgs/128/gray')
-            pipeline.build_Xy(set_seed=False)
-            X_train, X_test = pipeline.X_train, pipeline.X_test
+        for batch in batch_list:
+            if use_gray:
+                # load data
+                pipeline = ImagePipeline('../data/proc_imgs/128/gray')
+                pipeline.build_Xy(set_seed=False)
+                X_train, X_test = pipeline.X_train, pipeline.X_test
 
-            # build model
-            model = Autoencoder()
-            model.build_autoencoder(init_filter, layers, kernel_size=kernel)
-        else:
-            # load data
-            pipeline = ImagePipeline('../data/proc_imgs/128/color', gray_imgs=False)
-            pipeline.build_Xy(set_seed=False)
-            X_train, X_test = pipeline.X_train, pipeline.X_test
+                # build model
+                model = Autoencoder()
+                model.build_autoencoder(init_filter, layers, kernel_size=kernel)
+            else:
+                # load data
+                pipeline = ImagePipeline('../data/proc_imgs/128/color', gray_imgs=False)
+                pipeline.build_Xy(set_seed=False)
+                X_train, X_test = pipeline.X_train, pipeline.X_test
 
-            # build model
-            model = Autoencoder(gray_imgs=False)
-            model.build_autoencoder(init_filter, layers, kernel_size=kernel)
+                # build model
+                model = Autoencoder(gray_imgs=False)
+                model.build_autoencoder(init_filter, layers, kernel_size=kernel)
 
-        # fit model
-        model.fit_(X_train, X_test, epochs, batch_1)
-        
-        # save
-        model.save_model()
+            # fit model
+            model.fit_(X_train, X_test, epochs, batch)
+            
+            # save
+            model.save_model()
