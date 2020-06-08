@@ -39,7 +39,7 @@ if __name__ == "__main__":
 
             # build model
             model = Autoencoder()
-            model.build_autoencoder(init_filter, layers)
+            model.build_autoencoder(init_filter, layers, dec_do=0)
         else:
             # load data
             pipeline = ImagePipeline('../data/proc_imgs/128/color', gray_imgs=False)
@@ -48,7 +48,7 @@ if __name__ == "__main__":
 
             # build model
             model = Autoencoder(gray_imgs=False)
-            model.build_autoencoder(init_filter, layers)
+            model.build_autoencoder(init_filter, layers, dec_do=0)
 
         # fit model
         model.fit_(X_train, X_test, epochs, batch_1)

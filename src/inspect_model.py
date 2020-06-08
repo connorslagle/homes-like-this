@@ -60,32 +60,34 @@ if __name__ == "__main__":
     X_rgb_holdout = X_rgb_holdout.astype('float32') 
 
     X_gray_holdout = X_gray_holdout/255
-    X_rgb_holdout = X_rgb_holdout/255    
+    X_rgb_holdout = X_rgb_holdout/255
+
+    
 
     # gray.kmean_cluster(gray.latent,7)
-    rgb._extract_latent(X_rgb_holdout)
-    rgb.kmean_cluster(rgb.latent,7,set_seed=False)
-    # rgb.top_9_from_clusters(X_rgb_holdout,rgb.latent, 'RGB Latent Holdout', gray_imgs=False)
+    # rgb._extract_latent(X_rgb_holdout)
+    # rgb.kmean_cluster(rgb.latent,7,set_seed=False)
+    # # rgb.top_9_from_clusters(X_rgb_holdout,rgb.latent, 'RGB Latent Holdout', gray_imgs=False)
 
-    rgb.elbow_plot(rgb.latent,20,'Color_Only')
+    # rgb.elbow_plot(rgb.latent,20,'Color_Only')
 
-    rgb_score = rgb.autoencoder.evaluate(X_rgb_holdout, X_rgb_holdout)
-    gray_score = gray.autoencoder.evaluate(X_gray_holdout, X_gray_holdout)
+    # rgb_score = rgb.autoencoder.evaluate(X_rgb_holdout, X_rgb_holdout)
+    # gray_score = gray.autoencoder.evaluate(X_gray_holdout, X_gray_holdout)
 
-    print('RGB RMSE: {}\tGray RMSE:{}'.format(np.round(rgb_score,4), np.round(gray_score,4)))
+    # print('RGB RMSE: {}\tGray RMSE:{}'.format(np.round(rgb_score,4), np.round(gray_score,4)))
 
-    gray._extract_latent(X_gray_holdout)
-    gray.kmean_cluster(gray.latent,7,set_seed=False)
-    # rgb.top_9_from_clusters(X_gray_holdout, gray.latent, 'Gray Latent Holdout')
+    # gray._extract_latent(X_gray_holdout)
+    # gray.kmean_cluster(gray.latent,7,set_seed=False)
+    # # rgb.top_9_from_clusters(X_gray_holdout, gray.latent, 'Gray Latent Holdout')
 
-    gray.elbow_plot(gray.latent,20,'Gray_Only')
+    # gray.elbow_plot(gray.latent,20,'Gray_Only')
 
-    combo = np.hstack((rgb.latent,gray.latent))
+    # combo = np.hstack((rgb.latent,gray.latent))
 
-    rgb.kmean_cluster(combo,7,set_seed=False)
-    # rgb.top_9_from_clusters(X_rgb_holdout, combo, 'Ensemble Latent Holdout', gray_imgs=False)
+    # rgb.kmean_cluster(combo,7,set_seed=False)
+    # # rgb.top_9_from_clusters(X_rgb_holdout, combo, 'Ensemble Latent Holdout', gray_imgs=False)
 
-    rgb.elbow_plot(combo,20,'Ensemble')
+    # rgb.elbow_plot(combo,20,'Ensemble')
 
 
     '''
