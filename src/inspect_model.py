@@ -64,22 +64,22 @@ if __name__ == "__main__":
     X_gray_holdout = X_gray_holdout/255
     X_rgb_holdout = X_rgb_holdout/255
 
-    # X_predict = rgb.autoencoder.predict(X_rgb_holdout)
+    X_predict = rgb.autoencoder.predict(X_rgb_holdout)
 
-    # plot_before_after(X_rgb_holdout, X_predict)
+    plot_before_after(X_rgb_holdout, X_predict)
 
-    gray.kmean_cluster(gray.latent,7,set_seed=False)
-    gray._extract_latent(X_gray_holdout)
-    cluster_plot(X_rgb_holdout, gray.kmeans.labels_,'gray')
+    # gray.kmean_cluster(gray.latent,7,set_seed=False)
+    # gray._extract_latent(X_gray_holdout)
+    # cluster_plot(X_rgb_holdout, gray.kmeans.labels_,'gray')
 
-    rgb._extract_latent(X_rgb_holdout)
-    rgb.kmean_cluster(rgb.latent,7,set_seed=False)
-    cluster_plot(X_rgb_holdout, rgb.kmeans.labels_,'color')
+    # rgb._extract_latent(X_rgb_holdout)
+    # rgb.kmean_cluster(rgb.latent,7,set_seed=False)
+    # cluster_plot(X_rgb_holdout, rgb.kmeans.labels_,'color')
 
     
-    combo = np.hstack((rgb.latent,gray.latent))
-    rgb.kmean_cluster(combo,7,set_seed=False)
-    cluster_plot(X_rgb_holdout, rgb.kmeans.labels_,'ensemble')
+    # combo = np.hstack((rgb.latent,gray.latent))
+    # rgb.kmean_cluster(combo,7,set_seed=False)
+    # cluster_plot(X_rgb_holdout, rgb.kmeans.labels_,'ensemble')
 
     # rgb.top_9_from_clusters(X_rgb_holdout,rgb.latent, 'RGB Latent Holdout', gray_imgs=False)
 
