@@ -138,7 +138,7 @@ def plot_before_after(test,test_decoded,n=10):
     for i in range(n):
         # display original
         ax = plt.subplot(2, n, i + 1)
-        plt.imshow(X[i])
+        plt.imshow(test[i])
         ax.get_xaxis().set_visible(False)
         ax.get_yaxis().set_visible(False)
 
@@ -148,7 +148,7 @@ def plot_before_after(test,test_decoded,n=10):
         ax.get_xaxis().set_visible(False)
         ax.get_yaxis().set_visible(False)
 
-    plt.savefig('../images/before_after.png',dpi-100)
+    plt.savefig('../images/before_after.png',dpi=100)
     plt.close('all')
 
 if __name__ == "__main__":

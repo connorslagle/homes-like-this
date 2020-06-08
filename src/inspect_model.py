@@ -8,6 +8,8 @@ import tensorflow as tf
 # other file imports
 from cnn_new import Autoencoder
 from data_pipelines import ImagePipeline
+from plotting import plot_before_after
+
 
 if __name__ == "__main__":
     # needed for tf gpu
@@ -16,26 +18,26 @@ if __name__ == "__main__":
     tf.compat.v1.Session(config=config)
 
     # model names updated on friday
-    gray_fname = 'rand_ae_convT_gray_3eps_128batch_128_5down5up_50do_2norm_128feats_2020-06-05_11:49:49.291655_datagen_2020-06-05_11:53:46.657751'
-    rgb_fname = 'rand_ae_convT_color_5eps_128batch_128_5down5up_50do_2norm_128feats_2020-06-05_11:56:06.697486_datagen_2020-06-05_12:00:55.866913'
+    # gray_fname = 'rand_ae_convT_gray_3eps_128batch_128_5down5up_50do_2norm_128feats_2020-06-05_11:49:49.291655_datagen_2020-06-05_11:53:46.657751'
+    rgb_fname = 'ae_convT_color_60eps_35batch_64initfilts_5layers_128img__50doall_2norm_128feats_2020-06-07_20:37:55.087401_datagen_2020-06-07_20:53:35.759855'
 
     # latent fnames
-    gray_latent_fname = 'rand_ae_convT_gray_3eps_128batch_128_5down5up_50do_2norm_128feats_2020-06-05_11:49:49.291655_datagen_2020-06-05_11:53:47.323588_xtest_encode.pkl'
-    rgb_latent_fname = 'rand_ae_convT_color_5eps_128batch_128_5down5up_50do_2norm_128feats_2020-06-05_11:56:06.697486_datagen_2020-06-05_12:00:56.525856_xtest_encode.pkl'
+    # gray_latent_fname = 'rand_ae_convT_gray_3eps_128batch_128_5down5up_50do_2norm_128feats_2020-06-05_11:49:49.291655_datagen_2020-06-05_11:53:47.323588_xtest_encode.pkl'
+    rgb_latent_fname = 'ae_convT_color_60eps_35batch_64initfilts_5layers_128img__50doall_2norm_128feats_2020-06-07_20:37:55.087401_datagen_2020-06-07_20:53:37.440617_xtest_encode.pkl'
 
     # load data
 
     rgb = Autoencoder(gray_imgs=False)
-    gray = Autoencoder()
+    # gray = Autoencoder()
 
     rgb.load_Xy('2020-06-04')
-    gray.load_Xy('2020-06-04')
+    # gray.load_Xy('2020-06-04')
     
     X_rgb = rgb.X_rgb
-    X_gray = gray.X_gray
+    # X_gray = gray.X_gray
 
     rgb.load_model(rgb_fname, rgb_latent_fname)
-    gray.load_model(gray_fname, gray_latent_fname)
+    # gray.load_model(gray_fname, gray_latent_fname)
 
     '''
     Elbow plots
@@ -52,17 +54,19 @@ if __name__ == "__main__":
     '''
     top 9 imgs
     '''
-    X_gray_holdout = X_gray['holdout'].reshape(X_gray['holdout'].shape[0], 128, 128, 1)
+    # X_gray_holdout = X_gray['holdout'].reshape(X_gray['holdout'].shape[0], 128, 128, 1)
     X_rgb_holdout = X_rgb['holdout'].reshape(X_rgb['holdout'].shape[0], 128, 128, 3)
 
 
-    X_gray_holdout = X_gray_holdout.astype('float32') 
+    # X_gray_holdout = X_gray_holdout.astype('float32') 
     X_rgb_holdout = X_rgb_holdout.astype('float32') 
 
-    X_gray_holdout = X_gray_holdout/255
+    # X_gray_holdout = X_gray_holdout/255
     X_rgb_holdout = X_rgb_holdout/255
 
-    
+    X_predict = rgb.autoencoder.predict(X_rgb_holdout)
+
+    plot_before_after(X_rgb_holdout, X_predict)
 
     # gray.kmean_cluster(gray.latent,7)
     # rgb._extract_latent(X_rgb_holdout)
