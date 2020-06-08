@@ -192,11 +192,6 @@ class Autoencoder():
                         , str(datetime.now().date()), str(datetime.now().time())
             )
 
-        X_train = X_train.astype('float32')
-        X_train = X_train/255
-
-        X_test = X_test.astype('float32')
-        X_test = X_test/255
 
         if use_gpu:
             self._use_gpu()
