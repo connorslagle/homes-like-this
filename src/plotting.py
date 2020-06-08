@@ -4,7 +4,7 @@ import glob
 from os import listdir
 from os.path import isfile, join
 import matplotlib.pyplot as plt
-plt.style.use('ggplot')
+# plt.style.use('ggplot')
 plt.rcParams.update({'font.size':20})
 
 from sklearn.cluster import KMeans
@@ -112,6 +112,18 @@ def elbow_plot(latents, max_k,title):
 
 def silhouette(latents, num_clusters):
     pass
+
+def cluster_plot(images, labels, title):
+    fig, axes = plt.subplots(3,7,figsize=(24,12))
+    for cluster in range(7):
+        subset_idx = np.where(labels == cluster)
+        random_idx = np.random.choice(subset_idx[0],3,replace=False)
+        axes[0,cluster].set_title('Cluster {}'.format(cluster+1))
+        for idx, rand_idx in enumerate(random_idx):
+            axes[idx,cluster].imshow(images[rand_idx])
+            axes[idx,cluster].set_axis_off()
+    plt.savefig('../images/7x3_cluster_{}.png'.format(title), dpi=200)
+
 
 def six_hist(sil_values, labels, color):
     fig, axes = plt.subplots(3,2, figsize=(10,10))

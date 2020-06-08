@@ -8,7 +8,7 @@ import tensorflow as tf
 # other file imports
 from cnn_new import Autoencoder
 from data_pipelines import ImagePipeline
-from plotting import plot_before_after
+from plotting import plot_before_after, cluster_plot
 
 
 if __name__ == "__main__":
@@ -18,34 +18,34 @@ if __name__ == "__main__":
     tf.compat.v1.Session(config=config)
 
     # model names updated on friday
-    # gray_fname = 'rand_ae_convT_gray_3eps_128batch_128_5down5up_50do_2norm_128feats_2020-06-05_11:49:49.291655_datagen_2020-06-05_11:53:46.657751'
+    gray_fname = 'ae_og_convT_gray_10eps_10batch_128initfilts_5layers_128img__50do_2norm_3kernel_2020-06-08_09:29:54.041637_datagen_2020-06-08_09:35:23.466331'
     rgb_fname = 'ae_og_convT_color_10eps_10batch_128initfilts_5layers_128img__50do_2norm_3kernel_2020-06-08_09:04:18.069434_datagen_2020-06-08_09:09:57.274791'
 
     # latent fnames
-    # gray_latent_fname = 'rand_ae_convT_gray_3eps_128batch_128_5down5up_50do_2norm_128feats_2020-06-05_11:49:49.291655_datagen_2020-06-05_11:53:47.323588_xtest_encode.pkl'
+    gray_latent_fname = 'ae_og_convT_gray_10eps_10batch_128initfilts_5layers_128img__50do_2norm_3kernel_2020-06-08_09:29:54.041637_datagen_2020-06-08_09:35:23.915315_xtest_encode.pkl'
     rgb_latent_fname = 'ae_og_convT_color_10eps_10batch_128initfilts_5layers_128img__50do_2norm_3kernel_2020-06-08_09:04:18.069434_datagen_2020-06-08_09:09:57.732799_xtest_encode.pkl'
 
     # load data
 
     rgb = Autoencoder(gray_imgs=False)
-    # gray = Autoencoder()
+    gray = Autoencoder()
 
     rgb.load_Xy('2020-06-04')
-    # gray.load_Xy('2020-06-04')
+    gray.load_Xy('2020-06-04')
     
     X_rgb = rgb.X_rgb
-    # X_gray = gray.X_gray
+    X_gray = gray.X_gray
 
     rgb.load_model(rgb_fname, rgb_latent_fname)
-    # gray.load_model(gray_fname, gray_latent_fname)
+    gray.load_model(gray_fname, gray_latent_fname)
 
     '''
     Elbow plots
     '''
     # concat both feats for kmeans
     # plot rgb/ gray only elbows
-    # rgb.elbow_plot(rgb.latent,20,'Color_Only')
-    # gray.elbow_plot(gray.latent,20,'Gray_Only')
+    # rgb.elbow_plot(rgb.latent,20,'Color Only')
+    # gray.elbow_plot(gray.latent,20,'Gray Only')
 
     # combo = np.hstack((rgb.latent,gray.latent))
 
@@ -54,24 +54,34 @@ if __name__ == "__main__":
     '''
     top 9 imgs
     '''
-    # X_gray_holdout = X_gray['holdout'].reshape(X_gray['holdout'].shape[0], 128, 128, 1)
+    X_gray_holdout = X_gray['holdout'].reshape(X_gray['holdout'].shape[0], 128, 128, 1)
     X_rgb_holdout = X_rgb['holdout'].reshape(X_rgb['holdout'].shape[0], 128, 128, 3)
 
 
-    # X_gray_holdout = X_gray_holdout.astype('float32') 
+    X_gray_holdout = X_gray_holdout.astype('float32') 
     X_rgb_holdout = X_rgb_holdout.astype('float32') 
 
-    # X_gray_holdout = X_gray_holdout/255
+    X_gray_holdout = X_gray_holdout/255
     X_rgb_holdout = X_rgb_holdout/255
 
-    X_predict = rgb.autoencoder.predict(X_rgb_holdout)
+    # X_predict = rgb.autoencoder.predict(X_rgb_holdout)
 
-    plot_before_after(X_rgb_holdout, X_predict)
+    # plot_before_after(X_rgb_holdout, X_predict)
 
-    # gray.kmean_cluster(gray.latent,7)
-    # rgb._extract_latent(X_rgb_holdout)
-    # rgb.kmean_cluster(rgb.latent,7,set_seed=False)
-    # # rgb.top_9_from_clusters(X_rgb_holdout,rgb.latent, 'RGB Latent Holdout', gray_imgs=False)
+    gray.kmean_cluster(gray.latent,7,set_seed=False)
+    gray._extract_latent(X_gray_holdout)
+    cluster_plot(X_rgb_holdout, gray.kmeans.labels_,'gray')
+
+    rgb._extract_latent(X_rgb_holdout)
+    rgb.kmean_cluster(rgb.latent,7,set_seed=False)
+    cluster_plot(X_rgb_holdout, rgb.kmeans.labels_,'color')
+
+    
+    combo = np.hstack((rgb.latent,gray.latent))
+    rgb.kmean_cluster(combo,7,set_seed=False)
+    cluster_plot(X_rgb_holdout, rgb.kmeans.labels_,'ensemble')
+
+    # rgb.top_9_from_clusters(X_rgb_holdout,rgb.latent, 'RGB Latent Holdout', gray_imgs=False)
 
     # rgb.elbow_plot(rgb.latent,20,'Color_Only')
 
@@ -86,7 +96,7 @@ if __name__ == "__main__":
 
     # gray.elbow_plot(gray.latent,20,'Gray_Only')
 
-    # combo = np.hstack((rgb.latent,gray.latent))
+    # 
 
     # rgb.kmean_cluster(combo,7,set_seed=False)
     # # rgb.top_9_from_clusters(X_rgb_holdout, combo, 'Ensemble Latent Holdout', gray_imgs=False)

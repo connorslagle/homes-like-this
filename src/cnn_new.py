@@ -69,10 +69,10 @@ class Autoencoder():
             out_filter = 3
             
         layer_list = []
-        for encode_layer in range(num_encode_layers):
-            if encode_layer == 0:
+        for encode_layer in range(num_encode_layers)[::-1]:
+            if encode_layer == max(range(num_encode_layers)):
                 encode_1 = layers.Conv2D(
-                    filters=init_num_filters,
+                    filters=(init_num_filters // (2**encode_layer)),
                     kernel_size=kernel_size,
                     strides=(1,1),
                     padding='same',
@@ -129,7 +129,7 @@ class Autoencoder():
 
 
         resize_side = int(128/(2**num_encode_layers))
-        resize_layers = int(init_num_filters/(2**(num_encode_layers-1)))
+        resize_layers = int(init_num_filters)
 
         layer_list.append(
             layers.Reshape(
@@ -137,7 +137,7 @@ class Autoencoder():
             )(layer_list[-1])
         )
 
-        for decode_layer in range(num_encode_layers)[::-1]:
+        for decode_layer in range(num_encode_layers):
             layer_list.append(
                 layers.Conv2DTranspose(
                     filters=(init_num_filters // (2**decode_layer)),
@@ -337,7 +337,7 @@ class Autoencoder():
         Extract encoded latent features
         '''
         print('\nShape of X:{}\n'.format(X_test.shape))
-        batches = np.split(X_test,95)
+        batches = np.split(X_test,199)           # 95 for test, 199 for holdout
         for i,batch in enumerate(batches):
             get_layer_output = K.function([self.autoencoder.layers[0].input],
                                         [self.autoencoder.layers[16].output])
