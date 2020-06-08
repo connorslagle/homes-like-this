@@ -126,6 +126,31 @@ def six_hist(sil_values, labels, color):
     plt.savefig('../images/six_sil_pca_{}.png'.format(color), dpi=200)
     plt.close('all')
 
+def plot_before_after(test,test_decoded,n=10):
+    '''
+    Plots the image and reconstructed image.
+    Input:
+    test: test dataset of image arrays
+    test_decoded: reconstructed test dataset image arrays (predict results)
+    Output: None (saves figure to a file)
+    '''
+    plt.figure(figsize=(n*2, 4))
+    for i in range(n):
+        # display original
+        ax = plt.subplot(2, n, i + 1)
+        plt.imshow(X[i])
+        ax.get_xaxis().set_visible(False)
+        ax.get_yaxis().set_visible(False)
+
+        # display reconstruction
+        ax = plt.subplot(2, n, i + 1 + n)
+        plt.imshow(test_decoded[i])
+        ax.get_xaxis().set_visible(False)
+        ax.get_yaxis().set_visible(False)
+
+    plt.savefig('../images/before_after.png',dpi-100)
+    plt.close('all')
+
 if __name__ == "__main__":
     path = '/home/conslag/Documents/galvanize/capstones/homes-like-this/data/models'
     df = tt_holdout_error_curves(path)

@@ -372,29 +372,7 @@ def build_autoencoder_model(img_size):
 
         return autoencoder
 
-def plot_before_after(self,test,test_decoded,n=10):
-    '''
-    Plots the image and reconstructed image.
-    Input:
-    test: test dataset of image arrays
-    test_decoded: reconstructed test dataset image arrays (predict results)
-    Output: None (saves figure to a file)
-    '''
-    plt.figure(figsize=(n*2, 4))
-    for i in range(n):
-        # display original
-        ax = plt.subplot(2, n, i + 1)
-        plt.imshow(X[i])
-        ax.get_xaxis().set_visible(False)
-        ax.get_yaxis().set_visible(False)
 
-        # display reconstruction
-        ax = plt.subplot(2, n, i + 1 + n)
-        plt.imshow(test_decoded[i])
-        ax.get_xaxis().set_visible(False)
-        ax.get_yaxis().set_visible(False)
-
-    plt.savefig('before_after.png')
 
 if __name__ == '__main__':
     # needed for tf gpu
