@@ -182,12 +182,12 @@ class Autoencoder():
         Fits Autoencoder to data
         '''
         if self.gray_imgs:
-            self.NAME = "ae_convT_{}_{}eps_{}batch_{}initfilts_{}layers_128img__50doall_2norm_{}kernel_{}_{}".format(
+            self.NAME = "ae_nc_convT_{}_{}eps_{}batch_{}initfilts_{}layers_128img__50do_2norm_{}kernel_{}_{}".format(
                 'gray', num_epochs, batch_size_, self.init_num_filters, self.num_encode_layers, self.kernel_size[0] \
                         , str(datetime.now().date()), str(datetime.now().time())
             )
         else:
-            self.NAME = "ae_convT_{}_{}eps_{}batch_{}initfilts_{}layers_128img__5030do_2norm_{}kernel_{}_{}".format(
+            self.NAME = "ae_nc_convT_{}_{}eps_{}batch_{}initfilts_{}layers_128img__50do_2norm_{}kernel_{}_{}".format(
                 'color', num_epochs, batch_size_, self.init_num_filters, self.num_encode_layers, self.kernel_size[0] \
                         , str(datetime.now().date()), str(datetime.now().time())
             )
@@ -200,8 +200,8 @@ class Autoencoder():
             self.NAME = self.NAME + '_datagen'
 
             datagen = ImageDataGenerator(
-                featurewise_center=True,
-                featurewise_std_normalization=True,
+                featurewise_center=False,
+                featurewise_std_normalization=False,
                 rotation_range=20,
                 width_shift_range=0.2,
                 height_shift_range=0.2,
@@ -321,8 +321,8 @@ class Autoencoder():
         '''
         self._clear_variables()
 
-        self.autoencoder = keras.models.load_model('../models/{}'.format(model_fname))
-        with open('../models/{}'.format(latent_fname), 'rb') as f:
+        self.autoencoder = keras.models.load_model('../models_aws/models/{}'.format(model_fname))
+        with open('../models_aws/models/{}'.format(latent_fname), 'rb') as f:
             self.latent = pickle.load(f)
     
     def _save_fig(self, file_name):
