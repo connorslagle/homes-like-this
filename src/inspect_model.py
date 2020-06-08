@@ -19,11 +19,11 @@ if __name__ == "__main__":
 
     # model names updated on friday
     # gray_fname = 'rand_ae_convT_gray_3eps_128batch_128_5down5up_50do_2norm_128feats_2020-06-05_11:49:49.291655_datagen_2020-06-05_11:53:46.657751'
-    rgb_fname = 'ae_og_convT_color_2eps_10batch_128initfilts_5layers_128img__50do_2norm_3kernel_2020-06-08_08:36:27.459974_datagen_2020-06-08_08:37:56.088766'
+    rgb_fname = 'ae_og_convT_color_10eps_10batch_128initfilts_5layers_128img__50do_2norm_3kernel_2020-06-08_09:04:18.069434_datagen_2020-06-08_09:09:57.274791'
 
     # latent fnames
     # gray_latent_fname = 'rand_ae_convT_gray_3eps_128batch_128_5down5up_50do_2norm_128feats_2020-06-05_11:49:49.291655_datagen_2020-06-05_11:53:47.323588_xtest_encode.pkl'
-    rgb_latent_fname = 'ae_og_convT_color_2eps_10batch_128initfilts_5layers_128img__50do_2norm_3kernel_2020-06-08_08:36:27.459974_datagen_2020-06-08_08:37:56.595568_xtest_encode.pkl'
+    rgb_latent_fname = 'ae_og_convT_color_10eps_10batch_128initfilts_5layers_128img__50do_2norm_3kernel_2020-06-08_09:04:18.069434_datagen_2020-06-08_09:09:57.732799_xtest_encode.pkl'
 
     # load data
 
