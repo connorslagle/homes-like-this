@@ -19,11 +19,11 @@ if __name__ == "__main__":
 
     # model names updated on friday
     gray_fname = 'ae_og_convT_gray_10eps_10batch_128initfilts_5layers_128img__50do_2norm_3kernel_2020-06-08_09:29:54.041637_datagen_2020-06-08_09:35:23.466331'
-    rgb_fname = 'ae_og_convT_color_15eps_10batch_128initfilts_6layers_128img__50do_2norm_3kernel_2020-06-08_11:39:27.781333_datagen_2020-06-08_11:42:59.027209'
+    rgb_fname = 'ae_og_convT_color_50eps_10batch_128initfilts_5layers_128img__50do_2norm_3kernel_2020-06-08_14:12:01.306635_datagen_2020-06-08_14:23:16.954124'
 
     # latent fnames
     gray_latent_fname = 'ae_og_convT_gray_10eps_10batch_128initfilts_5layers_128img__50do_2norm_3kernel_2020-06-08_09:29:54.041637_datagen_2020-06-08_09:35:23.915315_xtest_encode.pkl'
-    rgb_latent_fname = 'ae_og_convT_color_15eps_10batch_128initfilts_6layers_128img__50do_2norm_3kernel_2020-06-08_11:39:27.781333_datagen_2020-06-08_11:42:59.600674_xtest_encode.pkl'
+    rgb_latent_fname = 'ae_og_convT_color_50eps_10batch_128initfilts_5layers_128img__50do_2norm_3kernel_2020-06-08_14:12:01.306635_datagen_2020-06-08_14:23:17.408975_xtest_encode.pkl'
 
     # load data
 
@@ -66,7 +66,7 @@ if __name__ == "__main__":
 
     X_predict = rgb.autoencoder.predict(X_rgb_holdout)
 
-    plot_before_after(X_rgb_holdout, X_predict, 'flowers2')
+    plot_before_after(X_rgb_holdout, X_predict, 'flowers3')
 
     # gray.kmean_cluster(gray.latent,7,set_seed=False)
     # gray._extract_latent(X_gray_holdout)
