@@ -39,7 +39,7 @@ if __name__ == "__main__":
 
         # build model
         model = Autoencoder()
-        model.build_autoencoder(init_filter, layers, dec_do=0)
+        model.build_autoencoder(init_filter, layers, enc_do=0, dec_do=0)
     else:
         # load data
         pipeline = ImagePipeline('../data/proc_imgs/128/color', gray_imgs=False)
