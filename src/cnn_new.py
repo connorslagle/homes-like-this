@@ -174,7 +174,7 @@ class Autoencoder():
         self.autoencoder = keras.Model(inputs, layer_list[-1])
         self.autoencoder.compile(
             optimizer='adam',
-            loss='binary_crossentropy'
+            loss='mean_squared_error'
         )
 
     def fit_(self, X_train, X_test, num_epochs, batch_size_, use_gpu=True, data_aug=True, with_tensorboard=True):
