@@ -24,7 +24,7 @@ if __name__ == "__main__":
     batch_1 = int(args.batchsize)       # around 30-40
     kernel_sizes = [(3,3),(4,4),(5,5)]
     layers = 5
-    init_filter = 128
+    init_filter = 64
 
     epoch_list = np.array([epochs//2, epochs, epochs*2]).astype(int)
     batch_list = np.array([batch_1-10, batch_1, batch_1+10]).astype(int)
