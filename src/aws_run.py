@@ -30,28 +30,28 @@ if __name__ == "__main__":
     batch_list = np.array([batch_1-10, batch_1, batch_1+10]).astype(int)
 
     
-    for _ in range(3):
-        if use_gray:
-            # load data
-            pipeline = ImagePipeline('../data/proc_imgs/128/gray')
-            pipeline.build_Xy(set_seed=False)
-            X_train, X_test = pipeline.X_train, pipeline.X_test
+    # for _ in range(3):
+    if use_gray:
+        # load data
+        pipeline = ImagePipeline('../data/proc_imgs/128/gray')
+        pipeline.build_Xy(set_seed=False)
+        X_train, X_test = pipeline.X_train, pipeline.X_test
 
-            # build model
-            model = Autoencoder()
-            model.build_autoencoder(init_filter, layers, dec_do=0)
-        else:
-            # load data
-            pipeline = ImagePipeline('../data/proc_imgs/128/color', gray_imgs=False)
-            pipeline.build_Xy(set_seed=False)
-            X_train, X_test = pipeline.X_train, pipeline.X_test
+        # build model
+        model = Autoencoder()
+        model.build_autoencoder(init_filter, layers, dec_do=0)
+    else:
+        # load data
+        pipeline = ImagePipeline('../data/proc_imgs/128/color', gray_imgs=False)
+        pipeline.build_Xy(set_seed=False)
+        X_train, X_test = pipeline.X_train, pipeline.X_test
 
-            # build model
-            model = Autoencoder(gray_imgs=False)
-            model.build_autoencoder(init_filter, layers, dec_do=0)
+        # build model
+        model = Autoencoder(gray_imgs=False)
+        model.build_autoencoder(init_filter, layers,enc_do=0, dec_do=0)
 
-        # fit model
-        model.fit_(X_train, X_test, epochs, batch_1)
-        
-        # save
-        model.save_model()
+    # fit model
+    model.fit_(X_train, X_test, epochs, batch_1)
+    
+    # save
+    model.save_model()

@@ -182,12 +182,12 @@ class Autoencoder():
         Fits Autoencoder to data
         '''
         if self.gray_imgs:
-            self.NAME = "ae_nc_convT_{}_{}eps_{}batch_{}initfilts_{}layers_128img__50do_2norm_{}kernel_{}_{}".format(
+            self.NAME = "ae_og_convT_{}_{}eps_{}batch_{}initfilts_{}layers_128img__50do_2norm_{}kernel_{}_{}".format(
                 'gray', num_epochs, batch_size_, self.init_num_filters, self.num_encode_layers, self.kernel_size[0] \
                         , str(datetime.now().date()), str(datetime.now().time())
             )
         else:
-            self.NAME = "ae_nc_convT_{}_{}eps_{}batch_{}initfilts_{}layers_128img__50do_2norm_{}kernel_{}_{}".format(
+            self.NAME = "ae_og_convT_{}_{}eps_{}batch_{}initfilts_{}layers_128img__50do_2norm_{}kernel_{}_{}".format(
                 'color', num_epochs, batch_size_, self.init_num_filters, self.num_encode_layers, self.kernel_size[0] \
                         , str(datetime.now().date()), str(datetime.now().time())
             )
@@ -372,6 +372,6 @@ class Autoencoder():
 
 if __name__ == "__main__":
     model = Autoencoder(gray_imgs=True)
-    model.build_autoencoder(64,5)
+    model.build_autoencoder(128,5)
     model1 = model.autoencoder
     print(model1.summary())
