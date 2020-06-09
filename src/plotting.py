@@ -11,17 +11,12 @@ plt.rcParams.update({'font.size':20})
 from sklearn.cluster import KMeans
 from sklearn.metrics import silhouette_score, silhouette_samples
 
+from bokeh.io import show
+from bokeh.sampledata.us_counties import data as counties
+from bokeh.plotting import figure, output_file
+from bokeh.palettes import magma as palette
 
-# from data_pipelines import ImagePipeline
 
-def metadata_heatmap():
-    pass
-
-def sat_histogram():
-    '''
-    Make 
-    '''
-    pass
 
 def tt_holdout_error_curves(tb_csv_dir):
     '''
@@ -255,6 +250,56 @@ def plot_before_after(test,test_decoded,fname,n=10):
 
     plt.savefig('../images/before_after_{}.png'.format(fname),dpi=100)
     plt.close('all')
+
+
+def listing_map(longs, lats):
+
+    palette = tuple(reversed(palette(7)))
+
+    counties = {
+        code: county for code, county in counties.items() if county["state"] == "co"
+    }
+
+    county_xs = [county["lons"] for county in counties.values()]
+    county_ys = [county["lats"] for county in counties.values()]
+
+    county_names = [county['name'] for county in counties.values()]
+
+    data=dict(
+        x=county_xs,
+        y=county_ys,
+        name=county_names
+    )
+
+
+    # init figure
+    p = figure(title="Plotting Top 10 Listing Recommendations", 
+            toolbar_location="left", plot_width=1100, plot_height=700)
+
+    # Draw state lines
+    p.patches('x','y', source=data, fill_alpha=0.0,
+        line_color="white", line_width=1.5)
+
+    #  Latitude and Longitude of 5 Cities
+    # ------------------------------------
+    # Austin, TX -------30.26° N, 97.74° W
+    # Dallas, TX -------32.77° N, 96.79° W
+    # Fort Worth, TX ---32.75° N, 97.33° W
+    # Houston, TX ------29.76° N, 95.36° W
+    # San Antonio, TX --29.42° N, 98.49° W
+
+    # Now group these values together into a lists of x (longitude) and y (latitude)
+    x = longs
+    y = lats 
+
+    # The scatter markers
+    p.circle(x, y, size=8, color='k', alpha=1)
+
+    # output to static HTML file
+    output_file("recommendations.html")
+
+    # show results
+    show(p)
 
 if __name__ == "__main__":
     path = '/home/conslag/Documents/galvanize/capstones/homes-like-this/data/models'

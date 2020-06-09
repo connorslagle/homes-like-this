@@ -352,24 +352,37 @@ class Autoencoder():
                 final_layers = np.vstack((final_layers,layer_output))
         self.latent = final_layers
 
-    def load_Xy(self, date):
+    def load_Xy(self, date, with_href=True):
         '''
         Load Xy matrices to use without calling pipeline.
         '''
-        if self.gray_imgs:
-            X_fname = '../data/Xs/gray_{}'.format(date)
+        if with_href:
+            X_fname = '../data/Xs/rgb_{}_original'.format(date)
             with open(X_fname, 'rb') as f:
-                self.X_gray = pickle.load(f)
-            y_fname = '../data/ys/gray_{}'.format(date)
+                self.X_total = pickle.load(f)
+            y_fname = '../data/ys/rgb_{}_href'.format(date)
             with open(y_fname, 'rb') as f:
-                self.y_gray = pickle.load(f)
-        else: 
-            X_fname = '../data/Xs/rgb_{}'.format(date)
-            with open(X_fname, 'rb') as f:
-                self.X_rgb = pickle.load(f)
-            y_fname = '../data/ys/rgb_{}'.format(date)
-            with open(y_fname, 'rb') as f:
-                self.y_rgb = pickle.load(f)
+                self.y_href = pickle.load(f)
+
+        else:
+            if self.gray_imgs:
+                X_fname = '../data/Xs/gray_{}'.format(date)
+                with open(X_fname, 'rb') as f:
+                    self.X_gray = pickle.load(f)
+                y_fname = '../data/ys/gray_{}'.format(date)
+                with open(y_fname, 'rb') as f:
+                    self.y_gray = pickle.load(f)
+            else: 
+                X_fname = '../data/Xs/rgb_{}'.format(date)
+                with open(X_fname, 'rb') as f:
+                    self.X_rgb = pickle.load(f)
+                y_fname = '../data/ys/rgb_{}'.format(date)
+                with open(y_fname, 'rb') as f:
+                    self.y_rgb = pickle.load(f)
+        
+        
+
+
 
 
 

@@ -74,35 +74,6 @@ if __name__ == "__main__":
 
     rgb._extract_latent(X_rgb_holdout)
     rgb.kmean_cluster(rgb.latent,7,set_seed=False)
-    # cluster_plot(X_rgb_holdout, rgb.kmeans.labels_,7,'color 64x4')
-    # silhouette(rgb.latent,7,'color')
-
-    
-    # combo = np.hstack((rgb.latent,gray.latent))
-    # rgb.kmean_cluster(combo,7,set_seed=False)
-    # cluster_plot(X_rgb_holdout, rgb.kmeans.labels_,'ensemble')
-
-    # rgb.top_9_from_clusters(X_rgb_holdout,rgb.latent, 'RGB Latent Holdout', gray_imgs=False)
-
-    # rgb.elbow_plot(rgb.latent,20,'Color_Only')
-
-    # rgb_score = rgb.autoencoder.evaluate(X_rgb_holdout, X_rgb_holdout)
-    # gray_score = gray.autoencoder.evaluate(X_gray_holdout, X_gray_holdout)
-
-    # print('RGB RMSE: {}\tGray RMSE:{}'.format(np.round(rgb_score,4), np.round(gray_score,4)))
-
-    # gray._extract_latent(X_gray_holdout)
-    # gray.kmean_cluster(gray.latent,7,set_seed=False)
-    # # rgb.top_9_from_clusters(X_gray_holdout, gray.latent, 'Gray Latent Holdout')
-
-    # gray.elbow_plot(gray.latent,20,'Gray_Only')
-
-    # 
-
-    # rgb.kmean_cluster(combo,7,set_seed=False)
-    # # rgb.top_9_from_clusters(X_rgb_holdout, combo, 'Ensemble Latent Holdout', gray_imgs=False)
-
-    # rgb.elbow_plot(combo,20,'Ensemble')
 
 
     '''

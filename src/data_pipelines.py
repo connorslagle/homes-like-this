@@ -340,7 +340,7 @@ class ImagePipeline(MongoImporter):
         Take a list of images and vectorize all the images. Returns a feature matrix where each
         row represents an image
         '''
-        imgs = [np.ravel(img) for img in self.img_lst2]
+        imgs = [np.ravel(img) for img in self.img_lst2[0]]
         
         self.features = np.r_['0', imgs]
 
@@ -377,14 +377,18 @@ class ImagePipeline(MongoImporter):
             self.df = self.load_docs()
 
         city = []
+        href = []
         idx = []
         for elem in self.labels:
             if elem in self.df.image_file.values:
                 city.append(self.df.city[self.df.image_file == elem].values[0])
+                href.append(self.df.listing_href[self.df.image_file == elem].values[0])
                 idx.append(self.labels.index(elem))
 
+        # pdb.set_trace()
         self.X = self.features[idx,:]
         self.y = [self.city_dict[key] for key in city]
+        self.hrefs = href
 
         self.img_dict = {}
 
@@ -427,7 +431,7 @@ class ImagePipeline(MongoImporter):
         y_dict = {'train':self.y_train, 'test':self.y_test, 'holdout':self.y_holdout}
 
         X_original = self.X
-        X_files = self.labels
+        X_files = self.hrefs
 
         if self.gray_images:
             color_tag = 'gray'
@@ -451,9 +455,10 @@ class ImagePipeline(MongoImporter):
                 color_tag, str(datetime.now().date())
             )
             with open(X_fname, 'wb') as f:
+
                 pickle.dump(X_original, f)
             
-            y_fname = '../data/ys/{}_{}_labels'.format(
+            y_fname = '../data/ys/{}_{}_href'.format(
                 color_tag, str(datetime.now().date())
             )
             with open(y_fname, 'wb') as f:
