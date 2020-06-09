@@ -5,6 +5,7 @@ import pandas as pd
 from datetime import datetime
 import os
 import pickle
+import pdb
 
 # sk imports
 from skimage import io
@@ -21,7 +22,7 @@ class MongoImporter():
 
     def __init__(self):
         self.conn = pymongo.MongoClient('localhost', 27017)
-        self.db = self.conn['listings']
+        self.db = self.conn['test']
 
     def _from_collection(self):
         '''
@@ -166,11 +167,10 @@ class MongoImporter():
         df['city'] = [elem[-2] for elem in df.temp1]
         df['state'] = [state for elem in df.listing_href]
         df['zipcode'] = [elem[1] for elem in df.temp2]
-        df.drop('listing_href', axis=1, inplace=True)
         df.drop('temp1', axis=1, inplace=True)
         df.drop('temp2', axis=1, inplace=True)
-
-        df.columns = ['listing_id', 'image_file','prop_type', 'listing_price',
+        # breakpoint()
+        df.columns = ['listing_id', 'image_file', 'listing_href','prop_type', 'listing_price',
                         'beds','baths', 'sqft', 'address','city','state','zipcode']
 
         # drop duplicate images
@@ -188,7 +188,7 @@ class MongoImporter():
         '''
         Save to csv file for easier data processing down the line.
         '''
-        today_date = str(date.today())
+        today_date = str(datetime.today())
         file_path = '../data/metadata/{}_{}'.format(today_date,file_name)
 
         self.df.to_csv(file_path)
@@ -201,7 +201,7 @@ class ImagePipeline(MongoImporter):
 
     def __init__(self, image_dir, gray_imgs=True):
         self.image_dir = image_dir
-        self.save_dir = '../data/proc_images/'
+        self.save_dir = '../data/test_imgs/'
         self.city_dict = {'Denver': 0, 'Arvada': 1, 'Aurora': 2, 'Lakewood':3,
                         'Centennial': 4,'Westminster':5, 'Thornton':6}
 
@@ -266,10 +266,13 @@ class ImagePipeline(MongoImporter):
         
         else:
             self.img_names2.append(img_names)
+
             img_lst = [io.imread(os.path.join(self.image_dir, fname)) for fname in img_names]
+            self.img_lst_len = len(img_lst)
             self.img_lst2.append(img_lst)
 
-        self.img_lst2 = self.img_lst2[0]
+        # self.img_lst2 = self.img_lst2[0]
+        # pdb.set_trace()
 
 
     def _square_image(self):
@@ -328,7 +331,7 @@ class ImagePipeline(MongoImporter):
             gray_tag = 'color'
         for fname, img in zip(self.img_names2[0], self.img_lst2):
 
-            io.imsave(os.path.join('{}{}/{}/'.format(self.save_dir,gray_tag,self.shape), fname), img)
+            io.imsave(os.path.join('{}/{}/{}/'.format(self.save_dir,gray_tag,self.shape), fname), img)
 
     def _vectorize_features(self):
         '''
@@ -380,6 +383,8 @@ class ImagePipeline(MongoImporter):
 
         self.X = self.features[idx,:]
         self.y = [self.city_dict[key] for key in city]
+
+        self.img_dict = {}
 
         if set_seed:
             X_tt, X_holdout, y_tt, self.y_holdout = train_test_split(self.X, np.array(self.y), stratify=np.array(self.y), random_state=33)
@@ -439,11 +444,13 @@ class ImagePipeline(MongoImporter):
 
 
 if __name__ == "__main__":
+    print('hi')
     # importer = MongoImporter()
     # df = importer.load_docs()
+    # df.info()
     # importer.to_csv('pg1_3_all.csv')
 
-    img_pipe = ImagePipeline('../data/listing_images/full/',gray_imgs=False)
-    img_pipe.read(batch_mode=True, batch_size=500,batch_resize_size=(256,256))
+    # img_pipe = ImagePipeline('../data/listing_images/full/',gray_imgs=False)
+    # img_pipe.read(batch_mode=True, batch_size=500,batch_resize_size=(256,256))
     # img_pipe.resize((64,64))
     # img_pipe.save()

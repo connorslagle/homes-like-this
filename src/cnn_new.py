@@ -30,6 +30,8 @@ class Autoencoder():
         self.gray_imgs = gray_imgs
         self._clear_variables()
 
+        
+
     def _clear_variables(self):
         '''
         Set attributes to empty type variables
@@ -202,9 +204,9 @@ class Autoencoder():
             datagen = ImageDataGenerator(
                 featurewise_center=False,
                 featurewise_std_normalization=False,
-                rotation_range=20,
-                width_shift_range=0.2,
-                height_shift_range=0.2,
+                rotation_range=10,
+                width_shift_range=0.05,
+                height_shift_range=0.05,
                 horizontal_flip=True
             )
             datagen.fit(X_train)
@@ -237,7 +239,7 @@ class Autoencoder():
                     batch_size=batch_size_,
                     validation_data=(X_test,X_test))
 
-        self._extract_latent(X_test)
+        # self._extract_latent(X_test)
             
     def kmean_cluster(self, latents, num_clusters, set_seed=True):
         '''
@@ -302,16 +304,16 @@ class Autoencoder():
         '''
         pass
 
-    def save_model(self):
+    def save_model(self,model_name):
         '''
         Method to save model and latent features
         '''
         self.autoencoder.save('../models/{}_{}_{}'.format(
-            self.NAME, str(datetime.now().date()), str(datetime.now().time())
+            model_name, str(datetime.now().date()), str(datetime.now().time())
         ))
 
         with open('../models/{}_{}_{}_xtest_encode.pkl'.format(
-            self.NAME, str(datetime.now().date()), str(datetime.now().time())
+            model_name, str(datetime.now().date()), str(datetime.now().time())
         ), 'wb') as f:
             pickle.dump(self.latent,f)
 
@@ -321,8 +323,8 @@ class Autoencoder():
         '''
         self._clear_variables()
 
-        self.autoencoder = keras.models.load_model('../models_aws/models/{}'.format(model_fname))
-        with open('../models_aws/models/{}'.format(latent_fname), 'rb') as f:
+        self.autoencoder = keras.models.load_model('../models/{}'.format(model_fname))
+        with open('../models/{}'.format(latent_fname), 'rb') as f:
             self.latent = pickle.load(f)
     
     def _save_fig(self, file_name):
@@ -337,10 +339,11 @@ class Autoencoder():
         Extract encoded latent features
         '''
         print('\nShape of X:{}\n'.format(X_test.shape))
-        batches = np.split(X_test,95)           # 95 for test, 199 for holdout
+        batches = np.split(X_test,199)           # 95 for test, 199 for holdout/all
         for i,batch in enumerate(batches):
             get_layer_output = K.function([self.autoencoder.layers[0].input],
-                                        [self.autoencoder.layers[16].output])
+                                        [self.autoencoder.layers[13].output])
+            # pdb.set_trace()
             layer_output = get_layer_output([batch])[0]
 
             if i == 0:
@@ -372,6 +375,6 @@ class Autoencoder():
 
 if __name__ == "__main__":
     model = Autoencoder(gray_imgs=True)
-    model.build_autoencoder(128,4)
+    model.build_autoencoder(64,4)
     model1 = model.autoencoder
     print(model1.summary())

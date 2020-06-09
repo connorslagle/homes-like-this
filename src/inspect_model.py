@@ -8,7 +8,7 @@ import tensorflow as tf
 # other file imports
 from cnn_new import Autoencoder
 from data_pipelines import ImagePipeline
-from plotting import plot_before_after, cluster_plot
+from plotting import plot_before_after, cluster_plot, silhouette
 
 
 if __name__ == "__main__":
@@ -18,12 +18,12 @@ if __name__ == "__main__":
     tf.compat.v1.Session(config=config)
 
     # model names updated on friday
-    gray_fname = 'ae_og_convT_gray_10eps_10batch_128initfilts_5layers_128img__50do_2norm_3kernel_2020-06-08_09:29:54.041637_datagen_2020-06-08_09:35:23.466331'
-    rgb_fname = 'ae_og_convT_color_50eps_10batch_128initfilts_5layers_128img__50do_2norm_3kernel_2020-06-08_14:12:01.306635_datagen_2020-06-08_14:23:16.954124'
+    gray_fname = 'ae_og_convT_gray_15eps_10batch_64initfilts_4layers_128img__50do_2norm_3kernel_2020-06-08_17:51:39.718211_datagen_2020-06-08_17:53:21.290709'
+    rgb_fname = 'ae_og_convT_color_15eps_10batch_64initfilts_4layers_128img__50do_2norm_3kernel_2020-06-08_17:45:47.036921_datagen_2020-06-08_17:47:43.071002'
 
     # latent fnames
     gray_latent_fname = 'ae_og_convT_gray_10eps_10batch_128initfilts_5layers_128img__50do_2norm_3kernel_2020-06-08_09:29:54.041637_datagen_2020-06-08_09:35:23.915315_xtest_encode.pkl'
-    rgb_latent_fname = 'ae_og_convT_color_50eps_10batch_128initfilts_5layers_128img__50do_2norm_3kernel_2020-06-08_14:12:01.306635_datagen_2020-06-08_14:23:17.408975_xtest_encode.pkl'
+    rgb_latent_fname = 'ae_og_convT_color_50eps_10batch_128initfilts_4layers_128img__50do_2norm_3kernel_2020-06-08_14:35:16.894755_datagen_2020-06-08_14:46:47.676980_xtest_encode.pkl'
 
     # load data
 
@@ -66,15 +66,16 @@ if __name__ == "__main__":
 
     X_predict = rgb.autoencoder.predict(X_rgb_holdout)
 
-    plot_before_after(X_rgb_holdout, X_predict, 'flowers3')
+    # plot_before_after(X_rgb_holdout, X_predict, 'color 64x4')
 
     # gray.kmean_cluster(gray.latent,7,set_seed=False)
     # gray._extract_latent(X_gray_holdout)
     # cluster_plot(X_rgb_holdout, gray.kmeans.labels_,'gray')
 
-    # rgb._extract_latent(X_rgb_holdout)
-    # rgb.kmean_cluster(rgb.latent,7,set_seed=False)
-    # cluster_plot(X_rgb_holdout, rgb.kmeans.labels_,'color')
+    rgb._extract_latent(X_rgb_holdout)
+    rgb.kmean_cluster(rgb.latent,7,set_seed=False)
+    # cluster_plot(X_rgb_holdout, rgb.kmeans.labels_,7,'color 64x4')
+    # silhouette(rgb.latent,7,'color')
 
     
     # combo = np.hstack((rgb.latent,gray.latent))
