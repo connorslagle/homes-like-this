@@ -1,6 +1,7 @@
 #general imports
 import numpy as np
 import pandas as pd
+import pdb
 import pickle
 import matplotlib.pyplot as plt
 # plt.style.use('ggplot')
@@ -15,8 +16,10 @@ from sklearn.metrics.pairwise import cosine_similarity
 
 
 # from other py files
-from data_pipelines import ImagePipeline
+from data_pipelines import ImagePipeline, MongoImporter
 from cnn_new import Autoencoder
+from plotting import img_plot_3x3
+
 
 if __name__ == "__main__":
     # needed for tf gpu
@@ -42,6 +45,13 @@ if __name__ == "__main__":
     rgb.load_model(rgb_fname, rgb_latent_fname)
     gray.load_model(gray_fname, gray_latent_fname)
 
+    rgb.load_Xy('2020-06-04')
+    gray.load_Xy('2020-06-04')
+    
+    X_rgb = rgb.X_rgb
+    X_gray = gray.X_gray
+
+    X_total = np.vstack((X_rgb['train'], X_rgb['test'], X_rgb['holdout']))
 
     '''
     Load img and data pipelines
@@ -70,16 +80,43 @@ if __name__ == "__main__":
     y_user_gary = gray_pipe.labels
 
     '''
+    reshape to imgs
+    '''
+
+    X_user_color = X_user_color.reshape(X_user_color.shape[0], 128, 128, 3)
+    X_user_gray = X_user_gray.reshape(X_user_gray.shape[0], 128, 128, 1)
+    
+    X_user_color = X_user_color.astype('float32')
+    X_user_gray = X_user_gray.astype('float32')
+    
+    X_user_color = X_user_color/255 # normalizing (scaling from 0 to 1)
+    X_user_gray = X_user_gray/255  # normalizing (scaling from 0 to 1)
+
+    '''
+    Featurize user img and get cosine dist
+    '''
+
+    X_extended_latent = np.hstack((rgb.latent, gray.latent))
+
+    rgb._extract_latent(X_user_color)
+    gray._extract_latent(X_user_gray)
+
+    X_user_extended = np.hstack((rgb.latent, gray.latent))
+
+    distances = cosine_similarity(X_user_extended, X_extended_latent)
+    # pdb.set_trace()
+    X_closest = X_total[np.argsort(distances)][0][::-1][:9]
+
+    X_close_imgs = X_closest.reshape(X_closest.shape[0], 128, 128, 3)
+
+    img_plot_3x3(X_close_imgs, 'closest_to_user')
+
+
+
+    '''
     Import df
     '''
-    # df = pd.read_csv('../data/metadata/2020-05-14_pg1_3_all.csv')
-
-
-
-    # '''
-    # Load pkled Xy
-    # '''
-
+    df = pd.read_csv('../data/metadata/2020-06-09_pg1_3_all.csv')
 
     '''
     Predict on user img with loaded models

@@ -143,6 +143,8 @@ class MongoImporter():
         df.image_urls = df.image_urls.str.split('/')
         df.image_urls = [elem[-1] for elem in df.image_urls]
 
+        orig_href = df.listing_href.copy()
+
         # listing href to address/city/zip
         df.listing_href = df.listing_href.str.split('/')
         df.listing_href = [elem[-1] for elem in df.listing_href]
@@ -167,9 +169,9 @@ class MongoImporter():
         df['city'] = [elem[-2] for elem in df.temp1]
         df['state'] = [state for elem in df.listing_href]
         df['zipcode'] = [elem[1] for elem in df.temp2]
+        df['listing_href'] = orig_href
         df.drop('temp1', axis=1, inplace=True)
         df.drop('temp2', axis=1, inplace=True)
-        # breakpoint()
         df.columns = ['listing_id', 'image_file', 'listing_href','prop_type', 'listing_price',
                         'beds','baths', 'sqft', 'address','city','state','zipcode']
 
@@ -188,7 +190,7 @@ class MongoImporter():
         '''
         Save to csv file for easier data processing down the line.
         '''
-        today_date = str(datetime.today())
+        today_date = str(datetime.today().date())
         file_path = '../data/metadata/{}_{}'.format(today_date,file_name)
 
         self.df.to_csv(file_path)
@@ -358,7 +360,7 @@ class ImagePipeline(MongoImporter):
         self._vectorize_features()
         self._vectorize_labels()
 
-    def build_Xy(self, meta_from_csv={True:'2020-05-14_pg1_3_all.csv'}, set_seed=True):
+    def build_Xy(self, meta_from_csv={True:'2020-06-09_pg1_3_all.csv'}, set_seed=True):
         '''
         Returns X,y mats for cnn
         '''
@@ -416,12 +418,16 @@ class ImagePipeline(MongoImporter):
         self.X_test = X_test/255  # normalizing (scaling from 0 to 1)
         self.X_holdout = X_holdout/255
 
-    def _save_Xy(self):
+    def _save_Xy(self, original_order=True):
         '''
         Save Xy matrices as pkl files to use without calling pipeline
         '''
+
         X_dict = {'train':self.X_train_ravel, 'test':self.X_test_ravel, 'holdout':self.X_holdout_ravel}
         y_dict = {'train':self.y_train, 'test':self.y_test, 'holdout':self.y_holdout}
+
+        X_original = self.X
+        X_files = self.labels
 
         if self.gray_images:
             color_tag = 'gray'
@@ -440,6 +446,21 @@ class ImagePipeline(MongoImporter):
         with open(y_fname, 'wb') as f:
             pickle.dump(y_dict, f)
 
+        if original_order:
+            X_fname = '../data/Xs/{}_{}_original'.format(
+                color_tag, str(datetime.now().date())
+            )
+            with open(X_fname, 'wb') as f:
+                pickle.dump(X_original, f)
+            
+            y_fname = '../data/ys/{}_{}_labels'.format(
+                color_tag, str(datetime.now().date())
+            )
+            with open(y_fname, 'wb') as f:
+                pickle.dump(X_files, f)
+
+        
+
     
 
 
@@ -450,7 +471,9 @@ if __name__ == "__main__":
     # df.info()
     # importer.to_csv('pg1_3_all.csv')
 
-    # img_pipe = ImagePipeline('../data/listing_images/full/',gray_imgs=False)
+    img_pipe = ImagePipeline('../data/proc_images/color/128/',gray_imgs=False)
+    img_pipe.build_Xy()
+    img_pipe._save_Xy()
     # img_pipe.read(batch_mode=True, batch_size=500,batch_resize_size=(256,256))
     # img_pipe.resize((64,64))
     # img_pipe.save()

@@ -197,7 +197,7 @@ def silhouette(X, n_clusters, color):
                  fontsize=14, fontweight='bold')
     plt.savefig('../images/sil_{}_{}clusters.png'.format(color, n_clusters))
 
-def cluster_plot(images, labels, num_clusters, title):
+def cluster_plot_7x3(images, labels, num_clusters, title):
     fig, axes = plt.subplots(3,num_clusters,figsize=(24,12))
     for cluster in range(num_clusters):
         subset_idx = np.where(labels == cluster)
@@ -207,6 +207,15 @@ def cluster_plot(images, labels, num_clusters, title):
             axes[idx,cluster].imshow(images[rand_idx])
             axes[idx,cluster].set_axis_off()
     plt.savefig('../images/7x3_cluster_{}.png'.format(title), dpi=200)
+
+def img_plot_3x3(images, title):
+
+    fig, axes = plt.subplots(3,3,figsize=(12,12))
+    for ax, img in zip(axes.flatten(), images):
+        ax.imshow(img)
+        ax.set_axis_off()
+
+    plt.savefig('../images/3x3_cluster_{}.png'.format(title), dpi=200)
 
 
 def six_hist(sil_values, labels, color):
