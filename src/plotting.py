@@ -3,6 +3,7 @@ import pandas as pd
 import glob
 import matplotlib.cm as cm
 from os import listdir
+import os
 from os.path import isfile, join
 import matplotlib.pyplot as plt
 plt.style.use('ggplot')
@@ -11,10 +12,10 @@ plt.rcParams.update({'font.size':20})
 from sklearn.cluster import KMeans
 from sklearn.metrics import silhouette_score, silhouette_samples
 
-from bokeh.io import show
-from bokeh.sampledata.us_counties import data as counties
-from bokeh.plotting import figure, output_file
-from bokeh.palettes import magma as palette
+from bokeh.io import show, output_file, export_png
+from bokeh.plotting import figure, output_file, gmap
+from bokeh.models import ColumnDataSource, GMapOptions
+
 
 
 
@@ -252,56 +253,57 @@ def plot_before_after(test,test_decoded,fname,n=10):
     plt.close('all')
 
 
-def listing_map(longs, lats):
+def listing_map(lat_lst, long_lst, export_as_png=False):
 
-    palette = tuple(reversed(palette(7)))
-
-    counties = {
-        code: county for code, county in counties.items() if county["state"] == "co"
+    output_file("../images/gmap.html")
+    map_style = '''[
+    {
+        "featureType": "road",
+        "elementType": "labels",
+        "stylers": [
+            {
+                "visibility": "off"
+            }
+        ]
+    },
+    {
+        "featureType": "poi",
+        "elementType": "labels",
+        "stylers": [
+            {
+                "visibility": "off"
+            }
+        ]
+    },
+    {
+        "featureType": "transit",
+        "elementType": "labels.text",
+        "stylers": [
+            {
+                "visibility": "off"
+            }
+        ]
     }
+    ]
+    '''
+    map_options = GMapOptions(lat=39.755123, lng=-104.980635, map_type="roadmap", zoom=10, styles=map_style)
 
-    county_xs = [county["lons"] for county in counties.values()]
-    county_ys = [county["lats"] for county in counties.values()]
+    p = gmap(os.environ['GCP_API_KEY'], map_options, title="Denver")
 
-    county_names = [county['name'] for county in counties.values()]
-
-    data=dict(
-        x=county_xs,
-        y=county_ys,
-        name=county_names
+    source = ColumnDataSource(
+        data=dict(lat=lat_lst,
+                lon=long_lst)
     )
 
+    p.circle(x="lon", y="lat", size=10, fill_color="red", fill_alpha=0.8, source=source)
 
-    # init figure
-    p = figure(title="Plotting Top 10 Listing Recommendations", 
-            toolbar_location="left", plot_width=1100, plot_height=700)
-
-    # Draw state lines
-    p.patches('x','y', source=data, fill_alpha=0.0,
-        line_color="white", line_width=1.5)
-
-    #  Latitude and Longitude of 5 Cities
-    # ------------------------------------
-    # Austin, TX -------30.26° N, 97.74° W
-    # Dallas, TX -------32.77° N, 96.79° W
-    # Fort Worth, TX ---32.75° N, 97.33° W
-    # Houston, TX ------29.76° N, 95.36° W
-    # San Antonio, TX --29.42° N, 98.49° W
-
-    # Now group these values together into a lists of x (longitude) and y (latitude)
-    x = longs
-    y = lats 
-
-    # The scatter markers
-    p.circle(x, y, size=8, color='k', alpha=1)
-
-    # output to static HTML file
-    output_file("recommendations.html")
-
-    # show results
-    show(p)
+    if export_as_png:
+        export_png(p, filename="../images/listing_map.png")
+    else:
+        show(p)
 
 if __name__ == "__main__":
-    path = '/home/conslag/Documents/galvanize/capstones/homes-like-this/data/models'
-    df = tt_holdout_error_curves(path)
-    
+    listing_map([39.76],[-104.98])
+
+    # df = tt_holdout_error_curves(path)
+    pass
