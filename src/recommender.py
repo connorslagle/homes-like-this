@@ -45,8 +45,8 @@ if __name__ == "__main__":
     rgb.load_model(rgb_fname, rgb_latent_fname)
     gray.load_model(gray_fname, gray_latent_fname)
 
-    rgb.load_Xy('2020-06-04')
-    gray.load_Xy('2020-06-04')
+    rgb.load_Xy('2020-06-04', with_href=False)
+    gray.load_Xy('2020-06-04', with_href=False)
     
     X_rgb = rgb.X_rgb
     X_gray = gray.X_gray
@@ -111,12 +111,12 @@ if __name__ == "__main__":
 
     img_plot_3x3(X_close_imgs, 'closest_to_user')
 
-
-
     '''
     Import df
     '''
     df = pd.read_csv('../data/metadata/2020-06-09_pg1_3_all.csv')
+
+
 
     '''
     Predict on user img with loaded models

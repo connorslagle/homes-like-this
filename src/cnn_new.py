@@ -298,12 +298,6 @@ class Autoencoder():
             fig.suptitle('Top 9: Cluster {}\n Model: {}'.format(label, model_name))
             self._save_fig('clusters/top9_cluster_{}_{}.png'.format(label, model_name))
 
-    def silhouette_plot(self):
-        '''
-        Plots silhouette plot, fill in later.
-        '''
-        pass
-
     def save_model(self,model_name):
         '''
         Method to save model and latent features
