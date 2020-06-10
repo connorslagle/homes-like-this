@@ -204,14 +204,14 @@ def cluster_plot_7x3(images, labels, num_clusters, title):
             axes[idx,cluster].set_axis_off()
     plt.savefig('../images/7x3_cluster_{}.png'.format(title), dpi=200)
 
-def img_plot_3x3(images, title):
+def similar_img_plot(images, n, title):
 
-    fig, axes = plt.subplots(3,3,figsize=(12,12))
+    fig, axes = plt.subplots(n,n,figsize=(12,12))
     for ax, img in zip(axes.flatten(), images):
         ax.imshow(img)
         ax.set_axis_off()
 
-    plt.savefig('../images/3x3_cluster_{}.png'.format(title), dpi=200)
+    plt.savefig('../images/{}x{}_cluster_{}.png'.format(n,n,title), dpi=200)
 
 
 def six_hist(sil_values, labels, color):

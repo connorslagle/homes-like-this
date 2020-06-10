@@ -340,7 +340,7 @@ class ImagePipeline(MongoImporter):
         Take a list of images and vectorize all the images. Returns a feature matrix where each
         row represents an image
         '''
-        imgs = [np.ravel(img) for img in self.img_lst2[0]]
+        imgs = [np.ravel(img) for img in self.img_lst2]
         
         self.features = np.r_['0', imgs]
 
@@ -388,7 +388,7 @@ class ImagePipeline(MongoImporter):
         # pdb.set_trace()
         self.X = self.features[idx,:]
         self.y = [self.city_dict[key] for key in city]
-        self.hrefs = href
+        self.hrefs = self.df.listing_href[idx]
 
         self.img_dict = {}
 
@@ -476,7 +476,7 @@ if __name__ == "__main__":
     # df.info()
     # importer.to_csv('pg1_3_all.csv')
 
-    img_pipe = ImagePipeline('../data/proc_images/color/128/',gray_imgs=False)
+    img_pipe = ImagePipeline('../data/proc_images/128/',gray_imgs=True)
     img_pipe.build_Xy()
     img_pipe._save_Xy()
     # img_pipe.read(batch_mode=True, batch_size=500,batch_resize_size=(256,256))

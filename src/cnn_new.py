@@ -351,12 +351,20 @@ class Autoencoder():
         Load Xy matrices to use without calling pipeline.
         '''
         if with_href:
-            X_fname = '../data/Xs/rgb_{}_original'.format(date)
-            with open(X_fname, 'rb') as f:
-                self.X_total = pickle.load(f)
-            y_fname = '../data/ys/rgb_{}_href'.format(date)
-            with open(y_fname, 'rb') as f:
-                self.y_href = pickle.load(f)
+            if self.gray_imgs:
+                X_fname = '../data/Xs/gray_{}_original'.format(date)
+                with open(X_fname, 'rb') as f:
+                    self.X_total = pickle.load(f)
+                y_fname = '../data/ys/gray_{}_href'.format(date)
+                with open(y_fname, 'rb') as f:
+                    self.y_href = pickle.load(f)
+            else:
+                X_fname = '../data/Xs/rgb_{}_original'.format(date)
+                with open(X_fname, 'rb') as f:
+                    self.X_total = pickle.load(f)
+                y_fname = '../data/ys/rgb_{}_href'.format(date)
+                with open(y_fname, 'rb') as f:
+                    self.y_href = pickle.load(f)
 
         else:
             if self.gray_imgs:

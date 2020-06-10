@@ -18,7 +18,7 @@ from sklearn.metrics.pairwise import cosine_similarity
 # from other py files
 from data_pipelines import ImagePipeline, MongoImporter
 from cnn_new import Autoencoder
-from plotting import img_plot_3x3
+from plotting import similar_img_plot, listing_map
 
 
 if __name__ == "__main__":
@@ -32,12 +32,12 @@ if __name__ == "__main__":
     '''
 
     # model names updated on friday
-    gray_fname = 'gray_final_2020-06-09_17:52:27.380764'
-    rgb_fname = 'rgb_final_2020-06-09_17:52:23.902556'
+    gray_fname = 'gray_061020_2020-06-10_22:42:13.393938'
+    rgb_fname = 'rgb_061020_2020-06-10_22:42:09.415735'
 
     # latent fnames
-    gray_latent_fname = 'gray_final_2020-06-09_17:52:30.434822_xtest_encode.pkl'
-    rgb_latent_fname = 'rgb_final_2020-06-09_17:52:27.223554_xtest_encode.pkl'
+    gray_latent_fname = 'gray_061020_2020-06-10_22:42:17.322067_xtest_encode.pkl'
+    rgb_latent_fname = 'rgb_061020_2020-06-10_22:42:13.297335_xtest_encode.pkl'
 
     rgb = Autoencoder(gray_imgs=False)
     gray = Autoencoder()
@@ -45,13 +45,27 @@ if __name__ == "__main__":
     rgb.load_model(rgb_fname, rgb_latent_fname)
     gray.load_model(gray_fname, gray_latent_fname)
 
-    rgb.load_Xy('2020-06-04', with_href=False)
-    gray.load_Xy('2020-06-04', with_href=False)
-    
-    X_rgb = rgb.X_rgb
-    X_gray = gray.X_gray
+    rgb.load_Xy('2020-06-10')
+    gray.load_Xy('2020-06-10')
 
-    X_total = np.vstack((X_rgb['train'], X_rgb['test'], X_rgb['holdout']))
+    X_rgb = rgb.X_total
+    # X_gray = gray.X_total
+    # pdb.set_trace()
+    # X_rgb = X_rgb.reshape(X_rgb.shape[0], 128, 128, 3)
+    # X_gray = X_gray.reshape(X_gray.shape[0], 128, 128, 1)
+    
+    # X_rgb = X_rgb.astype('float32')
+    # X_gray = X_gray.astype('float32')
+    
+    # X_rgb = X_rgb/255 # normalizing (scaling from 0 to 1)
+    # X_gray = X_gray/255  # normalizing (scaling from 0 to 1)
+
+    # rgb._extract_latent(X_rgb)
+    # gray._extract_latent(X_gray)
+
+    # rgb.save_model('rgb_061020')
+    # gray.save_model('gray_061020')
+    # X_total = np.vstack((X_rgb['train'], X_rgb['test'], X_rgb['holdout']))
 
     '''
     Load img and data pipelines
@@ -105,19 +119,42 @@ if __name__ == "__main__":
 
     distances = cosine_similarity(X_user_extended, X_extended_latent)
     # pdb.set_trace()
-    X_closest = X_total[np.argsort(distances)][0][::-1][:9]
+    X_closest = X_rgb[np.argsort(distances)][0][::-1][:9]
 
     X_close_imgs = X_closest.reshape(X_closest.shape[0], 128, 128, 3)
 
-    img_plot_3x3(X_close_imgs, 'closest_to_user')
+    similar_img_plot(X_close_imgs, 2, 'closest_to_user')
 
     '''
     Import df
     '''
     df = pd.read_csv('../data/metadata/2020-06-09_pg1_3_all.csv')
 
+    hrefs = np.array(rgb.y_href)
+    num_unique = 0
+    idx = 1
+    while num_unique < 10:
+        idx += 1
+        sorted_href = hrefs[np.argsort(distances)][0][::-1][:idx]
+        num_unique = np.unique(sorted_href).shape[0]
 
+    top_ten = sorted_href
 
     '''
-    Predict on user img with loaded models
+    Top ten with presentation example
+
+    '/realestateandhomes-detail/8091-S-Clayton-Cir_Centennial_CO_80122_M11235-45960',
+    '/realestateandhomes-detail/804-S-Vance-St-Unit-B_Lakewood_CO_80226_M17826-33954',
+    '/realestateandhomes-detail/8560-W-81st-Dr_Arvada_CO_80005_M12329-61732',
+    '/realestateandhomes-detail/11321-W-18th-Ave_Lakewood_CO_80215_M20461-22788',
+    '/realestateandhomes-detail/1926-Jamaica-St_Aurora_CO_80010_M14147-60408',
+    '/realestateandhomes-detail/8843-Flattop-St_Arvada_CO_80007_M24540-74250',
+    '/realestateandhomes-detail/8023-Wolff-St-Unit-D_Westminster_CO_80031_M14214-51983',
+    '/realestateandhomes-detail/8640-W-Alameda-Ave_Lakewood_CO_80226_M24028-57580',
+    '/realestateandhomes-detail/3411-W-98th-Dr-Unit-C_Westminster_CO_80031_M15814-33299',
+    '/realestateandhomes-detail/3805-W-84th-Ave_Westminster_CO_80031_M10115-77027']
+
+    lat = []
+    long = []
     '''
+
