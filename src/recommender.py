@@ -140,6 +140,7 @@ if __name__ == "__main__":
 
     top_ten = sorted_href
 
+
     '''
     Top ten with presentation example
 
@@ -153,9 +154,9 @@ if __name__ == "__main__":
     '/realestateandhomes-detail/8640-W-Alameda-Ave_Lakewood_CO_80226_M24028-57580'          1330 S Youngfield Ct, Lakewood, CO 80228
     '/realestateandhomes-detail/3411-W-98th-Dr-Unit-C_Westminster_CO_80031_M15814-33299',   2901-W-81st-Avenue/Westminster/CO/80031
     '/realestateandhomes-detail/3805-W-84th-Ave_Westminster_CO_80031_M10115-77027']         CO/Arvada/7760-W-87th-Dr-80005/unit-E
-    
 
-    lat = [39.570712, 39.703258, 39.844635, ]
-    long = [-104.956460, -105.079352, -105.093296, ]
+
+    lat = [39.588828, 39.745790, 39.809788, 39.730797, 39.646233, 39.870414, 39.873274, 39.692519, 39.843736, 39.853361]
+    long = [-104.931643, -105.125263, -105.106349, -105.087823, -104.780792, -105.215168, -105.093423, -105.142520,-105.023142, -105.085782]
     '''
 
