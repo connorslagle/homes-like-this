@@ -1,12 +1,18 @@
 # Real Estate Search Recommender
 
 
-Readme under development. If you have any questions, please contact me at connor.slagle@colorado.edu.
+Readme under development. Feel free to browse the ppt version below. If you have any questions, please contact me at connor.slagle@colorado.edu.
 
 Thank you!
 Connor
 
-<p align="center">
+<object data="images/Real\ Estate\ Search\ Recommender.pdf" type="application/pdf" width="700px" height="700px">
+    <embed src="images/Real\ Estate\ Search\ Recommender.pdf">
+        <p>This browser does not support PDFs. Please download the PDF to view it: <a href="images/Real\ Estate\ Search\ Recommender.pdf">Download PDF</a>.</p>
+    </embed>
+</object>
+
+<!--<p align="center">
 <img src="images/banner3.jpg" width='1000'/>
 </p>
 
