@@ -6,9 +6,9 @@ Readme under development. Feel free to browse the ppt version below. If you have
 Thank you!
 Connor
 
-<object data="images/Real\ Estate\ Search\ Recommender.pdf" type="application/pdf" width="700px" height="700px">
-    <embed src="images/Real\ Estate\ Search\ Recommender.pdf">
-        <p>This browser does not support PDFs. Please download the PDF to view it: <a href="images/Real\ Estate\ Search\ Recommender.pdf">Download PDF</a>.</p>
+<object data="images/presentation.pdf" type="application/pdf" width="700px" height="700px">
+    <embed src="images/presentation.pdf">
+        <p>This browser does not support PDFs. Please download the PDF to view it: <a href="images/presentation.pdf">Download PDF</a>.</p>
     </embed>
 </object>
 
