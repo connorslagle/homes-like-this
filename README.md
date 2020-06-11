@@ -8,7 +8,7 @@ Connor
 
 <object data="images/presentation.pdf" type="application/pdf" width="700px" height="700px">
     <embed src="images/presentation.pdf">
-        <p>This browser does not support PDFs. Please download the PDF to view it: <a href="images/presentation.pdf">Download PDF</a>.</p>
+        <p>This browser does not support PDFs. View and/or download the PDF here: <a href="images/presentation.pdf">PDF</a>.</p>
     </embed>
 </object>
 
