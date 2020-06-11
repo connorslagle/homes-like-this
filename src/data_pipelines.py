@@ -385,10 +385,10 @@ class ImagePipeline(MongoImporter):
                 href.append(self.df.listing_href[self.df.image_file == elem].values[0])
                 idx.append(self.labels.index(elem))
 
-        # pdb.set_trace()
+        pdb.set_trace()
         self.X = self.features[idx,:]
         self.y = [self.city_dict[key] for key in city]
-        self.hrefs = self.df.listing_href[idx]
+        self.hrefs = href
 
         self.img_dict = {}
 

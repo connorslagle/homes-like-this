@@ -143,18 +143,19 @@ if __name__ == "__main__":
     '''
     Top ten with presentation example
 
-    '/realestateandhomes-detail/8091-S-Clayton-Cir_Centennial_CO_80122_M11235-45960',
-    '/realestateandhomes-detail/804-S-Vance-St-Unit-B_Lakewood_CO_80226_M17826-33954',
-    '/realestateandhomes-detail/8560-W-81st-Dr_Arvada_CO_80005_M12329-61732',
-    '/realestateandhomes-detail/11321-W-18th-Ave_Lakewood_CO_80215_M20461-22788',
-    '/realestateandhomes-detail/1926-Jamaica-St_Aurora_CO_80010_M14147-60408',
-    '/realestateandhomes-detail/8843-Flattop-St_Arvada_CO_80007_M24540-74250',
-    '/realestateandhomes-detail/8023-Wolff-St-Unit-D_Westminster_CO_80031_M14214-51983',
-    '/realestateandhomes-detail/8640-W-Alameda-Ave_Lakewood_CO_80226_M24028-57580',
-    '/realestateandhomes-detail/3411-W-98th-Dr-Unit-C_Westminster_CO_80031_M15814-33299',
-    '/realestateandhomes-detail/3805-W-84th-Ave_Westminster_CO_80031_M10115-77027']
+    '/realestateandhomes-detail/8091-S-Clayton-Cir_Centennial_CO_80122_M11235-45960', --    7409-S-Dahlia-Ct-Centennial-CO-80122
+    '/realestateandhomes-detail/804-S-Vance-St-Unit-B_Lakewood_CO_80226_M17826-33954', -->  11321-W-18th-Ave-Lakewood-CO-80215
+    '/realestateandhomes-detail/8560-W-81st-Dr_Arvada_CO_80005_M12329-61732', -->           6189-Iris-Way-Arvada-CO-80004
+    '/realestateandhomes-detail/11321-W-18th-Ave_Lakewood_CO_80215_M20461-22788' -->        8060-W-9th-Ave-80214/unit-233
+    '/realestateandhomes-detail/1926-Jamaica-St_Aurora_CO_80010_M14147-60408'               17833 E Loyola Ave
+    '/realestateandhomes-detail/8843-Flattop-St_Arvada_CO_80007_M24540-74250',              18983-w-95th-ln-arvada-co-80007-
+    '/realestateandhomes-detail/8023-Wolff-St-Unit-D_Westminster_CO_80031_M14214-51983',    9690-brentwood-way-broomfield-co
+    '/realestateandhomes-detail/8640-W-Alameda-Ave_Lakewood_CO_80226_M24028-57580'          1330 S Youngfield Ct, Lakewood, CO 80228
+    '/realestateandhomes-detail/3411-W-98th-Dr-Unit-C_Westminster_CO_80031_M15814-33299',   2901-W-81st-Avenue/Westminster/CO/80031
+    '/realestateandhomes-detail/3805-W-84th-Ave_Westminster_CO_80031_M10115-77027']         CO/Arvada/7760-W-87th-Dr-80005/unit-E
+    
 
-    lat = []
-    long = []
+    lat = [39.570712, 39.703258, 39.844635, ]
+    long = [-104.956460, -105.079352, -105.093296, ]
     '''
 
