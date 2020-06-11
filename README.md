@@ -10,7 +10,7 @@ Connor
 <img src="images/banner3.jpg" width='1000'/>
 </p>
 
-Connor Slagle
+<!-- Connor Slagle
 
 # Table of Contents
 
@@ -183,5 +183,5 @@ In part two, we will implement our scraper in the glorious AWS and broaden the c
 
 Thank you for reading, feel free to contact me about any questions/comments/greetings.
 
-Connor
+Connor -->
 
