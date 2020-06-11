@@ -1,4 +1,10 @@
-# Homes Like This: Real Estate Search Optimizer, Pt. 1
+# Real Estate Search Recommender
+
+
+Readme under development. If you have any questions, please contact me at connor.slagle@colorado.edu.
+
+Thank you!
+Connor
 
 <p align="center">
 <img src="images/banner3.jpg" width='1000'/>
