@@ -1,28 +1,27 @@
 # Real Estate Search Recommender
 
-
 Readme under development. Feel free to browse the ppt version below. If you have any questions, please contact me at connor.slagle@colorado.edu.
 
 Thank you!
 Connor
 
 <object data="images/presentation.pdf" type="application/pdf" width="700px" height="700px">
-    <embed src="images/presentation.pdf">
-        <p>This browser does not support PDFs. View and/or download the PDF here: <a href="images/presentation.pdf">PDF</a>.</p>
-    </embed>
+<embed src="images/presentation.pdf">
+<p>This browser does not support PDFs. View and/or download the PDF here: <a href="images/presentation.pdf">PDF</a>.</p>
+</embed>
 </object>
 
-<!--<p align="center">
+<p align="center">
 <img src="images/banner3.jpg" width='1000'/>
 </p>
 
-<!-- Connor Slagle
+Connor Slagle
 
 # Table of Contents
 
 1. [Motivation](#Motivation)
 2. [The Dataset](#The-Dataset)
-3. [Webscraping](##Webscraping)
+3. [Web-scraping](##Web-scraping)
 4. [Exploratory Data Analysis](#Exploratory-Data-Analysis)
 5. [Image Processing](#Image-Processing)
 5. [Naive Bayes Classifier](#Naive-Bayes-Classifier)
@@ -40,9 +39,17 @@ According to [Realtor.com](https://www.realtor.com/advice/buy/how-many-homes-wil
 
 With this in mind, I decided to build a search optimizer that can recommend **where** to look for your next home based on images of rooms you already like.
 
+# Workflow
+
+My workflow is illustrated with the diagram below.
+
+<p align="center">
+<img src="images/workflow.png" width='600'/>
+</p>
+
 # The Dataset
 
-The dataset was collected by webscraping [Realtor.com](https://www.realtor.com/). For a proof of concept, roughly 10,000 images were scraped on May 12th - 13th, 2020 from the seven municipalities around the Denver Metro Area with a [population > 100,000](https://en.wikipedia.org/wiki/Denver_metropolitan_area#Places_with_over_100,000_inhabitants). Of the 10,000 images, only ~5,600 of them were unique and included in the final dataset. A brief description of the data source is below:
+The dataset was collected by web-scraping [Realtor.com](https://www.realtor.com/). For a proof of concept, roughly 10,000 images were scraped on May 12th - 13th, 2020 from the seven municipalities around the Denver Metro Area with a [population > 100,000](https://en.wikipedia.org/wiki/Denver_metropolitan_area#Places_with_over_100,000_inhabitants). Of the 10,000 images, only ~5,600 of them were unique and included in the final dataset. A brief description of the data source is below:
 
 Municipality | Pop. (2018, est.) | Listings Avail. (5/13/2020) | Listings Scraped | Images Scraped | Images/Listing
 |---|---:|---:|---:|---:|---:|
@@ -55,9 +62,9 @@ Westminster | 113,000 | 320 | 26 | 620 | 24
 Centennial | 110,000 | 340 | 28 | 700 | 25
 **Total** | **1,740,000** | **8,000** | **234** | **5,570** | **24**
 
-## Webscraping
+## Web-scraping
 
-Webscraping is a tricky beast. Mainly because websites are so good at detecting automated data collectors (bots). A common work flow for webscraping is to request the page HTML, process with HTML-parser (shout out Beautiful Soup), then store in a No-SQL database. This work flow works really well when scraping from a single web-page; however, it suffers at scale as synchronous requests are slow and easy to identify by websites. 
+Web-scraping is a tricky beast. Mainly because websites are so good at detecting automated data collectors (bots). A common work flow for web-scraping is to request the page HTML, process with HTML-parser (shout out Beautiful Soup), then store in a No-SQL database. This work flow works really well when scraping from a single web-page; however, it suffers at scale as synchronous requests are slow and easy to identify by websites. 
 
 Therefore, I scraped the data with the [Scrapy](https://scrapy.org/) python library. The Scrapy work flow is shown below:
 
@@ -67,7 +74,7 @@ Therefore, I scraped the data with the [Scrapy](https://scrapy.org/) python libr
 
 Scrapy is build on an asynchronous [Twisted](https://twistedmatrix.com/trac/) engine that controls web-page requests, webscrapers (spiders), and data post-processing. Additionally, custom 'middleware' can be added for further functionality.
 
-With scrapy in my tool belt, feeling confident, I tried to scrape Realtor.com - and was hit with a 403 - Unauthorized Request. I modified my code, tried again, and was redirected to their ['/robots.txt'](https://www.realtor.com/robots.txt) page. For those of you who are unaware of the 'robots.txt' rule of webscraping, as I was, here's a snippet from Realtor.com:
+With scrapy in my tool belt, feeling confident, I tried to scrape Realtor.com - and was hit with a 403 - Unauthorized Request. I modified my code, tried again, and was redirected to their ['/robots.txt'](https://www.realtor.com/robots.txt) page. For those of you who are unaware of the 'robots.txt' rule of web-scraping, as I was, here's a snippet from Realtor.com:
 
 <p align="center">
 <img src="images/robots.png" width='400'/>
@@ -77,7 +84,7 @@ This file describes which robots are allowed to scrape the website - I assure yo
 
 # Exploratory Data Analysis 
 
-After webscraping, the data was imported to Pandas. A random sample of 5 entries is shown below.
+After web-scraping, the data was imported to Pandas. A random sample of 5 entries is shown below.
 
 | Index | Listing ID | Address | City | State | Zip Code | Image Filename | Property Type | List Price | Num. Beds | Num. Baths | sq.ft. |
 |---:|:---|:---|:---|:---|---:|---:|---:|:----|:---|:---|---:|
@@ -87,7 +94,7 @@ After webscraping, the data was imported to Pandas. A random sample of 5 entries
 | 4985 | Denver_CO_3_9 | 5380-N-Argonne-St | Denver | CO | 80249 | m2762133823xd-w1020_h770_q80.jpg | House for Sale | $333,595 | 4 | 3.0 | 1,701 | 
 | 3479 | Aurora_CO_1_32 | 6632-S-Muscadine-Ct | Aurora | CO | 80016 | w1113822923xd-w1020_h770_q80.jpg | House for Sale | $495,000 | 3 | 2.5 | 3,255 | 
 
-To start off, I wanted to make sure my webscraper collected data in equal proportions.
+To start off, I wanted to make sure my web-scraper collected data in equal proportions.
 
 <p align="center">
 <img src="images/count_by_city.png" width='500'/>
@@ -181,11 +188,51 @@ The MCC ranges from [-1, 1], +1 being a perfect prediction, -1 a completely oppo
 
 As can be seen, maybe NB is not the best approach for this classification problem - although further sorting of the images (indoor/outdoor) might help, as well as directly addressing the lack of balance of classes.
 
+# Convolutional Neural Network (CNN) Autoencoder
+
+Taking a different approach to the problem, I tried a convolutional neural network (CNN) autoencoder to featurize the images. I thought this self-supervised machine learning algorithm would effectively featurize the images and allow me to find similar images to a user-provided image for listing recommendations.
+
+The architecture for my autoencoder is shown below. Essentially it's a symmetrical design of 4 CNN layers in the encoder and decoder. The specifics of the architecture are displayed below.
+
+| Layer | Image Size (out) | Transformation | Parameters | Trainable Weights |
+|:---|:---|:---|:---|---:|
+| Input Image | 128x128x3 | - | - | - |
+| 1 | 128x128x8 | Convolution | 3x3 filter, 2 max norm | 224 | 
+| 2 | 64x64x8 | Max Pooling | 2x2 filter | 0 |
+| 3 | 64x64x16 | Convolution | 3x3 filter, 2 max norm | 1168 |
+| 4 | 32x32x16 | Max Pooling | 2x2 filter | 0 |
+| 5 | 32x32x32 | Convolution | 3x3 filter, 2 max norm | 4640 |
+| 6 | 16x16x32 | Max Pooling | 2x2 filter | 0 |
+| 7 | 16x16x64 | Convolution | 3x3 filter, 2 max norm | 18496 |
+| 8 | 8x8x64 | Max Pooling | 2x2 filter | 0 |
+| Latent Image | 4096x1 | Flatten | - | 0 |
+| 9 | 8x8x64 | Convolution | 3x3 filter, 2 max norm | 36928 |
+| 10 | 16x16x64 | Upsampling | 2x2 filter | 0 |
+| 11 | 16x16x32 | Convolution | 3x3 filter, 2 max norm | 18464 |
+| 12 | 32x32x32 | Upsampling | 2x2 filter | 0 |
+| 13 | 32x32x16 | Convolution | 3x3 filter, 2 max norm | 4624 |
+| 14 | 64x64x16 | Upsampling | 2x2 filter | 0 |
+| 15 | 64x64x8 | Convolution | 3x3 filter, 2 max norm | 1160 |
+| 16 | 128x128x8 | Upsampling | 2x2 filter | 0 |
+| Reconstructed Image | 128x128x3 | Convolution | 3x3 filter, 2 max norm | 219 |
+
+As an illustration:
+
+<p align="center">
+<img src="images/encoder.png" width='850'/>
+<b>Encoder</b>
+</p>
+
+<p align="center">
+<img src="images/decoder.png" width='850'/>
+<b>Decoder</b>
+</p>
+
 # Conclusion
 
-This concludes this part of the Homes Like This project. In this part we developed a scalable webscraper, with visions of implementing on AWS. Image and data pipelines were established to format the data in a meaningful way, although future work into image segregation is warranted. For an initial look at feasibility, we fit our data with a Naive Bayes Classifier. The model did not perform very well on aggregate; however, significant differences in 'types' of homes were seen in the confusion matrices. 
+This concludes this part of the Homes Like This project. In this part we developed a scalable web-scraper, with visions of implementing on AWS. Image and data pipelines were established to format the data in a meaningful way, although future work into image segregation is warranted. For an initial look at feasibility, we fit our data with a Naive Bayes Classifier. The model did not perform very well on aggregate; however, significant differences in 'types' of homes were seen in the confusion matrices. 
 
-In part two, we will implement our scraper in the glorious AWS and broaden the cities which we webscrape data from. This might increase our classification accuracy. Another objective of part 2 will be exploring other featurization methods to process the images. The most exciting in my opinion, being a convolutional neural network autoencoder. This will train on the color image, reduce the dimentionality (encode) our images from 32x32x3 (=3,074!) features to ~128. The ultimate goal of the next part will be to deploy a better model in a Flask app, so users can upload images snapped from their phones. 
+In part two, we will implement our scraper in the glorious AWS and broaden the cities which we web-scrape data from. This might increase our classification accuracy. Another objective of part 2 will be exploring other featurization methods to process the images. The most exciting in my opinion, being a convolutional neural network autoencoder. This will train on the color image, reduce the dimentionality (encode) our images from 32x32x3 (=3,074!) features to ~128. The ultimate goal of the next part will be to deploy a better model in a Flask app, so users can upload images snapped from their phones. 
 
 Thank you for reading, feel free to contact me about any questions/comments/greetings.
 
