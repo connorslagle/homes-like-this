@@ -231,11 +231,22 @@ As an illustration:
 The CNN was trained on AWS using a p2-xlarge GPU instance. I noticed the performance of the CNN was overfitting based on color saturation, to combat this I added a grayscale CNN in parellel and stacked the latent images to form a new extended latent representation. Theoretically, this should improve shape detection of the CNN while keeping the important color information. 
 
 <p align="center">
-<b>Parellel Ensemble</b>
 <img src="images/ensemble.png" width='850'/>
 </p>
 
+This architecture worked well, achieving **less than 0.02 RMSE** with training and test split.
 
+After training the model, encoded user-provided images were compared to listing encoded images via cosine similarity. An example is shown below.
+
+<p align="center">
+<img src="images/image_match.png" width='850'/>
+</p>
+
+The corresponding listings for the top 10 images were retrieved and provided as recommendations to the user.
+
+<p align="center">
+<img src="images/listings.png" width='850'/>
+</p>
 
 # Conclusion
 
