@@ -1,25 +1,14 @@
-# Real Estate Search Recommender
-
-Readme under development. Feel free to browse the ppt version below. If you have any questions, please contact me at connor.slagle@colorado.edu.
-
-Thank you!
-Connor
-
-<object data="images/presentation.pdf" type="application/pdf" width="700px" height="700px">
-<embed src="images/presentation.pdf">
-<p>This browser does not support PDFs. View and/or download the PDF here: <a href="images/presentation.pdf">PDF</a>.</p>
-</embed>
-</object>
+# Style-based Real Estate Recommender
 
 <p align="center">
 <img src="images/banner3.jpg" width='1000'/>
 </p>
 
-Connor Slagle
 
 # Table of Contents
 
 1. [Motivation](#Motivation)
+2. [Workflow](#Workflow)
 2. [The Dataset](#The-Dataset)
 3. [Web-scraping](##Web-scraping)
 4. [Exploratory Data Analysis](#Exploratory-Data-Analysis)
@@ -250,11 +239,16 @@ The corresponding listings for the top 10 images were retrieved and provided as 
 
 # Conclusion
 
-This concludes this part of the Homes Like This project. In this part we developed a scalable web-scraper, with visions of implementing on AWS. Image and data pipelines were established to format the data in a meaningful way, although future work into image segregation is warranted. For an initial look at feasibility, we fit our data with a Naive Bayes Classifier. The model did not perform very well on aggregate; however, significant differences in 'types' of homes were seen in the confusion matrices. 
+This concludes this part of the Style-based Real Estate Recommender project. In this part we developed a scalable web-scraper for scraping listing data, a CNN Autoencoder architecture for featurizing listing images, and a proof-of-concept listing recommender. 
 
-In part two, we will implement our scraper in the glorious AWS and broaden the cities which we web-scrape data from. This might increase our classification accuracy. Another objective of part 2 will be exploring other featurization methods to process the images. The most exciting in my opinion, being a convolutional neural network autoencoder. This will train on the color image, reduce the dimentionality (encode) our images from 32x32x3 (=3,074!) features to ~128. The ultimate goal of the next part will be to deploy a better model in a Flask app, so users can upload images snapped from their phones. 
+Next steps include deploying the application on the web using AWS and Flask. I will update this readme when the application is operational. 
 
 Thank you for reading, feel free to contact me about any questions/comments/greetings.
 
-Connor -->
+Connor
+
+Email: [connor.slagle@colorado.edu](mailto:connor.slagle@colorado.edu)
+LinkedIn: [/connorslagle](https://www.linkedin.com/in/connorslagle/)
+GitHub: [/connorslagle](https://github.com/connorslagle)
+
 
