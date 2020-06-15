@@ -1,13 +1,10 @@
 import numpy as np
 import pandas as pd
 import glob
-import matplotlib.cm as cm
+
 from os import listdir
 import os
 from os.path import isfile, join
-import matplotlib.pyplot as plt
-plt.style.use('ggplot')
-plt.rcParams.update({'font.size':20})
 
 from sklearn.cluster import KMeans
 from sklearn.metrics import silhouette_score, silhouette_samples
@@ -15,6 +12,12 @@ from sklearn.metrics import silhouette_score, silhouette_samples
 from bokeh.io import show, output_file, export_png
 from bokeh.plotting import figure, output_file, gmap
 from bokeh.models import ColumnDataSource, GMapOptions
+
+import seaborn as sb
+import matplotlib.pyplot as plt
+import matplotlib.cm as cm
+plt.style.use('ggplot')
+plt.rcParams.update({'font.size':20})
 
 
 
@@ -301,6 +304,57 @@ def listing_map(lat_lst, long_lst, export_as_png=False):
         export_png(p, filename="../images/listing_map.png")
     else:
         show(p)
+
+def bar_chart_desc(tick_labels, values, xlabel, ylabel, title):
+    desc_idx = np.argsort(np.array(values))
+    desc_y = values[desc_idx][::-1]
+    desc_x = tick_labels[desc_idx][::-1]
+
+
+    fig, ax = plt.subplots(1,figsize=(10,8))
+    ax.bar(desc_x, desc_y)
+    ax.set_xticklabels(desc_x, rotation=25, ha='right')
+    ax.set_xlabel(xlabel)
+    ax.set_ylabel(ylabel)
+    ax.set_title(title)
+
+def plot_1x4_resize_img(sq_imgs, size=(20,5)):
+    '''
+    Plots 1x4 of varying resizing
+    '''
+    shape_lst = ['32 x 32','64 x 64','128 x 128','256 x 256']
+
+    fig, axs = plt.subplots(1,4,figsize=size)
+    for idx, (ax, img) in enumerate(zip(axs, sq_imgs)):
+        ax.imshow(img, cmap='gray')
+        ax.set_xlabel(shape_lst[idx])
+        ax.set_xticks([]); ax.set_yticks([])
+
+
+def plot_1x2_img(imgs, labels, size=(20,8)):
+    '''
+    Plots 1x2 of varying resizing
+    '''
+
+    fig, axs = plt.subplots(1,2,figsize=size)
+    for idx, (ax, img) in enumerate(zip(axs, imgs)):
+        ax.imshow(img)
+        ax.set_xlabel(labels[idx])
+        ax.set_xticks([]); ax.set_yticks([])
+
+
+def cm_plot(cm,title):
+    '''
+    Plots heatmap of Confusion matrix for NB classifier
+    '''
+    cats = ['Denver','Arvada','Aurora','Lakewood','Centennial','Westminster','Thornton']
+    y_range = [0.5, 1.5, 2.5, 3.5, 4.5, 5.5, 6.5]
+
+    cm_round = np.round(cm,decimals=2)
+    heat_map = sb.heatmap(cm_round, annot=True)
+    plt.xticks(range(len(cats)), labels = cats, rotation=25)
+    plt.title(title)
+    plt.yticks(y_range, labels = cats, rotation=0, ha='right')
 
 if __name__ == "__main__":
     lats = [39.588828, 39.745790, 39.809788, 39.730797, 39.646233, 39.870414, 39.873274, 39.692519, 39.843736, 39.853361]
