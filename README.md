@@ -219,14 +219,23 @@ The architecture for my autoencoder is shown below. Essentially it's a symmetric
 As an illustration:
 
 <p align="center">
-<img src="images/encoder.png" width='850'/>
 <b>Encoder</b>
+<img src="images/encoder.png" width='850'/>
 </p>
 
 <p align="center">
-<img src="images/decoder.png" width='850'/>
 <b>Decoder</b>
+<img src="images/decoder.png" width='850'/>
 </p>
+
+The CNN was trained on AWS using a p2-xlarge GPU instance. I noticed the performance of the CNN was overfitting based on color saturation, to combat this I added a grayscale CNN in parellel and stacked the latent images to form a new extended latent representation. Theoretically, this should improve shape detection of the CNN while keeping the important color information. 
+
+<p align="center">
+<b>Parellel Ensemble</b>
+<img src="images/ensemble.png" width='850'/>
+</p>
+
+
 
 # Conclusion
 
