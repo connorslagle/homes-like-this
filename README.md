@@ -181,7 +181,8 @@ As can be seen, maybe NB is not the best approach for this classification proble
 
 Taking a different approach to the problem, I tried a convolutional neural network (CNN) autoencoder to featurize the images. I thought this self-supervised machine learning algorithm would effectively featurize the images and allow me to find similar images to a user-provided image for listing recommendations.
 
-The architecture for my autoencoder is shown below. Essentially it's a symmetrical design of 4 CNN layers in the encoder and decoder. The specifics of the architecture are displayed below.
+The architecture for my autoencoder is shown below; Essentially it's a symmetrical design of 4 CNN layers in the encoder and decoder. [TensorFlow](https://www.tensorflow.org/) and [Keras](https://keras.io/) were used to develop the CNN.
+
 
 | Layer | Image Size (out) | Transformation | Parameters | Trainable Weights |
 |:---|:---|:---|:---|---:|
