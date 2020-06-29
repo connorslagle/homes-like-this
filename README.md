@@ -55,7 +55,7 @@ Centennial | 110,000 | 340 | 28 | 700 | 25
 
 Web-scraping is a tricky beast. Mainly because websites are so good at detecting automated data collectors (bots). A common work flow for web-scraping is to request the page HTML, process with HTML-parser (shout out Beautiful Soup), then store in a No-SQL database. This work flow works really well when scraping from a single web-page; however, it suffers at scale as synchronous requests are slow and easy to identify by websites. 
 
-Therefore, I scraped the data with the [Scrapy](https://scrapy.org/) python library. The Scrapy work flow is shown below:
+Therefore, I scraped the data with the [Scrapy](https://scrapy.org/) python library. The Scrapy work flow is shown below (image from Scrapy docs):
 
 <p align="center">
 <img src="images/scrapy.png" width='800'/>
@@ -217,6 +217,14 @@ As an illustration:
 <b>Decoder</b>
 <img src="images/decoder.png" width='850'/>
 </p>
+
+Images were augmented to reduce overfitting train data. Augmentation transformations included horizontal mirroring, random rotation < 20 degrees, and random < 20% horizontal shift.
+
+
+<p align="center">
+<img src="images/cnn_image_aug.png" width='800'/>
+</p>
+
 
 The CNN was trained on AWS using a p2-xlarge GPU instance. I noticed the performance of the CNN was overfitting based on color saturation, to combat this I added a grayscale CNN in parellel and stacked the latent images to form a new extended latent representation. Theoretically, this should improve shape detection of the CNN while keeping the important color information. 
 
