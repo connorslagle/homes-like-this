@@ -256,8 +256,10 @@ Thank you for reading, feel free to contact me about any questions/comments/gree
 
 Connor
 
-Email: [connor.slagle@colorado.edu](mailto:connor.slagle@colorado.edu)
+Email: [con.slagle@gmail.com](mailto:con.slagle@gmail.com)
+
 LinkedIn: [/connorslagle](https://www.linkedin.com/in/connorslagle/)
+
 GitHub: [/connorslagle](https://github.com/connorslagle)
 
 
