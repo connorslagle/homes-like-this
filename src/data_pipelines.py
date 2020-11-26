@@ -470,7 +470,6 @@ class ImagePipeline(MongoImporter):
 
 
 if __name__ == "__main__":
-    print('hi')
     # importer = MongoImporter()
     # df = importer.load_docs()
     # df.info()
