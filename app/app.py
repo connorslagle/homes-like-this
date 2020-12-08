@@ -31,7 +31,7 @@ Start App
 app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024
-app.config["MONGO_URI"] = "mongodb://localhost:27017/fraud"
+app.config["MONGO_URI"] = "mongodb://localhost:27017/"
 
 # open model
 with open('models/test_model.pkl', 'rb') as f:
@@ -74,7 +74,7 @@ def get_and_score():
 
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=8105, threaded=True)
+    app.run(host='0.0.0.0', port=8105, threaded=True, debug=True)
     
 
     '''
