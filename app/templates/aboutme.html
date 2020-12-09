@@ -6,20 +6,20 @@
     <!--<h3 class="masthead-brand">Cover</h3>-->
     <nav>
       <ul class="nav masthead-nav">
-        <li class="active"><a href="#">Homepage</a></li>
+        <li><a href="/">Homepage</a></li>
         <li><a href="/submit">Recommender</a></li>
-        <li><a href="/aboutme">About Me</a></li>
+        <li class="active"><a href="/aboutme">About Me</a></li>
       </ul>
     </nav>
   </div>
 </div>
 
 <div class="inner cover">
-  <h1 class="cover-heading">Style-based Real Estate Recommender</h1>
-  <p class="lead">Submit a room you like, browse recommended listings</p>
-  <p class="lead">
-    <a href="/submit" class="btn btn-lg btn-default">Start browsing!</a>
-  </p>
+  <h1 class="cover-heading">Submit image for recommendations</h1>
+  <form method=post enctype=multipart/form-data>
+      <input class="btn btn-lg" type=file name=file>
+      <input class="btn-default btn-lg" type=submit value=Browse>
+  </form>
 </div>
 
 <div class="mastfoot">
