@@ -75,7 +75,7 @@ def upload_file():
 # @app.route('/results')
 
 # TODO aboutme page w/LI and GH links
-# @app.route('/aboutme')
+# @app.route('/about')
 # def get_and_score():
 #     new_json = requests.get('http://galvanize-case-study-on-fraud.herokuapp.com/data_point')
 #     stream_json = new_json.json()
