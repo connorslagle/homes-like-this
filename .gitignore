@@ -1,3 +1,7 @@
+# data in app
+/app/static/data
+/app/static/images
+
 # data extensions
 /data
 *.gz

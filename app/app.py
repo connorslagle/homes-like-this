@@ -33,10 +33,6 @@ app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024
 app.config["MONGO_URI"] = "mongodb://localhost:27017/"
 
-# open model
-with open('models/test_model.pkl', 'rb') as f:
-    model = pickle.load(f)
-
 
 '''
 Pages
@@ -63,7 +59,12 @@ def upload_file():
             file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
             
             # TODO: load model
+            # open model
+            # with open('models/test_model.pkl', 'rb') as f:
+            #     model = pickle.load(f)
+
             # TODO: load data, predict on data, return top 10 imgs and locations
+            
 
             return render_template('predict.html', filename=filename)
     else:
