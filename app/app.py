@@ -43,7 +43,7 @@ Pages
 '''
 @app.route('/')
 def index():
-    return render_template('index.html')
+    return render_template('cover.html')
 
 @app.route('/submit', methods=['GET','POST'])
 def upload_file():
@@ -51,26 +51,30 @@ def upload_file():
         # check if the post request has the file part
         if 'file' not in request.files:
             flash('No file part')
-            return redirect(request.url)
+            return render_template('submit.html')
         file = request.files['file']
         # if user does not select file, browser also
         # submit an empty part without filename
         if file.filename == '':
             flash('No selected file')
-            return redirect(request.url)
+            return render_template('submit.html')
         if file and allowed_file(file.filename):
             filename = secure_filename(file.filename)
             file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-            return redirect(url_for('uploaded_file',
-                                    filename=filename))
-    return render_template('submit.html')
+            
+            # TODO: load model
+            # TODO: load data, predict on data, return top 10 imgs and locations
 
-@app.route('/aboutme')
-def get_and_score():
-    new_json = requests.get('http://galvanize-case-study-on-fraud.herokuapp.com/data_point')
-    stream_json = new_json.json()
+            return render_template('predict.html', filename=filename)
+    else:
+        return render_template('submit.html')
 
-    return render_template('table.html',listing=test.json())
+# @app.route('/aboutme')
+# def get_and_score():
+#     new_json = requests.get('http://galvanize-case-study-on-fraud.herokuapp.com/data_point')
+#     stream_json = new_json.json()
+
+#     return render_template('table.html',listing=test.json())
 
 
 if __name__ == '__main__':
