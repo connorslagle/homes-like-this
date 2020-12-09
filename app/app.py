@@ -64,12 +64,17 @@ def upload_file():
             #     model = pickle.load(f)
 
             # TODO: load data, predict on data, return top 10 imgs and locations
+            # pass to results page
             
 
-            return render_template('predict.html', filename=filename)
+            return render_template('results.html', filename=filename)
     else:
         return render_template('submit.html')
 
+# TODO results page
+# @app.route('/results')
+
+# TODO aboutme page w/LI and GH links
 # @app.route('/aboutme')
 # def get_and_score():
 #     new_json = requests.get('http://galvanize-case-study-on-fraud.herokuapp.com/data_point')
