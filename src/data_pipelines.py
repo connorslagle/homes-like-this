@@ -8,7 +8,10 @@ import pdb
 
 # db imports
 import pymongo
-from sqlalchemy import c
+from sqlalchemy import create_engine, Column, String, Numeric, Integer
+from sqlalchemy.ext.declarative import declarative_base  
+from sqlalchemy.orm import sessionmaker
+
 
 # sk imports
 from skimage import io
@@ -18,7 +21,7 @@ from skimage.filters import sobel
 from sklearn.model_selection import train_test_split
 
 
-class MongoImporter():
+class MongoImporter(object):
     '''
     Class to import/format metadata from mongodb to pandas df. Has option to save to csv or sql for easier processing.
     '''
@@ -466,19 +469,18 @@ class ImagePipeline(MongoImporter):
             with open(y_fname, 'wb') as f:
                 pickle.dump(X_files, f)
 
-class PostgresImporter(onject):
+class PostgresImporter(object):
     '''
-    
+    Object to interact with psql database. Leveraging SQLAlchemy syntax.
     '''
     def __init__(self):
-        self.conn = pg2.connect(dbname='db_name', user='postgres', host='localhost', port='5432')
-        
+        db_string = 'postgresql+psycopg2://postgres:password@localhost:5432/homes_like_this'
+        self.db = create_engine(db_string)
 
-    
 
 
 if __name__ == "__main__":
-    # importer = dbImporter()
+    # importer = MongoImporter()
     # df = importer.load_docs()
     # df.info()
     # importer.to_csv('pg1_3_all.csv')
