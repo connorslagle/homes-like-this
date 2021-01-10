@@ -75,48 +75,16 @@ def upload_file():
 # @app.route('/results')
 
 # TODO aboutme page w/LI and GH links
-# @app.route('/about')
-# def get_and_score():
-#     new_json = requests.get('http://galvanize-case-study-on-fraud.herokuapp.com/data_point')
-#     stream_json = new_json.json()
+@app.route('/about')
+def about():
+    return redirect("https://github.com/connorslagle/homes-like-this/blob/master/README.md")
 
-#     return render_template('table.html',listing=test.json())
 
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=8105, threaded=True, debug=True)
-    
-
     '''
-    Trying to stream data
+    To startin dev mode:
+        $ export FLASK_ENV=development
+        $ flask run
     '''
-    # def tick():
-    #     return '\ntesting stream'
-
-    # scheduler = BackgroundScheduler()
-    # scheduler.add_job(func=tick, trigger='interval',seconds=5)
-    # scheduler.start()
-    # atexit.register(lambda: scheduler.shutdown())
-
-    # # from https://flask.palletsprojects.com/en/1.1.x/patterns/streaming/#streaming-from-templates
-    # def stream_template(template_name, **context):
-    #     app.update_template_context(context)
-    #     t = app.jinja_env.get_template(template_name)
-    #     rv = t.stream(context)
-    #     rv.enable_buffering(5)
-    #     return rv
-
-    # get incoming data from API
-    # @app.route('/stream')
-    # def test():
-    #     return Response(stream_template('table.html',listing=test))
-
-
-
-    # # from https://flask.palletsprojects.com/en/1.1.x/patterns/streaming/#streaming-from-templates
-    # def stream_template(template_name, **context):
-    #     app.update_template_context(context)
-    #     t = app.jinja_env.get_template(template_name)
-    #     rv = t.stream(context)
-    #     rv.enable_buffering(5)
-    #     return rv
