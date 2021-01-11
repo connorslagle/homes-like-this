@@ -77,7 +77,9 @@ def upload_file():
 # TODO aboutme page w/LI and GH links
 @app.route('/about')
 def about():
-    return redirect("https://github.com/connorslagle/homes-like-this/blob/master/README.md")
+    return render_template('about.html')
+
+# redirect("https://github.com/connorslagle/homes-like-this/blob/master/README.md")
 
 
 
