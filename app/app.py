@@ -41,6 +41,10 @@ Pages
 def index():
     return render_template('cover.html')
 
+@app.route('/recommender')
+def recommender():
+    return render_template('recommender.html')
+
 @app.route('/submit', methods=['GET','POST'])
 def upload_file():
     if request.method == 'POST':
