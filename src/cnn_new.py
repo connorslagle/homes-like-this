@@ -179,19 +179,19 @@ class Autoencoder():
             loss='mean_squared_error'
         )
 
-    def fit_(self, X_train, X_test, num_epochs, batch_size_, use_gpu=True, data_aug=True, with_tensorboard=True):
+    def fit_(self, X_train, X_test, num_epochs, batch_size_, model_name='Autoencoder', use_gpu=True, data_aug=True, with_tensorboard=True):
         '''
         Fits Autoencoder to data
         '''
         if self.gray_imgs:
-            self.NAME = "ae_og_convT_{}_{}eps_{}batch_{}initfilts_{}layers_128img__50do_2norm_{}kernel_{}_{}".format(
-                'gray', num_epochs, batch_size_, self.init_num_filters, self.num_encode_layers, self.kernel_size[0] \
-                        , str(datetime.now().date()), str(datetime.now().time())
+            self.NAME = "{}_convT_{}_{}eps_{}batch_{}initfilts_{}layers_128img__50do_2norm_{}kernel_{}_{}".format(
+                model_name, 'gray', num_epochs, batch_size_, self.init_num_filters, self.num_encode_layers \
+                    , self.kernel_size[0], str(datetime.now().date()), str(datetime.now().time())
             )
         else:
-            self.NAME = "ae_og_convT_{}_{}eps_{}batch_{}initfilts_{}layers_128img__50do_2norm_{}kernel_{}_{}".format(
-                'color', num_epochs, batch_size_, self.init_num_filters, self.num_encode_layers, self.kernel_size[0] \
-                        , str(datetime.now().date()), str(datetime.now().time())
+            self.NAME = "{}_convT_{}_{}eps_{}batch_{}initfilts_{}layers_128img__50do_2norm_{}kernel_{}_{}".format(
+                model_name, 'color', num_epochs, batch_size_, self.init_num_filters, self.num_encode_layers \
+                    , self.kernel_size[0], str(datetime.now().date()), str(datetime.now().time())
             )
 
 

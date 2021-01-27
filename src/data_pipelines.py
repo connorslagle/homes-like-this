@@ -480,6 +480,7 @@ class PostgresImporter(object):
 
 
 if __name__ == "__main__":
+    pass
     # importer = MongoImporter()
     # df = importer.load_docs()
     # df.info()

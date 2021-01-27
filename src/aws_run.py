@@ -5,6 +5,8 @@ import numpy as np
 
 # other file imports
 from cnn_new import Autoencoder
+from cnn_w_meta import XceptionAE
+
 from data_pipelines import ImagePipeline
 
 
@@ -14,6 +16,7 @@ if __name__ == "__main__":
     parser.add_argument('-e','--epochs',help='Set number of Epochs to run')
     parser.add_argument('-b','--batchsize',help='Set batch size for training')
     parser.add_argument('-g','--grayscale', help='Use grayscale imgs, bool, 0 or 1')
+    parser.add_argument('-m','--model', help='Name of AE model (XceptionAE or Autoencoder)')
     args = parser.parse_args()
 
     # grayscale tag
@@ -39,19 +42,28 @@ if __name__ == "__main__":
 
         # build model
         model = Autoencoder()
-        model.build_autoencoder(init_filter, layers, enc_do=0, dec_do=0)
+
+        # Select model
+        if args.model == 'XceptionAE':
+            model_builder = XceptionAE()
+        elif args.model == 'Autoencoder':
+            model_builder = Autoencoder()
     else:
         # load data
         pipeline = ImagePipeline('../data/proc_imgs/128/color', gray_imgs=False)
         pipeline.build_Xy(set_seed=False)
         X_train, X_test = pipeline.X_train, pipeline.X_test
 
-        # build model
-        model = Autoencoder(gray_imgs=False)
-        model.build_autoencoder(init_filter, layers, enc_do=0, dec_do=0)
+        # Select model
+        if args.model == 'XceptionAE':
+            model_builder = XceptionAE(gray_imgs=False)
+        elif args.model == 'Autoencoder':
+            model_builder = Autoencoder(gray_imgs=False)
+
+    model_builder.build_autoencoder(init_filter, layers, enc_do=0, dec_do=0)
 
     # fit model
-    model.fit_(X_train, X_test, epochs, batch_1)
+    model_builder.fit_(X_train, X_test, epochs, batch_1)
     
     # save
-    model.save_model()
+    model_builder.save_model()
