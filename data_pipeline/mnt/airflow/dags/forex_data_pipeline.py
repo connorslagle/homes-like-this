@@ -110,7 +110,7 @@ with DAG(dag_id="forex_data_pipeline",
 
     sending_slack_notification = SlackAPIPostOperator(
         task_id='sending_slack',
-        token="xoxb-1736774026291-1733516034373-9M7SSJOOei8WaUJGV338vzXU",
+        token=None,
         username='airflow',
         text='DAG forex_data_pipeline: DONE',
         channel='#airflow-exploit'
