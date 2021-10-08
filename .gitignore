@@ -1,3 +1,9 @@
+# pycharm stuff
+.idea/
+
+# ignore testing notebooks
+notebooks/
+
 # data in app
 /app/static/data
 /app/static/images

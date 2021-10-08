@@ -3,8 +3,6 @@ import numpy as np
 import pickle
 from datetime import datetime
 import matplotlib.pyplot as plt
-plt.style.use('ggplot')
-plt.rcParams.update({'font.size': 20})
 import pdb
 
 # tf imports
@@ -24,12 +22,17 @@ from sklearn.metrics.pairwise import cosine_distances
 # import base class from cnn_new
 from cnn_new import Autoencoder
 
+plt.style.use('ggplot')
+plt.rcParams.update({'font.size': 20})
+
 
 class XceptionAE(Autoencoder):
     def __init__(self, gray_imgs=True):
         super().__init__(gray_imgs=gray_imgs)
+        self._clear_variables()
 
-    def build_autoencoder(self, init_num_filters, num_encode_layers, enc_do=0.5, dec_do=0.5, max_norm_value=2, kernel_size=(3,3)):
+    def build_autoencoder(self, init_num_filters, num_encode_layers, enc_do=0.5, dec_do=0.5, max_norm_value=2,
+                          kernel_size=(3, 3)):
         '''
         Functional API build of model
         input shape = (128,128,x) where x=1,3 1=greyscale
@@ -43,23 +46,23 @@ class XceptionAE(Autoencoder):
         self.kernel_size = kernel_size
 
         if self.gray_imgs:
-            inputs = keras.Input(shape=(128,128,1))
+            inputs = keras.Input(shape=(128, 128, 1))
             out_filter = 1
         else:
-            inputs = keras.Input(shape=(128,128,3))
+            inputs = keras.Input(shape=(128, 128, 3))
             out_filter = 3
-            
+
         layer_list = []
         for encode_layer in range(num_encode_layers)[::-1]:
             if encode_layer == max(range(num_encode_layers)):
                 layer_list.append(
                     layers.SeparableConv2D(
-                        filters=(init_num_filters // (2**encode_layer)),
+                        filters=(init_num_filters // (2 ** encode_layer)),
                         kernel_size=kernel_size,
                         padding='same'
                     )(inputs)
                 )
-                
+
                 layer_list.append(
                     layers.BatchNormalization()(layer_list[-1])
                 )
@@ -70,7 +73,7 @@ class XceptionAE(Autoencoder):
 
                 layer_list.append(
                     layers.SeparableConv2D(
-                        filters=(init_num_filters // (2**encode_layer)),
+                        filters=(init_num_filters // (2 ** encode_layer)),
                         kernel_size=kernel_size,
                         padding='same'
                     )(layer_list[-1])
@@ -94,12 +97,12 @@ class XceptionAE(Autoencoder):
             else:
                 layer_list.append(
                     layers.SeparableConv2D(
-                        filters=(init_num_filters // (2**encode_layer)),
+                        filters=(init_num_filters // (2 ** encode_layer)),
                         kernel_size=kernel_size,
                         padding='same'
                     )(layer_list[-1])
                 )
-                
+
                 layer_list.append(
                     layers.BatchNormalization()(layer_list[-1])
                 )
@@ -110,7 +113,7 @@ class XceptionAE(Autoencoder):
 
                 layer_list.append(
                     layers.SeparableConv2D(
-                        filters=(init_num_filters // (2**encode_layer)),
+                        filters=(init_num_filters // (2 ** encode_layer)),
                         kernel_size=kernel_size,
                         padding='same'
                     )(layer_list[-1])
@@ -137,20 +140,19 @@ class XceptionAE(Autoencoder):
 
         self.encoder = keras.Model(inputs, layer_list[-1])
 
-
-        resize_side = int(128/(2**num_encode_layers))
+        resize_side = int(128 / (2 ** num_encode_layers))
         resize_layers = int(init_num_filters)
 
         layer_list.append(
             layers.Reshape(
-                target_shape=(resize_side,resize_side,resize_layers)
+                target_shape=(resize_side, resize_side, resize_layers)
             )(layer_list[-1])
         )
 
         for decode_layer in range(num_encode_layers):
             layer_list.append(
                 layers.Conv2DTranspose(
-                    filters=(init_num_filters // (2**decode_layer)),
+                    filters=(init_num_filters // (2 ** decode_layer)),
                     kernel_size=kernel_size,
                     padding='same'
                 )(layer_list[-1])
@@ -166,12 +168,12 @@ class XceptionAE(Autoencoder):
 
             layer_list.append(
                 layers.Conv2DTranspose(
-                    filters=(init_num_filters // (2**decode_layer)),
+                    filters=(init_num_filters // (2 ** decode_layer)),
                     kernel_size=kernel_size,
                     padding='same'
                 )(layer_list[-1])
             )
-            
+
             layer_list.append(
                 layers.BatchNormalization()(layer_list[-1])
             )
@@ -182,17 +184,16 @@ class XceptionAE(Autoencoder):
 
             layer_list.append(
                 layers.UpSampling2D(
-                    size=(2,2)
+                    size=(2, 2)
                 )(layer_list[-1])
             )
 
-
         layer_list.append(
             layers.Conv2DTranspose(
-                    filters=out_filter,
-                    kernel_size=kernel_size,
-                    padding='same',
-                    activation='sigmoid'
+                filters=out_filter,
+                kernel_size=kernel_size,
+                padding='same',
+                activation='sigmoid'
             )(layer_list[-1])
         )
 
@@ -201,6 +202,7 @@ class XceptionAE(Autoencoder):
             optimizer='adam',
             loss='mean_squared_error'
         )
+
 
 if __name__ == "__main__":
     model_builder = XceptionAE(gray_imgs=False)

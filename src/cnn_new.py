@@ -22,15 +22,13 @@ from sklearn.metrics import silhouette_samples, silhouette_score
 from sklearn.metrics.pairwise import cosine_distances
 
 
-class Autoencoder():
+class Autoencoder:
     def __init__(self, gray_imgs=True):
         '''
         This class will build CNN autoencoder.
         '''
         self.gray_imgs = gray_imgs
         self._clear_variables()
-
-        
 
     def _clear_variables(self):
         '''
@@ -194,7 +192,6 @@ class Autoencoder():
                     , self.kernel_size[0], str(datetime.now().date()), str(datetime.now().time())
             )
 
-
         if use_gpu:
             self._use_gpu()
 
@@ -202,11 +199,12 @@ class Autoencoder():
             self.NAME = self.NAME + '_datagen'
 
             datagen = ImageDataGenerator(
+                rescale=1./255,
+                rotation_range=20,
                 featurewise_center=False,
                 featurewise_std_normalization=False,
-                rotation_range=10,
-                width_shift_range=0.05,
-                height_shift_range=0.05,
+                width_shift_range=0.20,
+                height_shift_range=0.20,
                 horizontal_flip=True
             )
             datagen.fit(X_train)
@@ -382,11 +380,6 @@ class Autoencoder():
                 with open(y_fname, 'rb') as f:
                     self.y_rgb = pickle.load(f)
         
-        
-
-
-
-
 
 if __name__ == "__main__":
     model = Autoencoder(gray_imgs=False)
