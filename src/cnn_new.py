@@ -1,11 +1,8 @@
 # conventional import
 import numpy as np
 import pickle
-from datetime import datetime
-import matplotlib.pyplot as plt
-plt.style.use('ggplot')
-plt.rcParams.update({'font.size': 20})
-import pdb
+import datetime as dt
+from typing import Tuple
 
 # tf imports
 import tensorflow as tf
@@ -16,171 +13,99 @@ from tensorflow.keras import backend as K
 from tensorflow.keras.preprocessing.image import ImageDataGenerator
 from tensorflow.keras.constraints import max_norm
 
-# sk imports
-from sklearn.cluster import KMeans
-from sklearn.metrics import silhouette_samples, silhouette_score
-from sklearn.metrics.pairwise import cosine_distances
-
 
 class Autoencoder:
-    def __init__(self, gray_imgs=True):
-        '''
-        This class will build CNN autoencoder.
-        '''
-        self.gray_imgs = gray_imgs
-        self._clear_variables()
-
-    def _clear_variables(self):
-        '''
-        Set attributes to empty type variables
-        '''
+    def __init__(self, gray_images: bool = True, use_gpu: bool = False):
+        self.gray_images = gray_images
         self.encoded_images = []
         self.encoder = None
         self.latent = None
-        self.encoder_decoder = None
+        self.autoencoder = None
         self.config = None
 
-    def _use_gpu(self):
-        '''
-        Sets tf environment for gpu operation
-        '''
-        self.config = tf.compat.v1.ConfigProto()
-        self.config.gpu_options.allow_growth = True
-        tf.compat.v1.Session(config=self.config)
+        if use_gpu:
+            self.config = tf.compat.v1.ConfigProto()
+            self.config.gpu_options.allow_growth = True
+            tf.compat.v1.Session(config=self.config)
 
-    def build_autoencoder(self, init_num_filters, num_encode_layers, enc_do=0.5, dec_do=0.5, max_norm_value=2, kernel_size=(3,3)):
-        '''
-        Functional API build of model
-        input shape = (128,128,x) where x=1,3 1=greyscale
-        num encode/decode layers = 5
+    def build_autoencoder(self,
+                          init_num_filters: int = 64,
+                          num_encode_layers: int = 4,
+                          image_shape: Tuple[int, int, int] = (128, 128, 1),
+                          drop_out: float = 0.5,
+                          max_norm_constraint: int = 2,
+                          kernel_size: Tuple[int, int] = (3, 3)) -> keras.Model:
+        """Builds encoder or decoder layers of autoencoder.
 
-        128 init layers --> 5 encoding layers for 128 feats
+        Args:
+            init_num_filters (int): Initial number of filters for the first CONV layer
+            num_encode_layers (int): Number of CONV layers in encoder.
+            image_shape (tuple (int, int, int)): Shape of images to be used.
+                grayscale images should have a 3rd dim of 1, while RGB have a 3rd dim of 3
+            drop_out (float): Fraction of neurons to drop after each layer.
+            max_norm_constraint (int): Max Norm constraint for CONV2D layer.
+            kernel_size (tuple (int, int)): Size of CONV kernel.
 
-        '''
-        self.init_num_filters = init_num_filters
-        self.num_encode_layers = num_encode_layers
-        self.kernel_size = kernel_size
+        Returns:
+            Encoder/Decoder layers (Keras Model): Model layers for encoder/decoder.
+        """
+        encoder_input = keras.Input(shape=image_shape, name="image")
+        out_filter = image_shape[-1]
 
-        if self.gray_imgs:
-            inputs = keras.Input(shape=(128,128,1))
-            out_filter = 1
-        else:
-            inputs = keras.Input(shape=(128,128,3))
-            out_filter = 3
-            
-        layer_list = []
-        for encode_layer in range(num_encode_layers)[::-1]:
-            if encode_layer == max(range(num_encode_layers)):
-                encode_1 = layers.Conv2D(
-                    filters=(init_num_filters // (2**encode_layer)),
-                    kernel_size=kernel_size,
-                    strides=(1,1),
-                    padding='same',
-                    activation='relu',
-                    use_bias=True,
-                    kernel_constraint=max_norm(max_norm_value, axis=[0,1,2])
-                )(inputs)
-
-                layer_list.append(encode_1)
-                
-                layer_list.append(
-                    layers.MaxPooling2D(
-                        pool_size=(2,2),
-                        padding='same'
-                    )(layer_list[-1])
-                )
-
-                layer_list.append(
-                    layers.SpatialDropout2D(
-                        rate=enc_do
-                    )(layer_list[-1])
-                )
-
+        for idx, layer in enumerate(range(num_encode_layers, step=-1)):
+            if idx:
+                previous_layer = x
             else:
-                layer_list.append(
-                    layers.Conv2D(
-                        filters=(init_num_filters // (2**encode_layer)),
-                        kernel_size=kernel_size,
-                        strides=(1,1),
-                        padding='same',
-                        activation='relu',
-                        kernel_constraint=max_norm(max_norm_value, axis=[0,1,2])
-                    )(layer_list[-1])
-                )
+                previous_layer = encoder_input
 
-                layer_list.append(
-                    layers.MaxPooling2D(
-                        pool_size=(2,2),
-                        padding='same'
-                    )(layer_list[-1])
-                )
+            x = layers.Conv2D(
+                filters=(init_num_filters // (2**layer)),
+                kernel_size=kernel_size,
+                strides=(1, 1),
+                padding='same',
+                activation='relu',
+                kernel_constraint=max_norm(max_norm_constraint, axis=[0, 1, 2])
+            )(previous_layer)
 
-                layer_list.append(
-                    layers.SpatialDropout2D(
-                        rate=enc_do
-                    )(layer_list[-1])
-                )
+            x = layers.MaxPooling2D(pool_size=(2, 2), padding='same')(x)
+            x = layers.SpatialDropout2D(rate=drop_out)(x)
+        encoder_output = layers.GlobalMaxPooling2D()(x)
+        self.encoder = keras.Model(encoder_input, encoder_output, name="encoder")
 
-        layer_list.append(
-            layers.Flatten()(layer_list[-1])
-        )
-
-        self.encoder = keras.Model(inputs, layer_list[-1])
-
-
-        resize_side = int(128/(2**num_encode_layers))
+        resize_size = image_shape[0] // (2**num_encode_layers)
         resize_layers = int(init_num_filters)
 
-        layer_list.append(
-            layers.Reshape(
-                target_shape=(resize_side,resize_side,resize_layers)
-            )(layer_list[-1])
-        )
+        x = layers.Reshape(target_shape=(resize_size, resize_size, resize_layers))(encoder_output)
 
-        for decode_layer in range(num_encode_layers):
-            layer_list.append(
-                layers.Conv2DTranspose(
-                    filters=(init_num_filters // (2**decode_layer)),
-                    kernel_size=kernel_size,
-                    strides=(1,1),
-                    padding='same',
-                    activation='relu',
-                    kernel_constraint=max_norm(max_norm_value, axis=[0,1,2])
-                )(layer_list[-1])
-            )
+        for layer in range(num_encode_layers):
+            x = layers.Conv2DTranspose(
+                filters=(init_num_filters // (2**layer)),
+                kernel_size=kernel_size,
+                strides=(1, 1),
+                padding='same',
+                activation='relu',
+                kernel_constraint=max_norm(max_norm_constraint, axis=[0, 1, 2])
+            )(x)
+            x = layers.UpSampling2D(size=(2, 2))(x)
+            x = layers.SpatialDropout2D(rate=drop_out)(x)
+        decoder_output = layers.Conv2DTranspose(
+            filters=out_filter,
+            kernel_size=kernel_size,
+            strides=(1, 1),
+            padding='same',
+            activation='sigmoid'
+        )(x)
+        self.autoencoder = keras.Model(encoder_input, decoder_output, name="autoencoder")
 
-            layer_list.append(
-                layers.UpSampling2D(
-                    size=(2,2)
-                )(layer_list[-1])
-            )
-
-            layer_list.append(
-                layers.SpatialDropout2D(
-                    rate=dec_do
-                )(layer_list[-1])
-            )
-
-        layer_list.append(
-            layers.Conv2DTranspose(
-                    filters=out_filter,
-                    kernel_size=kernel_size,
-                    strides=(1,1),
-                    padding='same',
-                    activation='sigmoid'
-            )(layer_list[-1])
-        )
-
-        self.autoencoder = keras.Model(inputs, layer_list[-1])
-        self.autoencoder.compile(
-            optimizer='adam',
-            loss='mean_squared_error'
-        )
 
     def fit_(self, X_train, X_test, num_epochs, batch_size_, model_name='Autoencoder', use_gpu=True, data_aug=True, with_tensorboard=True):
         '''
         Fits Autoencoder to data
         '''
+        self.autoencoder.compile(
+            optimizer='adam',
+            loss='mean_squared_error'
+        )
         if self.gray_imgs:
             self.NAME = "{}_convT_{}_{}eps_{}batch_{}initfilts_{}layers_128img__50do_2norm_{}kernel_{}_{}".format(
                 model_name, 'gray', num_epochs, batch_size_, self.init_num_filters, self.num_encode_layers \
@@ -382,7 +307,7 @@ class Autoencoder:
         
 
 if __name__ == "__main__":
-    model = Autoencoder(gray_imgs=False)
-    model.build_autoencoder(64,4)
+    model = Autoencoder()
+    model.build_autoencoder()
     model1 = model.autoencoder
     print(model1.summary())
