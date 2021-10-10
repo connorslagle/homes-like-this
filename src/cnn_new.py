@@ -71,7 +71,6 @@ class Autoencoder:
             x = layers.SpatialDropout2D(rate=drop_out)(x)
         encoder_output = layers.Flatten()(x)
         self.encoder = keras.Model(encoder_input, encoder_output, name="encoder")
-        print(self.encoder.summary())
 
         resize_size = image_shape[0] // (2**(num_encode_layers + 1))
         resize_layers = int(init_num_filters)
