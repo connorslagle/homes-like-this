@@ -52,7 +52,7 @@ class Autoencoder:
         encoder_input = keras.Input(shape=image_shape, name="image")
         out_filter = image_shape[-1]
 
-        for idx, layer in enumerate(range(num_encode_layers, step=-1)):
+        for idx, layer in enumerate(range(num_encode_layers, -1, -1)):
             if idx:
                 previous_layer = x
             else:
@@ -69,15 +69,16 @@ class Autoencoder:
 
             x = layers.MaxPooling2D(pool_size=(2, 2), padding='same')(x)
             x = layers.SpatialDropout2D(rate=drop_out)(x)
-        encoder_output = layers.GlobalMaxPooling2D()(x)
+        encoder_output = layers.Flatten()(x)
         self.encoder = keras.Model(encoder_input, encoder_output, name="encoder")
+        print(self.encoder.summary())
 
-        resize_size = image_shape[0] // (2**num_encode_layers)
+        resize_size = image_shape[0] // (2**(num_encode_layers + 1))
         resize_layers = int(init_num_filters)
 
         x = layers.Reshape(target_shape=(resize_size, resize_size, resize_layers))(encoder_output)
 
-        for layer in range(num_encode_layers):
+        for layer in range(num_encode_layers + 1):
             x = layers.Conv2DTranspose(
                 filters=(init_num_filters // (2**layer)),
                 kernel_size=kernel_size,
