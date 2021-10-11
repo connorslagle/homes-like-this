@@ -20,16 +20,15 @@ from sklearn.metrics import silhouette_samples, silhouette_score
 from sklearn.metrics.pairwise import cosine_distances
 
 # import base class from cnn_new
-from cnn_new import Autoencoder
+from cnn_new import BaseAutoencoder
 
 plt.style.use('ggplot')
 plt.rcParams.update({'font.size': 20})
 
 
-class XceptionAE(Autoencoder):
-    def __init__(self, gray_imgs=True):
-        super().__init__(gray_imgs=gray_imgs)
-        self._clear_variables()
+class XceptionAE(BaseAutoencoder):
+    def __init__(self, gray_images=True):
+        super().__init__(gray_images=gray_images)
 
     def build_autoencoder(self, init_num_filters, num_encode_layers, enc_do=0.5, dec_do=0.5, max_norm_value=2,
                           kernel_size=(3, 3)):
@@ -45,7 +44,7 @@ class XceptionAE(Autoencoder):
         self.num_encode_layers = num_encode_layers
         self.kernel_size = kernel_size
 
-        if self.gray_imgs:
+        if self.gray_images:
             inputs = keras.Input(shape=(128, 128, 1))
             out_filter = 1
         else:
@@ -205,7 +204,7 @@ class XceptionAE(Autoencoder):
 
 
 if __name__ == "__main__":
-    model_builder = XceptionAE(gray_imgs=False)
+    model_builder = XceptionAE(gray_images=False)
     model_builder.build_autoencoder(64, 5)
     
     model = model_builder.autoencoder
