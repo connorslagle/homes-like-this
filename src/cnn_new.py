@@ -1,10 +1,9 @@
-# conventional import
 import numpy as np
 import pickle
 import datetime as dt
-from typing import Tuple
+from typing import Tuple, Union
 
-# tf imports
+import sklearn.metrics.pairwise
 import tensorflow as tf
 from tensorflow import keras
 from tensorflow.keras import layers
@@ -13,11 +12,14 @@ from tensorflow.keras import backend as K
 from tensorflow.keras.preprocessing.image import ImageDataGenerator
 from tensorflow.keras.constraints import max_norm
 
+from sklearn.metrics.pairwise import cosine_distances
+
 
 class BaseAutoencoder:
-    def __init__(self, gray_images: bool = True, use_gpu: bool = False):
+    def __init__(self,
+                 gray_images: bool = True,
+                 use_gpu: bool = False):
         self.gray_images = gray_images
-        self.encoded_images = []
         self.encoder = None
         self.latent = None
         self.autoencoder = None
@@ -34,12 +36,21 @@ class BaseAutoencoder:
         Returns:
             None, instantiates encoder & autoencoder attributes
         """
-        return NotImplementedError
+        raise NotImplementedError
 
-    def fit_(self, X_train, X_test, num_epochs, batch_size_, model_name='Autoencoder', use_gpu=True, data_aug=True, with_tensorboard=True):
-        '''
-        Fits Autoencoder to data
-        '''
+    def fit(self,
+            X_train,
+            X_test,
+            num_epochs,
+            batch_size_,
+            model_name='Autoencoder',
+            use_gpu=True,
+            data_aug=True,
+            with_tensorboard=True):
+        """Fits autoencoder to
+        Args:
+
+        """
 
         if self.gray_imgs:
             self.NAME = "{}_convT_{}_{}eps_{}batch_{}initfilts_{}layers_128img__50do_2norm_{}kernel_{}_{}".format(
@@ -402,6 +413,12 @@ class XceptionAutoencoder(BaseAutoencoder):
             optimizer='adam',
             loss='mean_squared_error'
         )
+
+
+class BaseRecommender:
+    def __init__(self,
+                 distance_function: callable = cosine_distances):
+        self.distance_function = None
 
 
 if __name__ == "__main__":
