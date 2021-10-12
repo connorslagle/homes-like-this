@@ -1,3 +1,14 @@
+# idea folder from pycharm
+.idea/
+
+# unwanted data to commit to repo
+logs/
+notebooks/
+
+# data in app
+/app/static/data
+/app/static/images
+
 # data extensions
 /data
 *.gz

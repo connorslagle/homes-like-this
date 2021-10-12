@@ -1,3 +1,7 @@
+<<<<<<< HEAD
 Flask==1.0
+=======
+Flask==1.1.2
+>>>>>>> 1ba0007b76c29a4b4311511da763bf591fdef6ff
 pandas
 requests
