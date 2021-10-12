@@ -1,18 +1,27 @@
 import numpy as np
 import pickle
 import datetime as dt
-from typing import Tuple, Union
+from typing import Tuple, Union, List
 
 import sklearn.metrics.pairwise
 import tensorflow as tf
 from tensorflow import keras
 from tensorflow.keras import layers
-from tensorflow.keras.callbacks import TensorBoard
+from tensorflow.keras.callbacks import TensorBoard, EarlyStopping
 from tensorflow.keras import backend as K
 from tensorflow.keras.preprocessing.image import ImageDataGenerator
 from tensorflow.keras.constraints import max_norm
 
 from sklearn.metrics.pairwise import cosine_distances
+
+
+CALLABLE = {
+    TensorBoard: {
+        'log_dir': '../logs/',
+        'update_freq': 'epoch'
+    },
+    EarlyStopping: {}
+}
 
 
 class BaseAutoencoder:
@@ -42,29 +51,22 @@ class BaseAutoencoder:
             X_train,
             X_test,
             num_epochs,
-            batch_size_,
-            model_name='Autoencoder',
-            use_gpu=True,
+            batch_size,
+            encoder_only=False,
             data_aug=True,
-            with_tensorboard=True):
-        """Fits autoencoder to
+            callbacks: Union[Tuple[callable], None] = None) -> None:
+        """Fits model (encoder/autoencoder) to provided data.
+
         Args:
+            X_test (numpy Array):
+            X_train (numpy Array):
+            num_epochs (int): Number of epochs to train.
+            batch_size (int): Batch size for training.
+            encoder_only (bool): Flag to use encoder only instead of fitting whole autoencoder.
 
+        Returns:
+             None, trains encoder/autoencoder attribute
         """
-
-        if self.gray_imgs:
-            self.NAME = "{}_convT_{}_{}eps_{}batch_{}initfilts_{}layers_128img__50do_2norm_{}kernel_{}_{}".format(
-                model_name, 'gray', num_epochs, batch_size_, self.init_num_filters, self.num_encode_layers \
-                    , self.kernel_size[0], str(datetime.now().date()), str(datetime.now().time())
-            )
-        else:
-            self.NAME = "{}_convT_{}_{}eps_{}batch_{}initfilts_{}layers_128img__50do_2norm_{}kernel_{}_{}".format(
-                model_name, 'color', num_epochs, batch_size_, self.init_num_filters, self.num_encode_layers \
-                    , self.kernel_size[0], str(datetime.now().date()), str(datetime.now().time())
-            )
-
-        if use_gpu:
-            self._use_gpu()
 
         if data_aug:
             self.NAME = self.NAME + '_datagen'
@@ -109,7 +111,7 @@ class BaseAutoencoder:
                     validation_data=(X_test,X_test))
 
         # self._extract_latent(X_test)
-            
+
     def kmean_cluster(self, latents, num_clusters, set_seed=True):
         '''
         Cluster encoded images to means
@@ -416,9 +418,8 @@ class XceptionAutoencoder(BaseAutoencoder):
 
 
 class BaseRecommender:
-    def __init__(self,
-                 distance_function: callable = cosine_distances):
-        self.distance_function = None
+    def __init__(self, distance_function: callable = cosine_distances):
+        self.distance_function = distance_function
 
 
 if __name__ == "__main__":
