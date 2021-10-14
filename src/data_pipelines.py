@@ -1,11 +1,17 @@
 # general imports
-import pymongo
 import numpy as np
 import pandas as pd
 from datetime import datetime
 import os
 import pickle
 import pdb
+
+# db imports
+import pymongo
+from sqlalchemy import create_engine, Column, String, Numeric, Integer
+from sqlalchemy.ext.declarative import declarative_base  
+from sqlalchemy.orm import sessionmaker
+
 
 # sk imports
 from skimage import io
@@ -15,14 +21,15 @@ from skimage.filters import sobel
 from sklearn.model_selection import train_test_split
 
 
-class MongoImporter():
+class MongoImporter(object):
     '''
-    Class to import/format metadata from mongodb to pandas df. Has option to save to csv for easier processing.
+    Class to import/format metadata from mongodb to pandas df. Has option to save to csv or sql for easier processing.
     '''
 
     def __init__(self):
         self.conn = pymongo.MongoClient('localhost', 27017)
         self.db = self.conn['test']
+
 
     def _from_collection(self):
         '''
@@ -125,8 +132,6 @@ class MongoImporter():
         self._concat_docs()
         df = self._join_dfs()
         self.df = self._format_df(df)
-
-        return self.df
     
     def _format_df(self, df):
         '''
@@ -464,21 +469,26 @@ class ImagePipeline(MongoImporter):
             with open(y_fname, 'wb') as f:
                 pickle.dump(X_files, f)
 
-        
+class PostgresImporter(object):
+    '''
+    Object to interact with psql database. Leveraging SQLAlchemy syntax.
+    '''
+    def __init__(self):
+        db_string = 'postgresql+psycopg2://postgres:password@localhost:5432/homes_like_this'
+        self.db = create_engine(db_string)
 
-    
 
 
 if __name__ == "__main__":
-    print('hi')
+    pass
     # importer = MongoImporter()
     # df = importer.load_docs()
     # df.info()
     # importer.to_csv('pg1_3_all.csv')
 
-    img_pipe = ImagePipeline('../data/proc_images/128/',gray_imgs=True)
-    img_pipe.build_Xy()
-    img_pipe._save_Xy()
+    # img_pipe = ImagePipeline('../data/proc_images/128/',gray_imgs=True)
+    # img_pipe.build_Xy()
+    # img_pipe._save_Xy()
     # img_pipe.read(batch_mode=True, batch_size=500,batch_resize_size=(256,256))
     # img_pipe.resize((64,64))
     # img_pipe.save()

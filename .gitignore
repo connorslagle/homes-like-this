@@ -1,6 +1,23 @@
+# MAC finder files
+*.DS_Store
+
+# pycharm stuff
+.idea/
+
+# ignore testing notebooks
+notebooks/
+
 # data in app
 /app/static/data
 /app/static/images
+
+# logs/modelfiles
+logs/
+models/
+
+# incomplete data pipeline
+data_pipeline/
+
 
 # data extensions
 /data
