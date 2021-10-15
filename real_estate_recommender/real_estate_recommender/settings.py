@@ -11,10 +11,16 @@ https://docs.djangoproject.com/en/2.2/ref/settings/
 """
 
 import os
+import logging
+from google.cloud import secretmanager
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
+# Define base GCP-Related Variables
+GCP_PROJECT_ID = os.environ.get("GOOGLE_CLOUD_PROJECT", "")
+GCP_SECRET_LOCATION = f"projects/{GCP_PROJECT_ID}/secrets/"
+SECRET_MANAGER_CLIENT = secretmanager.SecretManagerServiceClient()
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/2.2/howto/deployment/checklist/
@@ -37,7 +43,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'recommender'
+    'recommender',
+    'autoencoder'
 ]
 
 MIDDLEWARE = [
@@ -75,11 +82,57 @@ WSGI_APPLICATION = 'real_estate_recommender.wsgi.application'
 # https://docs.djangoproject.com/en/2.2/ref/settings/#databases
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
-    }
+    'default': dict()
 }
+
+
+if os.getenv('GAE_INSTANCE'):
+    secret_name = os.environ["SECRET_NAME"]
+    cloud_sql_conn_name = os.environ["CLOUDSQL_CONN_NAME"]
+    secret_version = os.environ.get("SECRET_VERSION", "latest")
+
+    name = f"{GCP_SECRET_LOCATION}{secret_name}"
+    secret_labels = SECRET_MANAGER_CLIENT.get_secret(name=name).labels
+
+    db_name = secret_labels.get("database")
+    if not db_name:
+        if not os.environ.get("DATABASE_NAME"):
+            logger.info(f"No 'database' label on {secret_name} or in ENV variables, defaulting to 'postgres'")
+            db_name = 'postgres'
+        else:
+            db_name = os.environ['DATABASE_NAME']
+
+    db_user = secret_labels.get("user")
+    if not db_user:
+        logger.info(f"No 'user' label on {secret_name}, defaulting to 'postgres'")
+        db_user = 'postgres'
+
+    db_port = secret_labels.get("port", "5432")
+
+    name += f"/versions/{secret_version}"
+
+    DATABASES['default']['ENGINE'] = 'django.db.backends.postgresql'
+    DATABASES['default']['NAME'] = db_name
+    DATABASES['default']['PORT'] = db_port
+    DATABASES['default']['USER'] = db_user
+    DATABASES['default']['HOST'] = f'/cloudsql/{cloud_sql_conn_name}'
+    DATABASES['default']['PASSWORD'] = (
+        SECRET_MANAGER_CLIENT.access_secret_version(name=name).payload.data.decode('UTF-8')
+    )
+
+    # These are people who'll receive error emails and tracebacks
+    ADMINS = [
+        ('Connor Slagle', 'con.slagle@gmail.com'),
+    ]
+    SERVICE_NAME = os.environ["SERVICE_NAME"]
+
+else:
+    logger.info("GAE not detected. Initializing using SQLite.")
+    DATABASES['default']['ENGINE'] = 'django.db.backends.sqlite3'
+    DATABASES['default']['NAME'] = os.path.join(BASE_DIR, 'db.sqlite3')
+
+    ADMINS = []  # We don't want local envs sending emails to people
+    SERVICE_NAME = 'localhost'
 
 
 # Password validation
