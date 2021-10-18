@@ -14,11 +14,14 @@ import os
 import logging
 from google.cloud import secretmanager
 
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 # Define base GCP-Related Variables
-GCP_PROJECT_ID = os.environ.get("GOOGLE_CLOUD_PROJECT", "")
+GCP_PROJECT_ID = os.environ.get("GOOGLE_CLOUD_PROJECT", "homes-like-this")
 GCP_SECRET_LOCATION = f"projects/{GCP_PROJECT_ID}/secrets/"
 SECRET_MANAGER_CLIENT = secretmanager.SecretManagerServiceClient()
 
